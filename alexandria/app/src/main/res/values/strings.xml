@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Alexandria</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_user">Account</string>
+    <string name="activity_title_home">Home</string>
 </resources>
