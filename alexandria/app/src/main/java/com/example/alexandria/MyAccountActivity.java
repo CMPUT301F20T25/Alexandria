@@ -2,13 +2,9 @@ package com.example.alexandria;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 
-public class HomeActivity extends BaseActivity {
+public class MyAccountActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,12 +13,11 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     int getContentViewId() {
-        return R.layout.activity_home;
+        return R.layout.activity_my_account;
     }
 
     @Override
     int getNavigationMenuItemId() {
-        return R.id.navigation_home;
+        return R.id.navigation_user;
     }
-
 }
