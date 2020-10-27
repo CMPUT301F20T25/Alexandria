@@ -36,10 +36,10 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 // getting info from components
-                String email = usernameEditText.getText().toString();
+                String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
 
-                login(email, password);
+                login(username, password);
 
             }
         });
@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-    public void login(String email, String password){
+
+    public void login(String username, String password){
         //generate password hash
         //Reference: https://howtodoinjava.com/java/java-security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
         String generatedPassword = null;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity{
         }
 
         // logging user info
-        Log.d("LoginInfo", email);
+        Log.d("LoginInfo", username);
         Log.d("LoginInfo", password);
     }
 
