@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity{
     private EditText passwordEditText;
     private Button loginButton;
     private Button registerButton;
-    FirebaseFirestore db;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity{
         // logging user info
         Log.d("LoginInfo", username);
         Log.d("LoginInfo", password);
+
     }
 
 
