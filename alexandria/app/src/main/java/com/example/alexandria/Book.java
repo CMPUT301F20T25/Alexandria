@@ -13,24 +13,7 @@ public class Book {
     private Tuple<User, String> status; // <user, status>
     private Image image;
 
-    public Book(int isbn, String title, String author, String description, User owner, Tuple<User, String> status, Image image) {
-        this.isbn = isbn;
-        this.title = title;
-        this.author = author;
-        this.description = description;
-        this.owner = owner;
-        this.status = status;
-        this.image = image;
-    }
-
-    public Book(int isbn, String title, String author, String description, User owner, Tuple<User, String> status) {
-        this.isbn = isbn;
-        this.title = title;
-        this.author = author;
-        this.description = description;
-        this.owner = owner;
-        this.status = status;
-    }
+    // constructer
 
     // getters & setters
 
