@@ -1,4 +1,5 @@
 package com.example.alexandria;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,17 +9,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity{
 
+    private static final String TAG = "tag";
     private EditText usernameEditText;
     private EditText passwordEditText;
     private Button loginButton;
     private Button registerButton;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,16 +81,26 @@ public class MainActivity extends AppCompatActivity{
             e.printStackTrace();
         }
 
-        // compare with password in database
+
+        // compare with password in database - not completed
+        
+        db = FirebaseFirestore.getInstance();
         String currentPassword = null;// read from database
+
         if (currentPassword == generatedPassword){
             // go to home activity
 
-        } else {
-            // notify user with snackbar - wrong password
+
+        } else if (password.isEmpty()) {
+            // no action
+            return;
+        }
+        else {
+            // notify user with snackbar - incorrect password/username
             // reference: https://developer.android.com/training/snackbar/showing
             View coordinatorLayout = findViewById(R.id.coordinatorLayout);
-            Snackbar snackbar = Snackbar.make(coordinatorLayout, "Wrong password", Snackbar.LENGTH_SHORT);
+            Snackbar snackbar = Snackbar.make(coordinatorLayout,
+                    "Incorrect username/password", Snackbar.LENGTH_SHORT);
             snackbar.show();
         }
 
