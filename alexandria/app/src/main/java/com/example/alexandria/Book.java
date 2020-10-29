@@ -9,11 +9,11 @@ public class Book {
     private String title;
     private String author;
     private String description;
-    private User owner;
-    private Tuple<User, String> status; // <user, status>
+    //private User owner;
+    //private Tuple<User, String> status; // <user, status>
     private Image image;
 
-    // constructer
+    // constructor
 
     // getters & setters
 
