@@ -87,13 +87,19 @@ public class MainActivity extends AppCompatActivity{
         db = FirebaseFirestore.getInstance();
         String currentPassword = null;// read from database
 
-        if (currentPassword == generatedPassword){
+        // temporary password - for test use
+        currentPassword = "123";
+        generatedPassword = password;
+
+        if (currentPassword.equals(generatedPassword)){
             // go to home activity
 
+            // to be modified later when the password check is finished
+            Intent home = new Intent(this, HomeActivity.class);
+            startActivity(home);
 
         } else if (password.isEmpty()) {
             // no action
-            return;
         }
         else {
             // notify user with snackbar - incorrect password/username
@@ -107,6 +113,7 @@ public class MainActivity extends AppCompatActivity{
         // logging user info
         Log.d("LoginInfo", username);
         Log.d("LoginInfo", password);
+
 
     }
 
