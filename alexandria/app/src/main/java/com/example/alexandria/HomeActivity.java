@@ -19,7 +19,8 @@ public class HomeActivity extends BaseActivity {
         myBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openMyBookActivity();
+                //openMyBookActivity();
+                openBook();
             }
         });
 
@@ -40,6 +41,12 @@ public class HomeActivity extends BaseActivity {
                 openRequestedActivity();
             }
         });
+    }
+
+
+    private void openBook(){
+        Intent myBookIntent = new Intent(this, BookInfoActivity.class);
+        startActivity(myBookIntent);
     }
 
 

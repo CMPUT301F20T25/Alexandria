@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity{
     private EditText passwordEditText;
     private Button loginButton;
     private Button registerButton;
-    FirebaseFirestore db;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity{
 
         } else if (password.isEmpty()) {
             // no action
-            return;
         }
         else {
             // notify user with snackbar - incorrect password/username
