@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get UI components
+        // Get UI component
         usernameEditText = (EditText) findViewById(R.id.editTextUsernameLogin);
         passwordEditText = (EditText) findViewById(R.id.editTextTextPassword);
         loginButton = (Button) findViewById(R.id.buttonLogin);
