@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 public class Book {
 
-    private int isbn; // 10 or 13 digits
+    private String isbn; // 10 or 13 digits
     private String title;
     private String author;
     private String description;
@@ -23,7 +23,7 @@ public class Book {
     private Image image;
 
     // constructor
-//    public Book(int isbn, String title, String author, String description, User owner, String status, Image image) {
+//    public Book(String isbn, String title, String author, String description, User owner, String status, Image image) {
 //        this.isbn = isbn;
 //        this.title = title;
 //        this.author = author;
@@ -31,10 +31,10 @@ public class Book {
 //        this.owner = owner;
 //        this.status = status;
 //        this.image = image;
-//        this.requestStatus = new HashMap();
+//        this.requestStatus = new HashMap<User, String>();
 //    }
 
-    public Book(int isbn, String title, String author, String description, String owner, String status) {
+    public Book(String isbn, String title, String author, String description, String owner, String status) {
         this.isbn = isbn;
         this.title = title;
         this.author = author;
@@ -47,11 +47,11 @@ public class Book {
 
     // getters & setters
 
-    public int getIsbn() {
+    public String getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(int isbn) {
+    public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
 
@@ -126,8 +126,20 @@ public class Book {
 //        requestStatus.put(borrower,status);
 //    }
 //
-//    public User get Borrower(){
+//    public User getBorrower(){
 //
+//        User borrower = null;
+//
+//        // hashmap iterator
+//        // reference: https://stackoverflow.com/questions/1066589/iterate-through-a-hashmap
+//        Iterator it = requestStatus.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry pair = (Entry) it.next();
+//            if (pair.getValue().toString().equals("Borrowed")){
+//                borrower = pair.getKey().getClass(User);
+//            }
+//        }
+//        return borrower;
 //    }
 
 
@@ -145,6 +157,7 @@ public class Book {
 
         String borrower = null;
 
+        // hashmap iterator
         // reference: https://stackoverflow.com/questions/1066589/iterate-through-a-hashmap
         Iterator it = requestStatus.entrySet().iterator();
         while (it.hasNext()) {

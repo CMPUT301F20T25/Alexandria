@@ -22,8 +22,11 @@ public class MyBookInfoActivity extends AppCompatActivity {
 
         // set up toolbar
         // reference: https://developer.android.com/training/appbar/setting-up
+        // https://stackoverflow.com/questions/29448116/adding-backbutton-on-top-of-child-element-of-toolbar/29794680#29794680
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // get intent and book/user passed from previous page
 
@@ -31,7 +34,7 @@ public class MyBookInfoActivity extends AppCompatActivity {
 
         // book for test
         String user = "user1";
-        Book book = new Book(1234567890,"book2","jack", "some text",
+        Book book = new Book("1234567890","book2","jack", "some text",
                 "user1", "Available");
         book.setRequestStatus("user2","Available");
 
@@ -48,7 +51,7 @@ public class MyBookInfoActivity extends AppCompatActivity {
 
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
-        isbn.setText(String.valueOf(book.getIsbn()));
+        isbn.setText(book.getIsbn());
         descr.setText(book.getDescription());
         status.setText(book.getStatus());
 
@@ -75,11 +78,19 @@ public class MyBookInfoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.editBook) {
-            Intent intent = new Intent(this, EditBookActivity.class);
-            startActivity(intent);
-            Log.d("toolbar item", "Edit button selected");
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                Log.d("toolbar item", "Back button selected");
+                break;
+            case R.id.editBook:
+                int EDIT_BOOK_ACTIVITY = 1;
+                Intent intent = new Intent(this, EditBookActivity.class);
+                startActivityForResult(intent, EDIT_BOOK_ACTIVITY);
+                Log.d("toolbar item", "Edit button selected");
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
