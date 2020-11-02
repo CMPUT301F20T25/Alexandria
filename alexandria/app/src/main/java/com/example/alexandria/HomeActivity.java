@@ -41,8 +41,7 @@ public class HomeActivity extends BaseActivity {
             }
         });
     }
-
-
+    
     private void openMyBookActivity() {
         Intent myBookIntent = new Intent(this, MyBookActivity.class);
         startActivity(myBookIntent);
