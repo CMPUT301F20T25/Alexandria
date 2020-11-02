@@ -34,6 +34,7 @@ public class Book {
 //        this.requestStatus = new HashMap<User, String>();
 //    }
 
+    //for test use
     public Book(String isbn, String title, String author, String description, String owner, String status) {
         this.isbn = isbn;
         this.title = title;
@@ -97,9 +98,6 @@ public class Book {
     }
 
 
-
-
-
     public String getStatus() {
         return status;
     }
@@ -143,6 +141,7 @@ public class Book {
 //    }
 
 
+    // take string for users - for test use
 
     public void setRequestStatus(String borrower, String status) {
         // add <user, status> to dictionary when a request is made
