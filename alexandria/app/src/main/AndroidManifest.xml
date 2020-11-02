@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alexandria">
-
-        <activity android:name=".BookInfoActivity"></activity>
+        <activity android:name=".EditBookActivity"></activity>
+        <activity android:name=".MyBookInfoActivity" />
         <activity android:name=".RequestedActivity" />
         <activity android:name=".BorrowedActivity" />
         <activity android:name=".MyBookActivity" />
