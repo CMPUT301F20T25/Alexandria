@@ -1,6 +1,6 @@
 package com.example.alexandria.models.validators;
 
-class ValidationError {
+public class ValidationError {
     private final String errorField;
     private final String errorMessage;
 

@@ -25,7 +25,7 @@ public class SignupValidator implements Validator{
      * @param phone String
      * @param pass String
      */
-    SignupValidator(String username, String userBio, String email, String phone, String pass){
+    public SignupValidator(String username, String userBio, String email, String phone, String pass){
         this.username = username;
         this.userBio = userBio;
         this.email = email;
@@ -40,7 +40,7 @@ public class SignupValidator implements Validator{
      * @param phone String
      * @param pass String
      */
-    SignupValidator(String username, String email, String phone, String pass){
+    public SignupValidator(String username, String email, String phone, String pass){
         this.username = username;
         this.userBio = new String("");
         this.email = email;
