@@ -15,6 +15,8 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
+import javax.xml.transform.Result;
+
 
 public class SearchAdapter extends RecyclerView.Adapter {
     private ArrayList<ResultModel> resultModels = new ArrayList<ResultModel>();
@@ -59,6 +61,14 @@ public class SearchAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         return resultModels.get(position).getViewType();
+    }
+
+    public void updateData(ArrayList<ResultModel> models) {
+        if (models != null) {
+            this.resultModels.clear();
+            this.resultModels.addAll(models);
+        }
+        notifyDataSetChanged();
     }
 
     class SearchBookItemHolder extends RecyclerView.ViewHolder {

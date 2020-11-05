@@ -28,7 +28,7 @@ public abstract class ResultModel {
         public SearchUserItemModel(@NonNull final String username) {
             super();
             this.username = username;
-            this.bio = "";
+            this.bio = " ";
         }
 
         public SearchUserItemModel(@NonNull final String username, String bio) {

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.SearchView;
@@ -25,29 +26,28 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.Result;
 
 public class SearchActivity extends BaseActivity {
-    //TODO: display a mixed list of books and users
-    //TODO: figure out how to hook up search functionality; design and test queries
-    //TODO: select result functionality --> redirect to profile/book pages (activities? have to make a public book activity? make a public user activity?)
     //attributes
     private FirebaseFirestore db;
-    private CollectionReference usersRef;
-    private CollectionReference booksRef;
+    private ArrayList<ResultModel> resultData = new ArrayList<ResultModel>();
 
     //layout elements
     private androidx.appcompat.widget.Toolbar toolbar;
     private SearchView searchBar;
     private RecyclerView resultsView;
+    private SearchAdapter resultAdapter;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -56,164 +56,116 @@ public class SearchActivity extends BaseActivity {
 
         //setup database
         db = FirebaseFirestore.getInstance();
-        //db settings
-        FirebaseFirestoreSettings.Builder dbSettings = new FirebaseFirestoreSettings.Builder();
-        dbSettings.setSslEnabled(false);
-        usersRef = db.collection("users");
-        booksRef = db.collection("books");
 
         //set layout elements
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.search_toolbar);
         searchBar = (SearchView) findViewById(R.id.search_searchView);
-        searchBar.setOnClickListener(new View.OnClickListener() {
+        searchBar.setIconifiedByDefault(true);
+        searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onClick(View v) {
-                searchBar.setIconified(false);
+            public boolean onQueryTextSubmit(String query) {
+                String q = searchBar.getQuery().toString();
+                if (!q.equals("")) {
+                    Log.e("SEARCH MADE", q);
+                    resultData.clear();
+                    loadResults(q);
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return true;
+            }
+        });
+        searchBar.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                resultData.clear();
+                updateResults(new ArrayList<ResultModel>());
+                return true;
             }
         });
 
-        //create adapter
-        ArrayList<ResultModel> resultData = generateTestList();
-        SearchAdapter adapter = new SearchAdapter(resultData);
+        //instantiate adapter and layout manager
+        resultAdapter = new SearchAdapter(resultData);
         LinearLayoutManager resultsLayoutManager = new LinearLayoutManager(getApplicationContext());
 
-        //setup recyclerView
+        //instantiate recyclerView
         resultsView = (RecyclerView) findViewById(R.id.search_resultsList);
-        //  add decoration
+        //  set divider decoration
         DividerItemDecoration divider = new DividerItemDecoration(resultsView.getContext(), resultsLayoutManager.getOrientation());
         resultsView.addItemDecoration(divider);
         //  set layout manager and adapter
         resultsView.setLayoutManager(resultsLayoutManager);
-        resultsView.setAdapter(adapter);
-
-        testDatabase();
+        resultsView.setAdapter(resultAdapter);
     }
 
-    private void testDatabase() {
-        String TAG = "TESTING DATABASE";
-        // Create a new user with a first and last name
-        Map<String, Object> user1 = new HashMap<>();
-        user1.put("first", "Ada");
-        user1.put("last", "Lovelace");
-        user1.put("born", 1815);
+    private void loadResults(@NonNull String keywords) {
+        String USER_TYPE = "users";
+        String BOOK_TYPE = "books";
+        Log.e("LOAD RESULTS", keywords);
+        if (!keywords.equals("")) {
+            //TODO: make search more robust
+            //search on user's username is case sensitive and only matches partial prefix matches
+            Query userUsernameQuery = db.collection("users").orderBy("username").startAt(keywords).endAt(keywords + "~");
+            runQuery(userUsernameQuery, USER_TYPE);
+            //search on book title is case sensitive and only matches partial prefix matches
+            Query bookTitleQuery = db.collection("books").orderBy("title").startAt(keywords).endAt(keywords + "~");
+            runQuery(bookTitleQuery, BOOK_TYPE);
+            //search on author name only matches a full, case-sensitive match of one author
+            Query bookAuthorsQuery = db.collection("books").whereArrayContains("authors", keywords);
+            runQuery(bookAuthorsQuery, BOOK_TYPE);
+        }
+    }
 
-        // Add a new document with a generated ID
-        db.collection("users")
-                .add(user1)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
-
-        // Create a new user with a first, middle, and last name
-        Map<String, Object> user2 = new HashMap<>();
-        user2.put("first", "Alan");
-        user2.put("middle", "Mathison");
-        user2.put("last", "Turing");
-        user2.put("born", 1912);
-
-        // Add a new document with a generated ID
-        db.collection("users")
-                .add(user2)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
-
-        //READING!!!!!!!!!!!!!!!
-
-        db.collection("users")
-                .get()
+    private void runQuery(Query query,@NonNull String modelType) {
+        ArrayList<ResultModel> models = new ArrayList<ResultModel>();
+        String TAG = "Running query";
+        query.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.e(TAG, document.getId() + " => " + document.getData());
+                                Map<String,Object> data = document.getData();
+                                if (modelType == "users" && data.get("bio") != "") {
+                                    models.add(new ResultModel.SearchUserItemModel(data.get("username").toString()));
+                                } else if (modelType == "users") {
+                                    models.add(new ResultModel.SearchUserItemModel(data.get("username").toString(), data.get("bio").toString()));
+                                } else if (modelType == "books") {
+                                    //Log.e(TAG, data.toString());
+                                    ArrayList<String> authors = (ArrayList<String>) data.get("authors");
+                                    Map<String,Object> status = (Map<String,Object>) data.get("status");
+                                    /*
+                                    //TODO: delete if db gets the change I need
+                                    final String[] owner = new String[1];
+                                    DocumentReference ownerRef = (DocumentReference) data.get("owner");
+                                    ownerRef.get()
+                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        owner[0] = task.getResult().getData().get("username").toString();
+                                                    }
+                                                }
+                                            });
+                                     //use: String.valueof(owner[0])
+                                     */
+                                    models.add(new ResultModel.SearchBookItemModel(data.get("title").toString(), authors, data.get("owner").toString(), status.get("public").toString()));
+                                }
                             }
+                            updateResults(models);
                         } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
+                            Log.w(TAG, "Error getting documents", task.getException());
                         }
                     }
                 });
     }
 
-    private ArrayList<ResultModel> generateTestList() {
-        ArrayList<ResultModel> models = new ArrayList<>();
-        for (int i=0; i < 4; ++i) {
-            ArrayList<String> a = new ArrayList<String>(Arrays.asList("author1", "author2"));
-            ResultModel.SearchBookItemModel mod = new ResultModel.SearchBookItemModel("title"+i, a, "owner"+i, "available");
-            models.add(mod);
-        }
-        for (int i=0; i < 4; ++i) {
-            ResultModel.SearchUserItemModel mod = new ResultModel.SearchUserItemModel("user"+ i, "hello");
-            models.add(mod);
-        }
-        return models;
-    }
-
-    private ArrayList<ResultModel> getDatabaseResults(@NonNull String keywords) {
-        ArrayList<ResultModel> models = new ArrayList<>();
-        String TAG = "DB READ";
-        Log.e("DB ACCESS", "HELLO I AM BEGINNING NOW");
-
-
-        /*
-        Map<String, Object> testData1 = new HashMap<>();
-        testData1.put("name", "Betty");
-        testData1.put("email", "betty@fake.com");
-        db.collection("test").document("testUser4")
-                .set(testData1)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.e("DB WRITE", "YAY WE ADDED STUFF");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("DB WRITE", "Data couldn't be added", e);
-                    }
-                });
-         */
-
-        if (keywords == "") {
-            DocumentReference docRef = db.collection("users").document("testUser1");
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        } else {
-                            Log.d(TAG, "No such document");
-                        }
-                    } else {
-                        Log.d(TAG, "get failed with ", task.getException());
-                    }
-
-                }
-            });
-        }
-        return models;
+    private void updateResults(ArrayList<ResultModel> models) {
+        resultData.addAll(models);
+        resultAdapter.updateData(resultData);
     }
 
     @Override
