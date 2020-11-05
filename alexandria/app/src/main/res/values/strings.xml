@@ -8,4 +8,6 @@
     <string name="search_button">Search</string>
     <string name="search_keywordPrompt">Enter a keyword(s)...</string>
     <string name="search_title">Search</string>
+    <string name="search_bookitem_photo">Cover photo</string>
+    <string name="search_defaultText">text...</string>
 </resources>
