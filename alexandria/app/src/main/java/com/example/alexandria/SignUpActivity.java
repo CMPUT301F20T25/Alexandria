@@ -99,12 +99,12 @@ public class SignUpActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
-                                    Log.d("Signup", "createUserWithEmail:success");
+                                    Log.d("Sign Up", "createUserWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     Intent home = new Intent(SignUpActivity.this, HomeActivity.class);
                                     startActivity(home);
                                 }else{
-                                    Log.d("Signup", "createUserWithEmail:failure", task.getException());
+                                    Log.d("Sign Up", "createUserWithEmail:failure", task.getException());
                                     Toast.makeText(SignUpActivity.this, "Unknown error",
                                             Toast.LENGTH_SHORT).show();
                                 }
