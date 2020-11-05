@@ -26,6 +26,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+* MainActivity. Responsible for logging in and redirect to sign up page
+* @author han
+*/
 public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = "tag";
@@ -35,7 +39,11 @@ public class MainActivity extends AppCompatActivity{
     private Button registerButton;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
-
+    
+    /**
+    * onCreate method
+    * @author han
+    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +87,10 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-
+    /**
+    * Get user's input and try to login throught Firebse Authentication Module
+    * @author han
+    */
     public void login(String email, String password){
         //generate password hash
         //Reference: https://howtodoinjava.com/java/java-security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
