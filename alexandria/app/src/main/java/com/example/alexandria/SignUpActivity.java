@@ -26,6 +26,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+* Sign up activity. Sending request to FirebaseAuthentication module.
+* @author: han
+*/
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText usernameEditText;
