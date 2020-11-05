@@ -86,7 +86,7 @@ public class SignUpActivity extends AppCompatActivity {
                 }
 
                 if(!password.equals(repeatedPass)){
-                    passwordEditText.setError("");
+                    passwordEditText.setError("Password doesn't match!");
                     confirmPasswordEditText.setError("Password doesn't match!");
                     return;
                 }
