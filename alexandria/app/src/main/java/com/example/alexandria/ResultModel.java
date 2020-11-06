@@ -101,10 +101,12 @@ public abstract class ResultModel {
         private ArrayList<String> authors;
         private String owner;
         private String publicStatus;
+        private String bookId;
         //private ImageView photo; //TODO: figure out how to handle images
 
-        public SearchBookItemModel(@NonNull String title, @NonNull ArrayList<String> authors, @NonNull String owner, @NonNull String publicStatus) {
+        public SearchBookItemModel(@NonNull String bookId, @NonNull String title, @NonNull ArrayList<String> authors, @NonNull String owner, @NonNull String publicStatus) {
             super();
+            this.bookId = bookId;
             this.title = title;
             this.authors = authors;
             this.owner = owner;
@@ -162,6 +164,13 @@ public abstract class ResultModel {
          * @param publicStatus String of public book status
          */
         public void setPublicStatus(String publicStatus) { this.publicStatus = publicStatus; }
+
+        /**
+         * Returns the id of the book as listed in the database
+         * @return String of book id
+         */
+        public String getBookId() { return this.bookId; }
+
 
         /*
         public ImageView getPhoto() { return this.photoView; }
