@@ -4,9 +4,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -24,7 +27,6 @@ public class MyAccountActivity extends BaseActivity {
 
         final String currentUserName;
         final String TAG = "Tag: Account";
-        final Button saveButton;
         final FirebaseFirestore db;
 
         // current user name, for testing
@@ -35,6 +37,11 @@ public class MyAccountActivity extends BaseActivity {
         final CollectionReference collectionRef = db.collection("users");
         final DocumentReference userDocRef = db.collection("users").document(currentUserName);
 
+        EditText userNameEditText = findViewById(R.id.editTextUserName);
+        EditText phoneEditText = findViewById(R.id.editTextPhone);
+        EditText emailEditText = findViewById(R.id.editTextTextEmail);
+
+        // get realtime updates with firebase
         userDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -46,23 +53,39 @@ public class MyAccountActivity extends BaseActivity {
                 if (value != null && value.exists()) {
                     Log.d(TAG, "Current data: " + value.getData());
                     // display user name
-                    String userName = value.getId();
-                    EditText userNameEditText = findViewById(R.id.editTextUserName);
+                    String userName = (String) value.getData().get("username");
                     userNameEditText.setText(userName);
 
                     // display phone number
                     String phone = (String) value.getData().get("phone number");
-                    EditText phoneEditText = findViewById(R.id.editTextPhone);
                     phoneEditText.setText(phone);
 
                     // display email
                     String email = (String) value.getData().get("email");
-                    EditText emailEditText = findViewById(R.id.editTextTextEmail);
                     emailEditText.setText(email);
-
                 } else {
                     Log.d(TAG, "Current data: null");
                 }
+            }
+        });
+
+        // save button
+        Button saveButton = (Button) findViewById(R.id.save_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // save changes
+                String name = userNameEditText.getText().toString();
+                userDocRef.update("username", name);
+
+                String phone = phoneEditText.getText().toString();
+                userDocRef.update("phone number", phone);
+
+                String email = emailEditText.getText().toString();
+                userDocRef.update("email", email);
+
+                // display message
+                Toast.makeText(MyAccountActivity.this, "Changes Saved",Toast.LENGTH_LONG).show();
             }
         });
     }
