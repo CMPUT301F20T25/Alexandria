@@ -107,10 +107,17 @@ public class SearchAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
+    /**
+     * Sets the clickListener to be used when an item is clicked
+     * @param clickListener clickListener to be set
+     */
     public void setOnItemClickListener(ClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
+    /**
+     * Interface for classes to use to implement a ClickListener and define the behaviour when that item is clicked
+     */
     public interface ClickListener {
         void onItemClick(int position, View v, String info);
     }
@@ -154,6 +161,10 @@ public class SearchAdapter extends RecyclerView.Adapter {
             this.bookID = viewModel.getBookId();
         }
 
+        /**
+         * Pass the viewHolder's position, view, and bookID when clicked to the adapter to handle
+         * @param v view that was clicked
+         */
         @Override
         public void onClick(View v) {
             clickListener.onItemClick(getAdapterPosition(), v, bookID);
@@ -191,6 +202,10 @@ public class SearchAdapter extends RecyclerView.Adapter {
             this.username = viewModel.getUsername();
         }
 
+        /**
+         * Pass the viewHolder's position, view, and username when clicked to the adapter to handle
+         * @param v view that was clicked
+         */
         @Override
         public void onClick(View v) {
             clickListener.onItemClick(getAdapterPosition(), v, username);
