@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity{
     private Button registerButton;
     FirebaseFirestore db;
 
+    static protected DocumentReference currentUserRef = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +91,6 @@ public class MainActivity extends AppCompatActivity{
             e.printStackTrace();
         }
 
-
         // compare with password in database
 
         db = FirebaseFirestore.getInstance();
@@ -101,11 +102,14 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
                 if (documentSnapshot.exists()) {
-                    Log.d("TAG", String.valueOf(documentSnapshot.getData().get("password")));
+                    Log.d("TAG", "retrieve password from database");
                     String currentPassword = String.valueOf(documentSnapshot.getData().get("password"));
 
                     if (currentPassword!=null) {
                         if (currentPassword.equals(finalGeneratedPassword)) {
+                            //logged in successfully
+
+                            currentUserRef = userReference;
                             goToHome();
 
                         } else {
@@ -124,10 +128,6 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         });
-
-        // logging user info
-        Log.d("LoginInfo", username);
-        Log.d("LoginInfo", password);
 
 
     }

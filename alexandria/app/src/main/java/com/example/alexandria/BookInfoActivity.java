@@ -32,11 +32,10 @@ public class BookInfoActivity extends AppCompatActivity {
     private int EDIT_BOOK_CODE = 1;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private String bookID = "1234567890123-testUser1"; // passed from previous page
-    final private DocumentReference bookRef = db.collection("books").document(bookID);
+    private String bookID = "1234567890123-testUser1-1"; // passed from previous page
+    private DocumentReference bookRef;
 
-
-    private DocumentReference userRef = db.collection("users").document(username);
+    DocumentReference userRef = MainActivity.currentUserRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +49,12 @@ public class BookInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+//        Intent intent = getIntent();
+//        bookID = intent.getStringExtra("bookID");
+        bookID = "9876543210999-testUser2";
+
+        bookRef = db.collection("books").document(bookID);
 
         updateView();
 
@@ -106,7 +111,7 @@ public class BookInfoActivity extends AppCompatActivity {
                             // for owner -  hide borrower section when book is available
 
                             statusView.setText(ownerStatus);
-                            if (ownerStatus.equals("Borrowed") || ownerStatus.equals("Accepted")) {
+                            if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
 
                                 borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
                                 borrowerOrOwner_titleView.setText("Current Borrower:");
@@ -147,11 +152,16 @@ public class BookInfoActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot document = task.getResult();
-                DocumentReference ownerRef = (DocumentReference) document.getData().get("ownerReference");
+                if (document.exists()) {
 
-                // only show editing button when the user owns the book
-                if (userRef.equals(ownerRef)) {
-                    getMenuInflater().inflate(R.menu.editbook,menu);
+                    DocumentReference ownerRef = (DocumentReference) document.getData().get("ownerReference");
+
+                    // only show editing button when the user owns the book
+                    if (userRef.equals(ownerRef)) {
+                        getMenuInflater().inflate(R.menu.editbook, menu);
+                    }
+                } else {
+                    Log.d("TAG", "document not found");
                 }
             }
         });
@@ -185,6 +195,10 @@ public class BookInfoActivity extends AppCompatActivity {
         // when EditBookActivity finished, refresh info
         if (requestCode == EDIT_BOOK_CODE) {
             if (resultCode == RESULT_OK) {
+                bookID = data.getStringExtra("returnBookID");
+                bookRef = db.collection("books").document(bookID);
+
+                Log.d("Tag", bookID+"..."+bookRef);
 
                 updateView();
             }

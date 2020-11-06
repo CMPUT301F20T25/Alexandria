@@ -19,8 +19,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.security.interfaces.DSAKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +34,7 @@ public class EditBookActivity extends AppCompatActivity {
     FirebaseFirestore db;
 
     private String oldISBN;
+    private DocumentReference userRef = MainActivity.currentUserRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,11 +113,6 @@ public class EditBookActivity extends AppCompatActivity {
                 updates.put("description", newDescr);
                 updates.put("isbn", newISBN);
 
-                // change bookID if isbn is changed
-//                if (!oldISBN.equals(newISBN)){
-//                    updates.put()
-//                }
-
                 bookRef.update(updates)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -131,7 +129,97 @@ public class EditBookActivity extends AppCompatActivity {
 
                 ;
 
-                setResult(RESULT_OK);
+
+
+                // copy the content, create a new doc if isbn is changed, delete old one
+                // reference: https://stackoverflow.com/questions/47885921/can-i-change-the-name-of-a-document-in-firestore
+
+                String returnBookID;
+                if (!oldISBN.equals(newISBN)){
+
+                    // generate new bookID by checking existing docID
+                    String newBookID = newISBN+'-'+userRef.getId();
+                    final boolean[] docFound = {true};
+                    final int[] counter = {1};
+//                    while (docFound[0]) {
+//                        String tempID = newBookID + String.valueOf(counter[0]);
+//                        DocumentReference checkRef = db.collection("books").document(tempID);
+//                        checkRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                                if (task.isSuccessful()) {
+//                                    DocumentSnapshot document = task.getResult();
+//                                    if (document.exists()) {
+//                                        Log.d("tag", "document found, try next one");
+//                                        counter[0] +=1;
+//
+//                                    } else {
+//                                        Log.d("TAG", "No such document, keep this id");
+//                                        docFound[0] = false;
+//                                    }
+//                                } else {
+//                                    Log.d("TAG", "get failed with ", task.getException());
+//                                }
+//                            }
+//                        });
+//                    }
+
+                    newBookID = newBookID + '-' + counter[0];
+                    Log.d("tag", "new bookID - "+newBookID);
+
+                    String finalNewBookID = newBookID;
+                    bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    Log.d("tag","document content copied");
+                                    Map content = document.getData();
+
+                                    db.collection("books").document(finalNewBookID).set(content);
+                                    bookRef.delete();
+
+                                } else {
+                                    Log.d("TAG", "No such document");
+                                }
+                            } else {
+                                Log.d("TAG", "get failed with ", task.getException());
+                            }
+                        }
+                    });
+
+                    // update the user's book list
+                    String finalNewBookID1 = newBookID;
+                    userRef.update(
+                            "books", FieldValue.arrayRemove(bookRef),
+                            "books", FieldValue.arrayUnion(
+                                    db.collection("books").document(finalNewBookID1)))
+                          .addOnSuccessListener(new OnSuccessListener<Void>() {
+                              @Override
+                              public void onSuccess(Void aVoid) {
+                                  Log.d("tag","book list updated successfully");
+                              }
+                          })
+                          .addOnFailureListener(new OnFailureListener() {
+                              @Override
+                              public void onFailure(@NonNull Exception e) {
+                                  Log.d("tag","book list update failed");
+
+                              }
+                          });
+
+                    returnBookID = newBookID;
+
+                } else {
+
+                    returnBookID = bookRef.getId();
+                }
+
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("returnBookID",returnBookID);
+                setResult(RESULT_OK, returnIntent);
                 finish();
             }
         });
@@ -142,7 +230,7 @@ public class EditBookActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // delete book from books collection & the reference in user books field
+                // delete book from books collection & the reference in user books array
 
 
 
