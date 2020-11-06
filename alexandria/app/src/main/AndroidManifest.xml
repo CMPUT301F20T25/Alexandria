@@ -9,24 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alexandria">
-<<<<<<< Updated upstream
         <activity android:name=".RequestedActivity"></activity>
         <activity android:name=".BorrowedActivity" />
         <activity android:name=".MyBookActivity" />
         <activity android:name=".MyAccountActivity" />
         <activity android:name=".SearchActivity" />
-=======
-        <activity android:name=".ScanActivity"></activity>
-        <activity android:name=".EditBookActivity" />
-        <activity android:name=".MyBookInfoActivity" />
-        <activity android:name=".RequestedActivity" />
-        <activity android:name=".BorrowedActivity" />
-        <activity android:name=".MyBookActivity" />
-        <activity android:name=".MyAccountActivity" />
-        <activity
-            android:name=".SearchActivity"
-            android:windowSoftInputMode="adjustNothing" />
->>>>>>> Stashed changes
         <activity android:name=".SignUpActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".MainActivity">
