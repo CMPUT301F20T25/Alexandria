@@ -1,4 +1,8 @@
 package com.example.alexandria;
+/**
+ * Allows a user to search for books and other users using keywords
+ * @author Kyla Wong, ktwong@ualberta.ca
+ */
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -54,7 +58,7 @@ public class SearchActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //setup database
+        //initialize database
         db = FirebaseFirestore.getInstance();
 
         //set layout elements
@@ -101,6 +105,10 @@ public class SearchActivity extends BaseActivity {
         resultsView.setAdapter(resultAdapter);
     }
 
+    /**
+     * Runs queries on the database looking for matches to the keywords pertaining to a username, book title, or book author
+     * @param keywords the string to query the database with
+     */
     private void loadResults(@NonNull String keywords) {
         String USER_TYPE = "users";
         String BOOK_TYPE = "books";
@@ -119,6 +127,11 @@ public class SearchActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Runs the given query on the database
+     * @param query the query to be run
+     * @param modelType the type of model that should be made with the query results ("users", "books")
+     */
     private void runQuery(Query query,@NonNull String modelType) {
         ArrayList<ResultModel> models = new ArrayList<ResultModel>();
         String TAG = "Running query";
@@ -129,29 +142,14 @@ public class SearchActivity extends BaseActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String,Object> data = document.getData();
-                                if (modelType == "users" && data.get("bio") != "") {
+                                if (modelType == "users" && data.get("bio").equals("")) {
                                     models.add(new ResultModel.SearchUserItemModel(data.get("username").toString()));
                                 } else if (modelType == "users") {
-                                    models.add(new ResultModel.SearchUserItemModel(data.get("username").toString(), data.get("bio").toString()));
+                                    models.add(new ResultModel.SearchUserItemModel(data.get("username").toString(), data.get("bio").toString())); //TODO: bio not displaying
                                 } else if (modelType == "books") {
                                     //Log.e(TAG, data.toString());
                                     ArrayList<String> authors = (ArrayList<String>) data.get("authors");
                                     Map<String,Object> status = (Map<String,Object>) data.get("status");
-                                    /*
-                                    //TODO: delete if db gets the change I need
-                                    final String[] owner = new String[1];
-                                    DocumentReference ownerRef = (DocumentReference) data.get("owner");
-                                    ownerRef.get()
-                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                    if (task.isSuccessful()) {
-                                                        owner[0] = task.getResult().getData().get("username").toString();
-                                                    }
-                                                }
-                                            });
-                                     //use: String.valueof(owner[0])
-                                     */
                                     models.add(new ResultModel.SearchBookItemModel(data.get("title").toString(), authors, data.get("owner").toString(), status.get("public").toString()));
                                 }
                             }
@@ -163,6 +161,10 @@ public class SearchActivity extends BaseActivity {
                 });
     }
 
+    /**
+     * Updates the recyclerView to display the results
+     * @param models the ArrayList of models for the adapter
+     */
     private void updateResults(ArrayList<ResultModel> models) {
         resultData.addAll(models);
         resultAdapter.updateData(resultData);
