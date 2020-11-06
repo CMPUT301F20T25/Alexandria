@@ -19,7 +19,8 @@ public class HomeActivity extends BaseActivity {
         myBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openMyBookActivity();
+                //openMyBookActivity();
+                testBook();
             }
         });
 
@@ -28,7 +29,8 @@ public class HomeActivity extends BaseActivity {
         borrowedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openBorrowedActivity();
+                //openBorrowedActivity();
+                testBook1();
             }
         });
 
@@ -37,11 +39,12 @@ public class HomeActivity extends BaseActivity {
         requestedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openRequestedActivity();
+                //openRequestedActivity();
+                testBook2();
             }
         });
     }
-    
+
     private void openMyBookActivity() {
         Intent myBookIntent = new Intent(this, MyBookActivity.class);
         startActivity(myBookIntent);
@@ -65,6 +68,22 @@ public class HomeActivity extends BaseActivity {
     @Override
     int getNavigationMenuItemId() {
         return R.id.navigation_home;
+    }
+
+
+    private void testBook() {
+        Intent intent = new Intent(this, BookInfoActivity.class);
+        startActivity(intent);
+    }
+
+    private void testBook1() {
+        Intent intent = new Intent(this, BorrowedBookInfoActivity.class);
+        startActivity(intent);
+    }
+
+    private void testBook2() {
+        Intent intent = new Intent(this, RequestedBookInfoActivity.class);
+        startActivity(intent);
     }
 
 }
