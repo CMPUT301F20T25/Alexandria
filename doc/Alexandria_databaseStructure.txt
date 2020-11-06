@@ -1,0 +1,40 @@
+Alexandria Firestore Database structure
+(updated: Nov 5, 2020)
+
+users (collection) 
+	<username> (document)
+		password (string)
+		email (string)
+		phone number (string)
+		bio (string)
+		books (array of references to books) #first item is null is no books
+		notificationSettings (map)
+			acceptedRequests : (boolean)
+			deniedRequests : (boolean)
+			receivedRequests : (boolean)
+		requests (map)
+			pending : (array of references to books) #first item is null if no pending requests
+			accepted : (array of references to books) #first item is null if no pending requests
+
+books (collection)
+	<isbn>-<owner username> (document) #what to do if a user owns more than one copy of a book?
+		isbn (string)
+		title (string)
+		authors (array of strings) #the strings are the authors' names
+		description (string)
+		photo (null)
+		owner (string of username)
+		ownerReference (reference to user)
+		borrower (null | reference to user)
+		requestedUsers (array or references to users)
+		status (map)
+			borrower (string | null)
+			owner (string)
+			public (string)
+
+
+NOTE: I'm not sure what happens when you delete a document that is being referenced somewhere else so that will have to be handled when deleting stuff
+
+NOTE: For intially populating the database and testing I've made two users (testUser1, testUser2) who each own a book (1234567890123-testUser1, 9876543210987-testUser2). 
+
+
