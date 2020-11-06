@@ -1,5 +1,6 @@
 package com.example.alexandria;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,23 +11,30 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity{
 
-    private static final String TAG = "tag";
     private EditText usernameEditText;
     private EditText passwordEditText;
     private Button loginButton;
     private Button registerButton;
-    private FirebaseFirestore db;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,33 +90,40 @@ public class MainActivity extends AppCompatActivity{
         }
 
 
-        // compare with password in database - not completed
-        
+        // compare with password in database
+
         db = FirebaseFirestore.getInstance();
-        String currentPassword = null;// read from database
 
-        // temporary password - for test use
-        currentPassword = "123";
-        generatedPassword = password;
+        final DocumentReference userReference = db.collection("users").document(username);
 
-        if (currentPassword.equals(generatedPassword)){
-            // go to home activity
+        String finalGeneratedPassword = generatedPassword;
+        userReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
+                if (documentSnapshot.exists()) {
+                    Log.d("TAG", String.valueOf(documentSnapshot.getData().get("password")));
+                    String currentPassword = String.valueOf(documentSnapshot.getData().get("password"));
 
-            // to be modified later when the password check is finished
-            Intent home = new Intent(this, HomeActivity.class);
-            startActivity(home);
+                    if (currentPassword!=null) {
+                        if (currentPassword.equals(finalGeneratedPassword)) {
+                            goToHome();
 
-        } else if (password.isEmpty()) {
-            // no action
-        }
-        else {
-            // notify user with snackbar - incorrect password/username
-            // reference: https://developer.android.com/training/snackbar/showing
-            View coordinatorLayout = findViewById(R.id.coordinatorLayout);
-            Snackbar snackbar = Snackbar.make(coordinatorLayout,
-                    "Incorrect username/password", Snackbar.LENGTH_SHORT);
-            snackbar.show();
-        }
+                        } else {
+                            // notify user with snackbar - incorrect password/username
+                            // reference: https://developer.android.com/training/snackbar/showing
+                            View coordinatorLayout = findViewById(R.id.coordinatorLayout);
+                            Snackbar snackbar = Snackbar.make(coordinatorLayout,
+                                    "Incorrect username/password", Snackbar.LENGTH_SHORT);
+                            snackbar.show();
+                        }
+                    } else {
+                        Log.d("error", "password = null");
+                    }
+                } else {
+                    System.out.println("snapshot does not exist");
+                }
+            }
+        });
 
         // logging user info
         Log.d("LoginInfo", username);
@@ -116,6 +131,13 @@ public class MainActivity extends AppCompatActivity{
 
 
     }
+
+    public void goToHome(){
+        Intent home = new Intent(this, HomeActivity.class);
+        startActivity(home);
+    }
+
+
 
 
 }

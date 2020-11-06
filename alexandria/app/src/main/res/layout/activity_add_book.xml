@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditBookActivity"
+    tools:context=".AddBookActivity"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -15,7 +15,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         android:visibility="visible"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="Edit/Delete Book"
+        app:title="Add Book"
         app:titleTextColor="#FFFFFF">
 
     </androidx.appcompat.widget.Toolbar>
@@ -50,7 +50,6 @@
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:hint="Book title"
-                android:text="sample title"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -65,8 +64,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:hint="Author (one per line)"
-                android:text="sample author"
+                android:hint="Author (one per line )"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +82,6 @@
                 android:hint="ISBN"
                 android:inputType="number"
                 android:maxLength="13"
-                android:text="1234567890123"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/scanButton"
@@ -102,7 +99,6 @@
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:hint="Book description"
-                android:text="some text"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -126,30 +122,15 @@
                 app:srcCompat="@android:drawable/ic_menu_camera" />
 
             <Button
-                android:id="@+id/saveButton"
+                android:id="@+id/addBook"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="60dp"
-                android:layout_marginRight="60dp"
-                android:text="SAVE"
-                app:layout_constraintBottom_toBottomOf="@+id/deleteBook"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:text="ADD BOOK"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/deleteBook" />
-
-            <Button
-                android:id="@+id/deleteBook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginLeft="60dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="24dp"
-                android:text="DELETE BOOK"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/saveButton"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/myBookDescr"
                 app:layout_constraintVertical_bias="0.0" />
