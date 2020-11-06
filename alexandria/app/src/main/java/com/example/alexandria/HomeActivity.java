@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -41,6 +42,12 @@ public class HomeActivity extends BaseActivity {
         myBookButton = findViewById(R.id.myBook_button);
         borrowedButton = findViewById(R.id.borrowed_button);
         requestedButton = findViewById(R.id.requested_button);
+
+        bookDataList = new ArrayList<Book>();
+        bookAdapter = new ArrayAdapter<Book>(this, R.layout.content, bookDataList);
+        myBookList.setAdapter(bookAdapter);
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference collectionReference = db.collection("Books");
 
         // click to ISBN scan button
         scanButton.setOnClickListener(new View.OnClickListener() {

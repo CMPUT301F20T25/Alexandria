@@ -1,74 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<<<<<<< Updated upstream
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-=======
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
->>>>>>> Stashed changes
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <Button
-        android:id="@+id/borrowed_button"
-        android:layout_width="270dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="130dp"
-        android:layout_marginLeft="130dp"
-        android:layout_marginTop="240dp"
-        android:layout_marginEnd="130dp"
-        android:layout_marginRight="130dp"
-        android:text="Borrowed"
-        app:backgroundTint="#222D6C"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="Alexandria"
+        app:titleTextColor="#FFFFFF" />
 
     <Button
-<<<<<<< Updated upstream
-        android:id="@+id/myBook_button"
-        android:layout_width="270dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="130dp"
-        android:layout_marginLeft="130dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="130dp"
-        android:layout_marginRight="130dp"
-        android:text="My Books"
-        app:backgroundTint="#222D6C"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/requested_button"
-        android:layout_width="270dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="130dp"
-        android:layout_marginLeft="130dp"
-        android:layout_marginTop="420dp"
-        android:layout_marginEnd="130dp"
-        android:layout_marginRight="130dp"
-        android:text="Requested"
-        app:backgroundTint="#222D6C"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        layout="@layout/navigation_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-=======
         android:id="@+id/scan_button"
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
@@ -81,13 +29,13 @@
         android:id="@+id/myBook_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="My books"
+        android:text="My Book"
         android:layout_below="@id/my_toolbar"/>
 
     <ListView
         android:id="@+id/myBook_list"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="170dp"
         android:layout_below="@id/myBook_button"/>
 
     <Button
@@ -100,7 +48,7 @@
     <ListView
         android:id="@+id/borrowed_list"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="200dp"
         android:layout_below="@id/borrowed_button"/>
 
     <Button
@@ -116,6 +64,7 @@
         android:layout_height="200dp"
         android:layout_below="@id/requested_button"/>
 
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
@@ -127,4 +76,3 @@
         android:layout_below="@id/requested_list"/>
 
 </RelativeLayout>
->>>>>>> Stashed changes
