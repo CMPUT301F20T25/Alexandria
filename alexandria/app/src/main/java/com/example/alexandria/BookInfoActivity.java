@@ -50,9 +50,9 @@ public class BookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        Intent intent = getIntent();
-//        bookID = intent.getStringExtra("bookID");
-        bookID = "9876543210999-testUser2";
+        Intent intent = getIntent();
+        bookID = intent.getStringExtra("bookID");
+        //bookID = "9876543210999-testUser2";
 
         bookRef = db.collection("books").document(bookID);
 
