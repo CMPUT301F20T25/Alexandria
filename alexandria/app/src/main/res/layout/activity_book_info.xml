@@ -137,7 +137,7 @@
                 app:layout_constraintStart_toEndOf="@+id/myStatus" />
 
             <Button
-                android:id="@+id/bookBorrowerOrOwner"
+                android:id="@+id/borrowerOrOwnerButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -209,7 +209,7 @@
                 android:text="Current Borrower:"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/bookBorrowerOrOwner"
+                app:layout_constraintEnd_toStartOf="@+id/borrowerOrOwnerButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/myBookStatus" />

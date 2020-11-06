@@ -29,10 +29,10 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/borrowedBookImage"
+                android:id="@+id/requestedBookImage"
                 android:layout_width="292dp"
                 android:layout_height="205dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:contentDescription="photo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -62,12 +62,11 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:text="sample title"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/title"
-                app:layout_constraintTop_toBottomOf="@+id/borrowedBookImage" />
+                app:layout_constraintTop_toBottomOf="@+id/requestedBookImage" />
 
             <TextView
                 android:id="@+id/requestedBookAuthor"
@@ -76,7 +75,6 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:text="sample author"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -90,7 +88,6 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:text="1234567890123"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -230,7 +227,6 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:text="Accepted"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/requestStatus"

@@ -113,11 +113,11 @@ public class MainActivity extends AppCompatActivity{
                             goToHome();
 
                         } else {
-                            // notify user with snackbar - incorrect password/username
+                            // notify user with snackbar
                             // reference: https://developer.android.com/training/snackbar/showing
                             View coordinatorLayout = findViewById(R.id.coordinatorLayout);
                             Snackbar snackbar = Snackbar.make(coordinatorLayout,
-                                    "Incorrect username/password", Snackbar.LENGTH_SHORT);
+                                    "Login failed", Snackbar.LENGTH_SHORT);
                             snackbar.show();
                         }
                     } else {

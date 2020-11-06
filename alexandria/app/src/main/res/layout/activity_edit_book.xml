@@ -29,7 +29,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/myBookImage"
+                android:id="@+id/editImage"
                 android:layout_width="292dp"
                 android:layout_height="205dp"
                 android:layout_marginTop="24dp"
@@ -41,7 +41,7 @@
                 app:srcCompat="@android:drawable/ic_menu_gallery" />
 
             <EditText
-                android:id="@+id/myBookTitle"
+                android:id="@+id/editTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -53,10 +53,10 @@
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/myBookImage" />
+                app:layout_constraintTop_toBottomOf="@+id/editImage" />
 
             <EditText
-                android:id="@+id/myBookAuthor"
+                android:id="@+id/editAuthor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -68,10 +68,10 @@
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/myBookTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/editTitle" />
 
             <EditText
-                android:id="@+id/myBookISBN"
+                android:id="@+id/editISBN"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -87,10 +87,10 @@
                 app:layout_constraintEnd_toStartOf="@+id/scanButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/myBookAuthor" />
+                app:layout_constraintTop_toBottomOf="@+id/editAuthor" />
 
             <EditText
-                android:id="@+id/myBookDescr"
+                android:id="@+id/editDescr"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -102,7 +102,7 @@
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/myBookISBN" />
+                app:layout_constraintTop_toBottomOf="@+id/editISBN" />
 
             <ImageButton
                 android:id="@+id/scanButton"
@@ -117,8 +117,8 @@
                 android:scaleY="1.4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/myBookISBN"
-                app:layout_constraintTop_toBottomOf="@+id/myBookAuthor"
+                app:layout_constraintStart_toEndOf="@+id/editISBN"
+                app:layout_constraintTop_toBottomOf="@+id/editAuthor"
                 app:srcCompat="@android:drawable/ic_menu_camera" />
 
             <Button
@@ -147,7 +147,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/saveButton"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/myBookDescr"
+                app:layout_constraintTop_toBottomOf="@+id/editDescr"
                 app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

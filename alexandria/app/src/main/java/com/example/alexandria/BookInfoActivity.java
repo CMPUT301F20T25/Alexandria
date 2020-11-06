@@ -1,7 +1,6 @@
 package com.example.alexandria;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -19,12 +18,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class BookInfoActivity extends AppCompatActivity {
@@ -50,9 +46,8 @@ public class BookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
-        //bookID = "9876543210999-testUser2";
+//        Intent intent = getIntent();
+//        bookID = intent.getStringExtra("bookID");
 
         bookRef = db.collection("books").document(bookID);
 
@@ -96,7 +91,7 @@ public class BookInfoActivity extends AppCompatActivity {
                         TextView isbnView = findViewById(R.id.myBookISBN);
                         TextView descrView = findViewById(R.id.myBookDescr);
                         TextView statusView = findViewById(R.id.myBookStatus);
-                        Button borrowerOrOwnerButton = findViewById(R.id.bookBorrowerOrOwner);
+                        Button borrowerOrOwnerButton = findViewById(R.id.borrowerOrOwnerButton);
                         TextView borrowerOrOwner_titleView = findViewById(R.id.borrowerOrOnwerTitle);
 
                         titleView.setText(title);

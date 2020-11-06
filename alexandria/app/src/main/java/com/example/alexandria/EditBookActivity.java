@@ -224,12 +224,11 @@ public class EditBookActivity extends AppCompatActivity {
             }
         });
 
-        // delete book - not completed
         Button deleteButton = findViewById(R.id.deleteBook);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // to be implemented
                 // delete book from books collection & the reference in user books array
 
 
