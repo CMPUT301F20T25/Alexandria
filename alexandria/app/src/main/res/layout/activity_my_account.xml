@@ -36,8 +36,8 @@
         android:layout_marginLeft="40dp"
         android:layout_marginTop="35dp"
         android:ems="10"
+        android:hint="User Name"
         android:inputType="textPersonName"
-        android:text="User Name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewMyAccount" />
 
@@ -49,8 +49,8 @@
         android:layout_marginLeft="40dp"
         android:layout_marginTop="20dp"
         android:ems="10"
+        android:hint="Phone"
         android:inputType="textPersonName"
-        android:text="Phone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextUserName" />
 
@@ -62,8 +62,8 @@
         android:layout_marginLeft="40dp"
         android:layout_marginTop="20dp"
         android:ems="10"
+        android:hint="Email"
         android:inputType="textPersonName"
-        android:text="Email"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextPhone" />
 
@@ -87,34 +87,12 @@
         android:layout_marginTop="40dp"
         android:text="Notification Settings"
         android:textColor="#000000"
-        android:textSize="20sp"
+        android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/save_button" />
 
     <Switch
-        android:id="@+id/switch3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="20dp"
-        android:text="Received Request"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch2" />
-
-    <Switch
-        android:id="@+id/switch2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="20dp"
-        android:text="Denied Request"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch1" />
-
-    <Switch
-        android:id="@+id/switch1"
+        android:id="@+id/accepted_switch"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -122,7 +100,31 @@
         android:layout_marginTop="20dp"
         android:text="Accepted Request"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
+    <Switch
+        android:id="@+id/denied_switch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="20dp"
+        android:text="Denied Request"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accepted_switch"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <Switch
+        android:id="@+id/received_switch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="20dp"
+        android:text="Received Request"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/denied_switch"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
