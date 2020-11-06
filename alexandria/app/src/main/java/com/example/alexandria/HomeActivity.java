@@ -6,16 +6,51 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 public class HomeActivity extends BaseActivity {
+
+    ListView myBookList;
+    ListView borrowedList;
+    ListView requestedList;
+    ArrayAdapter<Book> bookAdapter;
+    ArrayList<Book> bookDataList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Button scanButton;
+        Button myBookButton;
+        Button borrowedButton;
+        Button requestedButton;
+        FirebaseFirestore db;
+
+        myBookList = findViewById(R.id.myBook_list);
+        borrowedList = findViewById(R.id.borrowed_list);
+        requestedList = findViewById(R.id.requested_list);
+        scanButton = findViewById(R.id.scan_button);
+        myBookButton = findViewById(R.id.myBook_button);
+        borrowedButton = findViewById(R.id.borrowed_button);
+        requestedButton = findViewById(R.id.requested_button);
+
+        // click to ISBN scan button
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openScanActivity();
+            }
+        });
 
         // click to view my books
-        Button myBookButton = (Button) findViewById(R.id.myBook_button);
         myBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -23,8 +58,14 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        myBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+        });
+
         // click to view borrowed books
-        Button borrowedButton = (Button) findViewById(R.id.borrowed_button);
         borrowedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -32,14 +73,32 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        borrowedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+        });
+
         // click to view requested books
-        Button requestedButton = (Button) findViewById(R.id.requested_button);
         requestedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openRequestedActivity();
             }
         });
+
+        requestedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+        });
+    }
+
+    private void openScanActivity() {
+        Intent scanIntent = new Intent(this, ScanActivity.class);
+        startActivity(scanIntent);
     }
 
 

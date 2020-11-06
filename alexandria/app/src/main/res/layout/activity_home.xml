@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<<<<<<< Updated upstream
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+=======
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+>>>>>>> Stashed changes
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -23,6 +27,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+<<<<<<< Updated upstream
         android:id="@+id/myBook_button"
         android:layout_width="270dp"
         android:layout_height="50dp"
@@ -63,3 +68,63 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+=======
+        android:id="@+id/scan_button"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:text="ISBN"
+        android:textSize="20sp"
+        android:layout_alignRight="@id/my_toolbar"
+        android:layout_alignEnd="@id/my_toolbar" />
+
+    <Button
+        android:id="@+id/myBook_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My books"
+        android:layout_below="@id/my_toolbar"/>
+
+    <ListView
+        android:id="@+id/myBook_list"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/myBook_button"/>
+
+    <Button
+        android:id="@+id/borrowed_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Borrowed"
+        android:layout_below="@id/myBook_list"/>
+
+    <ListView
+        android:id="@+id/borrowed_list"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/borrowed_button"/>
+
+    <Button
+        android:id="@+id/requested_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Requested"
+        android:layout_below="@id/borrowed_list"/>
+
+    <ListView
+        android:id="@+id/requested_list"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/requested_button"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/navigation"
+        android:layout_below="@id/requested_list"/>
+
+</RelativeLayout>
+>>>>>>> Stashed changes
