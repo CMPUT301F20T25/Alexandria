@@ -35,7 +35,7 @@
     <ListView
         android:id="@+id/myBook_list"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
+        android:layout_height="140dp"
         android:layout_below="@id/myBook_button"/>
 
     <Button
@@ -48,7 +48,7 @@
     <ListView
         android:id="@+id/borrowed_list"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="140dp"
         android:layout_below="@id/borrowed_button"/>
 
     <Button
@@ -61,7 +61,7 @@
     <ListView
         android:id="@+id/requested_list"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="140dp"
         android:layout_below="@id/requested_button"/>
 
 
