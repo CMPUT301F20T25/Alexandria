@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditBookActivity"
+    tools:context=".AddBookActivity"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -15,7 +15,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         android:visibility="visible"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="Edit/Delete Book"
+        app:title="Add Book"
         app:titleTextColor="#FFFFFF">
 
     </androidx.appcompat.widget.Toolbar>
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/editImage"
+                android:id="@+id/addBookImage"
                 android:layout_width="292dp"
                 android:layout_height="205dp"
                 android:layout_marginTop="24dp"
@@ -41,7 +41,7 @@
                 app:srcCompat="@android:drawable/ic_menu_gallery" />
 
             <EditText
-                android:id="@+id/editTitle"
+                android:id="@+id/addBookTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -53,10 +53,10 @@
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editImage" />
+                app:layout_constraintTop_toBottomOf="@+id/addBookImage" />
 
             <EditText
-                android:id="@+id/editAuthor"
+                android:id="@+id/addBookAuthor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -64,14 +64,14 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:hint="Author (one per line)"
+                android:hint="Author (one per line )"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/addBookTitle" />
 
             <EditText
-                android:id="@+id/editISBN"
+                android:id="@+id/addBookISBN"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -84,13 +84,13 @@
                 android:maxLength="13"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/scanButton"
+                app:layout_constraintEnd_toStartOf="@+id/addScanButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editAuthor" />
+                app:layout_constraintTop_toBottomOf="@+id/addBookAuthor" />
 
             <EditText
-                android:id="@+id/editDescr"
+                android:id="@+id/addBookDescr"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -102,10 +102,10 @@
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editISBN" />
+                app:layout_constraintTop_toBottomOf="@+id/addBookISBN" />
 
             <ImageButton
-                android:id="@+id/scanButton"
+                android:id="@+id/addScanButton"
                 android:layout_width="51dp"
                 android:layout_height="47dp"
                 android:layout_marginTop="22dp"
@@ -117,37 +117,22 @@
                 android:scaleY="1.4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/editISBN"
-                app:layout_constraintTop_toBottomOf="@+id/editAuthor"
+                app:layout_constraintStart_toEndOf="@+id/addBookISBN"
+                app:layout_constraintTop_toBottomOf="@+id/addBookAuthor"
                 app:srcCompat="@android:drawable/ic_menu_camera" />
 
             <Button
-                android:id="@+id/saveButton"
+                android:id="@+id/addBookButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="60dp"
-                android:layout_marginRight="60dp"
-                android:text="SAVE"
-                app:layout_constraintBottom_toBottomOf="@+id/deleteBook"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:text="ADD BOOK"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/deleteBook" />
-
-            <Button
-                android:id="@+id/deleteBook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginLeft="60dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="24dp"
-                android:text="DELETE BOOK"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/saveButton"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editDescr"
+                app:layout_constraintTop_toBottomOf="@+id/addBookDescr"
                 app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

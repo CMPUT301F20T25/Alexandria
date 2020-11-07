@@ -20,7 +20,7 @@ public class BookInformationValidator implements Validator{
      * @param description String
      * @param isbn String
      */
-    BookInformationValidator(String title, String author, String description, String isbn){
+    public BookInformationValidator(String title, String author, String description, String isbn){
         this.title = title;
         this.author = author;
         this.description = description;

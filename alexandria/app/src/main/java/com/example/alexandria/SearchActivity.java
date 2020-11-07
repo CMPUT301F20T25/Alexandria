@@ -12,10 +12,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toolbar;
@@ -103,6 +105,23 @@ public class SearchActivity extends BaseActivity {
         //  set layout manager and adapter
         resultsView.setLayoutManager(resultsLayoutManager);
         resultsView.setAdapter(resultAdapter);
+        resultAdapter.setOnItemClickListener(new SearchAdapter.ClickListener() {
+            @Override
+            public void onItemClick(int position, View v, String info) {
+                if (resultAdapter.getItemViewType(position) == R.layout.activity_search_useritem) {
+                    //TODO: connect to public user profile page
+                    /*
+                    Intent intent = new Intent(v.getContext(), UserProfileActivity.class); //change class name to match what gets made
+                    intent.putExtra("username", info);
+                    startActivity(intent);
+                     */
+                } else if (resultAdapter.getItemViewType(position) == R.layout.activity_search_bookitem) {
+                    Intent intent = new Intent(v.getContext(), BookInfoActivity.class);
+                    intent.putExtra("bookID", info);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     /**
@@ -115,6 +134,7 @@ public class SearchActivity extends BaseActivity {
         Log.e("LOAD RESULTS", keywords);
         if (!keywords.equals("")) {
             //TODO: make search more robust
+            //TODO: have search ignore any books owned by the current user
             //search on user's username is case sensitive and only matches partial prefix matches
             Query userUsernameQuery = db.collection("users").orderBy("username").startAt(keywords).endAt(keywords + "~");
             runQuery(userUsernameQuery, USER_TYPE);
@@ -150,7 +170,7 @@ public class SearchActivity extends BaseActivity {
                                     //Log.e(TAG, data.toString());
                                     ArrayList<String> authors = (ArrayList<String>) data.get("authors");
                                     Map<String,Object> status = (Map<String,Object>) data.get("status");
-                                    models.add(new ResultModel.SearchBookItemModel(data.get("title").toString(), authors, data.get("owner").toString(), status.get("public").toString()));
+                                    models.add(new ResultModel.SearchBookItemModel(document.getId(), data.get("title").toString(), authors, data.get("owner").toString(), status.get("public").toString()));
                                 }
                             }
                             updateResults(models);
