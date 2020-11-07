@@ -1,7 +1,10 @@
 package com.example.alexandria;
+/**
+ * display book information to its owner / public user
+ * @author Xueying Luo
+ */
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -19,12 +22,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class BookInfoActivity extends AppCompatActivity {
@@ -32,7 +32,7 @@ public class BookInfoActivity extends AppCompatActivity {
     private int EDIT_BOOK_CODE = 1;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private String bookID = "1234567890123-testUser1-1"; // passed from previous page
+    private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
 
     DocumentReference userRef = MainActivity.currentUserRef;
@@ -52,7 +52,6 @@ public class BookInfoActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         bookID = intent.getStringExtra("bookID");
-        //bookID = "9876543210999-testUser2";
 
         bookRef = db.collection("books").document(bookID);
 
@@ -60,6 +59,9 @@ public class BookInfoActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * display/update the textView
+     */
     public void updateView(){
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -96,7 +98,7 @@ public class BookInfoActivity extends AppCompatActivity {
                         TextView isbnView = findViewById(R.id.myBookISBN);
                         TextView descrView = findViewById(R.id.myBookDescr);
                         TextView statusView = findViewById(R.id.myBookStatus);
-                        Button borrowerOrOwnerButton = findViewById(R.id.bookBorrowerOrOwner);
+                        Button borrowerOrOwnerButton = findViewById(R.id.borrowerOrOwnerButton);
                         TextView borrowerOrOwner_titleView = findViewById(R.id.borrowerOrOnwerTitle);
 
                         titleView.setText(title);
