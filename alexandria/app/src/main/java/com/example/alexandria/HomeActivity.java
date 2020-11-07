@@ -61,8 +61,7 @@ public class HomeActivity extends BaseActivity {
         myBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openMyBookActivity();
-                testAdd();
+                openMyBookActivity();
             }
         });
 
@@ -132,11 +131,6 @@ public class HomeActivity extends BaseActivity {
     @Override
     int getNavigationMenuItemId() {
         return R.id.navigation_home;
-    }
-
-    private void testAdd() {
-        Intent myBookIntent = new Intent(this, AddBookActivity.class);
-        startActivity(myBookIntent);
     }
     
 }
