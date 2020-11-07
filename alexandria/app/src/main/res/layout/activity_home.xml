@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeActivity"
-    android:orientation="vertical">
+    tools:context=".HomeActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -17,61 +16,63 @@
         app:title="Alexandria"
         app:titleTextColor="#FFFFFF" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <Button
+        android:id="@+id/scan_button"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:text="ISBN"
+        android:textSize="20sp"
+        android:layout_alignRight="@id/my_toolbar"
+        android:layout_alignEnd="@id/my_toolbar" />
+
+    <Button
+        android:id="@+id/myBook_button"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:text="My Book"
+        android:layout_below="@id/my_toolbar"/>
 
-        <Button
-            android:id="@+id/myBook_button"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="70dp"
-            android:layout_marginLeft="70dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="70dp"
-            android:layout_marginRight="70dp"
-            android:text="My Books"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#222D6C"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <ListView
+        android:id="@+id/myBook_list"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_below="@id/myBook_button"/>
 
-        <Button
-            android:id="@+id/borrowed_button"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="70dp"
-            android:layout_marginLeft="70dp"
-            android:layout_marginTop="140dp"
-            android:layout_marginEnd="70dp"
-            android:layout_marginRight="70dp"
-            android:text="Borrowed"
-            app:backgroundTint="#222D6C"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/myBook_button" />
+    <Button
+        android:id="@+id/borrowed_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Borrowed"
+        android:layout_below="@id/myBook_list"/>
 
-        <Button
-            android:id="@+id/requested_button"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="70dp"
-            android:layout_marginLeft="70dp"
-            android:layout_marginTop="140dp"
-            android:layout_marginEnd="70dp"
-            android:layout_marginRight="70dp"
-            android:text="Requested"
-            app:backgroundTint="#222D6C"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/borrowed_button" />
+    <ListView
+        android:id="@+id/borrowed_list"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/borrowed_button"/>
 
-        <include
-            layout="@layout/navigation_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="56dp"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/requested_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Requested"
+        android:layout_below="@id/borrowed_list"/>
 
-</LinearLayout>
+    <ListView
+        android:id="@+id/requested_list"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/requested_button"/>
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/navigation"
+        android:layout_below="@id/requested_list"/>
+
+</RelativeLayout>
