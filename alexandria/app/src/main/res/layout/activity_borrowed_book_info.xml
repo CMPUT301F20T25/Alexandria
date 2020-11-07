@@ -50,19 +50,18 @@
                 android:layout_marginRight="8dp"
                 android:text="Title:"
                 android:textSize="18sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/requestedBookTitle"
-                app:layout_constraintEnd_toStartOf="@+id/requestedBookTitle"
+                app:layout_constraintBaseline_toBaselineOf="@+id/borrowedBookTitle"
+                app:layout_constraintEnd_toStartOf="@+id/borrowedBookTitle"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/requestedBookTitle"
+                android:id="@+id/borrowedBookTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:text="sample title"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -70,32 +69,30 @@
                 app:layout_constraintTop_toBottomOf="@+id/borrowedBookImage" />
 
             <TextView
-                android:id="@+id/requestedBookAuthor"
+                android:id="@+id/borrowedBookAuthor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:text="sample author"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/author"
-                app:layout_constraintTop_toBottomOf="@+id/requestedBookTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/borrowedBookTitle" />
 
             <TextView
-                android:id="@+id/requestedBookISBN"
+                android:id="@+id/borrowedBookISBN"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
-                android:text="1234567890123"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/isbn"
-                app:layout_constraintTop_toBottomOf="@+id/requestedBookAuthor" />
+                app:layout_constraintTop_toBottomOf="@+id/borrowedBookAuthor" />
 
             <TextView
                 android:id="@+id/isbn"
@@ -107,13 +104,13 @@
                 android:layout_marginRight="8dp"
                 android:text="ISBN:"
                 android:textSize="18sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/requestedBookISBN"
-                app:layout_constraintEnd_toStartOf="@+id/requestedBookISBN"
+                app:layout_constraintBaseline_toBaselineOf="@+id/borrowedBookISBN"
+                app:layout_constraintEnd_toStartOf="@+id/borrowedBookISBN"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/requestedBookDescr"
+                android:id="@+id/borrowedBookDescr"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
@@ -137,8 +134,8 @@
                 android:layout_marginRight="8dp"
                 android:text="Author:"
                 android:textSize="18sp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/requestedBookAuthor"
-                app:layout_constraintEnd_toStartOf="@+id/requestedBookAuthor"
+                app:layout_constraintBaseline_toBaselineOf="@+id/borrowedBookAuthor"
+                app:layout_constraintEnd_toStartOf="@+id/borrowedBookAuthor"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -155,7 +152,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/isbn" />
 
             <Button
-                android:id="@+id/viewLocationButton"
+                android:id="@+id/returnScanButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
@@ -180,7 +177,7 @@
                 android:textSize="18sp"
                 app:layout_constraintEnd_toStartOf="@+id/ownerButton"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/requestedBookDescr" />
+                app:layout_constraintTop_toBottomOf="@+id/borrowedBookDescr" />
 
             <Button
                 android:id="@+id/ownerButton"
@@ -195,7 +192,7 @@
                 app:backgroundTint="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/owner"
-                app:layout_constraintTop_toBottomOf="@+id/requestedBookDescr" />
+                app:layout_constraintTop_toBottomOf="@+id/borrowedBookDescr" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
