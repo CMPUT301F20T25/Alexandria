@@ -1,4 +1,8 @@
 package com.example.alexandria;
+/**
+ * allows user to edit book information
+ * @author Xueying Luo
+ */
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,10 +51,11 @@ public class EditBookActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // set autofill texts
-        EditText titleView = findViewById(R.id.myBookTitle);
-        EditText authorView = findViewById(R.id.myBookAuthor);
-        EditText isbnView = findViewById(R.id.myBookISBN);
-        EditText descrView = findViewById(R.id.myBookDescr);
+        ImageView imageView = findViewById(R.id.editImage);
+        EditText titleView = findViewById(R.id.editTitle);
+        EditText authorView = findViewById(R.id.editAuthor);
+        EditText isbnView = findViewById(R.id.editISBN);
+        EditText descrView = findViewById(R.id.editDescr);
 
         // get intent
         Intent intent = getIntent();
@@ -65,6 +70,8 @@ public class EditBookActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+
+                        //TODO: use validator
 
                         // get data from database
 
@@ -175,8 +182,9 @@ public class EditBookActivity extends AppCompatActivity {
                                 DocumentSnapshot document = task.getResult();
                                 if (document.exists()) {
                                     Log.d("tag","document content copied");
-                                    Map content = document.getData();
 
+                                    // copy and create new doc, delete the old one
+                                    Map content = document.getData();
                                     db.collection("books").document(finalNewBookID).set(content);
                                     bookRef.delete();
 

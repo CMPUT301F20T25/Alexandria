@@ -19,7 +19,8 @@
         <activity android:name=".BorrowedActivity" />
         <activity android:name=".MyBookActivity" />
         <activity android:name=".MyAccountActivity" />
-        <activity android:name=".SearchActivity" />
+        <activity android:name=".SearchActivity"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".MainActivity">

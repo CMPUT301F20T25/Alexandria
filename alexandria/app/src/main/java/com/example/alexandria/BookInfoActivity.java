@@ -1,4 +1,8 @@
 package com.example.alexandria;
+/**
+ * display book information to its owner / public user
+ * @author Xueying Luo
+ */
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +32,7 @@ public class BookInfoActivity extends AppCompatActivity {
     private int EDIT_BOOK_CODE = 1;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private String bookID = "1234567890123-testUser1-1"; // passed from previous page
+    private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
 
     DocumentReference userRef = MainActivity.currentUserRef;
@@ -46,8 +50,8 @@ public class BookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        Intent intent = getIntent();
-//        bookID = intent.getStringExtra("bookID");
+        Intent intent = getIntent();
+        bookID = intent.getStringExtra("bookID");
 
         bookRef = db.collection("books").document(bookID);
 
@@ -55,6 +59,9 @@ public class BookInfoActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * display/update the textView
+     */
     public void updateView(){
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

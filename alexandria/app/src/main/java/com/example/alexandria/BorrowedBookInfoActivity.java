@@ -1,4 +1,8 @@
 package com.example.alexandria;
+/**
+ * display book information to its borrower
+ * @author Xueying Luo
+ */
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

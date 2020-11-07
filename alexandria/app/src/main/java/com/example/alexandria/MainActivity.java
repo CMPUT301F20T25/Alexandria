@@ -1,6 +1,8 @@
 package com.example.alexandria;
+
+import com.example.alexandria.utils.PassHash;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,42 +11,53 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.CollectionReference;
+
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 
+/**
+* MainActivity. Responsible for logging in and redirect to sign up page
+* @author han
+*/
 public class MainActivity extends AppCompatActivity{
 
-    private EditText usernameEditText;
+    private static final String TAG = "tag";
+    private EditText emailEditText;
     private EditText passwordEditText;
     private Button loginButton;
     private Button registerButton;
-    FirebaseFirestore db;
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
+    //TODO: get username from login and assign it to currentUserRef
     static protected DocumentReference currentUserRef = null;
 
+
+    /**
+    * onCreate method
+    * @author han
+    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get UI components
-        usernameEditText = (EditText) findViewById(R.id.editTextUsernameLogin);
+
+        // Initializing mAuth
+        mAuth = FirebaseAuth.getInstance();
+        Log.d("Login", mAuth.getApp().toString());
+
+        // Get UI component
+        emailEditText = (EditText) findViewById(R.id.editTextEmailLogin);
         passwordEditText = (EditText) findViewById(R.id.editTextTextPassword);
         loginButton = (Button) findViewById(R.id.buttonLogin);
         registerButton = (Button) findViewById(R.id.buttonRegister);
@@ -54,10 +67,10 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 // getting info from components
-                String username = usernameEditText.getText().toString();
+                String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
 
-                login(username, password);
+                login(email, password);
 
             }
         });
@@ -70,74 +83,37 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-    public void login(String username, String password){
-        //generate password hash
-        //Reference: https://howtodoinjava.com/java/java-security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
-        String generatedPassword = null;
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(password.getBytes());
-            byte[] bytes = md.digest();
-            StringBuilder sb = new StringBuilder();
-            for(int i=0; i< bytes.length ;i++)
-            {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-            }
-            generatedPassword = sb.toString();
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-        }
+    }
 
-        // compare with password in database
 
-        db = FirebaseFirestore.getInstance();
+    /**
+    * Get user's input and try to login throught Firebse Authentication Module
+    * @author han
+    */
+    public void login(String email, String password){
+       
+        String hashedPassword = PassHash.hash(password);
 
-        final DocumentReference userReference = db.collection("users").document(username);
-
-        String finalGeneratedPassword = generatedPassword;
-        userReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
-                if (documentSnapshot.exists()) {
-                    Log.d("TAG", "retrieve password from database");
-                    String currentPassword = String.valueOf(documentSnapshot.getData().get("password"));
-
-                    if (currentPassword!=null) {
-                        if (currentPassword.equals(finalGeneratedPassword)) {
-                            //logged in successfully
-
-                            currentUserRef = userReference;
-                            goToHome();
-
-                        } else {
-                            // notify user with snackbar
-                            // reference: https://developer.android.com/training/snackbar/showing
-                            View coordinatorLayout = findViewById(R.id.coordinatorLayout);
-                            Snackbar snackbar = Snackbar.make(coordinatorLayout,
-                                    "Login failed", Snackbar.LENGTH_SHORT);
-                            snackbar.show();
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()){
+                            Log.d("Login", "signInWithEmailPassword:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Intent home = new Intent(MainActivity.this, HomeActivity.class);
+                            startActivity(home);
+                        }else{
+                            Log.d("Login", "signInWithEmailPassword:failed", task.getException());
+                            Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Log.d("error", "password = null");
                     }
-                } else {
-                    System.out.println("snapshot does not exist");
-                }
-            }
-        });
-
-
+                });
     }
-
-    public void goToHome(){
-        Intent home = new Intent(this, HomeActivity.class);
-        startActivity(home);
-    }
-
-
-
 
 }
