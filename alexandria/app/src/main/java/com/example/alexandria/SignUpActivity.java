@@ -16,15 +16,27 @@ import android.widget.Toast;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
+
+import com.example.alexandria.models.user.User;
+import com.example.alexandria.models.user.UserManager;
 import com.example.alexandria.utils.PassHash;
 import com.example.alexandria.models.validators.SignupValidator;
 import com.example.alexandria.models.validators.ValidationError;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -99,8 +111,42 @@ public class SignUpActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
-                                    Log.d("Sign Up", "createUserWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    Log.d("Signup", "createUserWithEmail:success");
+                                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
+
+                                    // Setting up user model
+                                    UserManager.getInstance().setUser(firebaseUser, phone, username, "");
+                                    User user = UserManager.getInstance().getUser();
+                                    Log.d("Signup", UserManager.getInstance().getUser().getEmail());
+                                    Log.d("Signup", UserManager.getInstance().getUser().getPhone());
+
+                                    // Upload user's info to cloud
+                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                                    // Initializing payload
+                                    Map<String, Object> userInfo = new HashMap<>();
+                                    userInfo.put("email", UserManager.getInstance().getUser().getEmail());
+                                    userInfo.put("phone", UserManager.getInstance().getUser().getPhone());
+                                    userInfo.put("bio", UserManager.getInstance().getUser().getUserBio());
+                                    userInfo.put("username", UserManager.getInstance().getUser().getUsername());
+
+                                    // upload data
+                                    db.collection("users").document(UserManager.getInstance().getUser().getEmail())
+                                            .set(userInfo)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d("Signup", "DocumentSnapshot successfully written!");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w("Signup", "Error writing document", e);
+                                                }
+                                            });
+
+
                                     Intent home = new Intent(SignUpActivity.this, HomeActivity.class);
                                     startActivity(home);
                                 }else{
@@ -110,13 +156,6 @@ public class SignUpActivity extends AppCompatActivity {
                                 }
                             }
                         });
-
-
-                // Store on local
-
-                // Send request to the database
-
-                // redirect to home activity
             }
         });
     }

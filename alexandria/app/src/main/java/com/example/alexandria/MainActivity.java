@@ -1,5 +1,8 @@
 package com.example.alexandria;
 
+import com.example.alexandria.models.user.User;
+import com.example.alexandria.models.user.UserManager;
+import com.example.alexandria.models.validators.EmailValidator;
 import com.example.alexandria.utils.PassHash;
 
 import androidx.annotation.NonNull;
@@ -19,6 +22,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -59,6 +64,18 @@ public class MainActivity extends AppCompatActivity{
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
 
+                // validate input
+                EmailValidator validator = new EmailValidator(email);
+                if(!validator.isValid() || password.length() <= 0){
+                    if(!validator.isValid()){
+                        emailEditText.setError("Invalid format!");
+                    }
+                    if(password.length() <= 0){
+                        passwordEditText.setError("Please enter your password");
+                    }
+                    return;
+                }
+
                 login(email, password);
 
             }
@@ -91,9 +108,41 @@ public class MainActivity extends AppCompatActivity{
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
                             Log.d("Login", "signInWithEmailPassword:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Intent home = new Intent(MainActivity.this, HomeActivity.class);
-                            startActivity(home);
+                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+
+                            // get user document relate with current user
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            DocumentReference docRef = db.collection("users").document(email);
+
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                            Log.d("Login", "DocumentSnapshot data: " + document.getData());
+                                            UserManager.getInstance()
+                                                    .setUser(firebaseUser,
+                                                            (String) document.getData().get("phone"),
+                                                            (String) document.getData().get("username"),
+                                                            (String) document.getData().get("bio"));
+                                            User user = UserManager.getInstance().getUser();
+
+                                            Log.d("Login", user.getEmail());
+                                            Log.d("Login", user.getPhone());
+                                            Intent home = new Intent(MainActivity.this, HomeActivity.class);
+                                            startActivity(home);
+                                        } else {
+                                            Log.d("Login", "No such document");
+                                        }
+                                    } else {
+                                        Log.d("Login", "get failed with ", task.getException());
+                                    }
+                                }
+                            });
+
+                            // save user info to ram
+
                         }else{
                             Log.d("Login", "signInWithEmailPassword:failed", task.getException());
                             Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
@@ -101,40 +150,7 @@ public class MainActivity extends AppCompatActivity{
                     }
                 });
 
-        /*
-        // compare with password in database - not completed
-        
-        db = FirebaseFirestore.getInstance();
-        String currentPassword = null;// read from database
 
-        // temporary password - for test use
-        currentPassword = "123";
-        //generatedPassword = password;
-
-        //if (currentPassword.equals(generatedPassword)){
-            // go to home activity
-
-            // to be modified later when the password check is finished
-            Intent home = new Intent(this, HomeActivity.class);
-            startActivity(home);
-
-        } else if (password.isEmpty()) {
-            // no action
-        }
-        else {
-            // notify user with snackbar - incorrect password/username
-            // reference: https://developer.android.com/training/snackbar/showing
-            View coordinatorLayout = findViewById(R.id.coordinatorLayout);
-            Snackbar snackbar = Snackbar.make(coordinatorLayout,
-                    "Incorrect username/password", Snackbar.LENGTH_SHORT);
-            snackbar.show();
-        }
-
-        // logging user info
-        Log.d("LoginInfo", username);
-        Log.d("LoginInfo", password);
-
-        */
     }
 
 
