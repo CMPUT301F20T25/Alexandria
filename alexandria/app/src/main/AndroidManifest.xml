@@ -9,7 +9,6 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/Theme.Alexandria">
         <activity android:name=".ISBNActivity"></activity>
         <activity android:name=".RequestedActivity" />
