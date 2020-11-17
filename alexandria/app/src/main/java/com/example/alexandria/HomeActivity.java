@@ -1,5 +1,6 @@
 package com.example.alexandria;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,7 +14,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -28,12 +33,14 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home);
         Button scanButton;
         Button myBookButton;
         Button borrowedButton;
         Button requestedButton;
         FirebaseFirestore db;
+
+        final String TAG = "Sample";
 
         myBookList = findViewById(R.id.myBook_list);
         borrowedList = findViewById(R.id.borrowed_list);
@@ -43,17 +50,38 @@ public class HomeActivity extends BaseActivity {
         borrowedButton = findViewById(R.id.borrowed_button);
         requestedButton = findViewById(R.id.requested_button);
 
-        bookDataList = new ArrayList<Book>();
-        bookAdapter = new ArrayAdapter<Book>(this, R.layout.content, bookDataList);
+        bookDataList = new ArrayList<>();
+        bookAdapter = new CustomList(this, bookDataList);
         myBookList.setAdapter(bookAdapter);
+        borrowedList.setAdapter(bookAdapter);
+        requestedList.setAdapter(bookAdapter);
         db = FirebaseFirestore.getInstance();
-        final CollectionReference collectionReference = db.collection("Books");
+        CollectionReference collectionReference = db.collection("Books");
+        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
+                    FirebaseFirestoreException error) {
+                // Clear the old list
+                bookDataList.clear();
+                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+                {
+                    String name = doc.getId();
+                    String isbn = (String) doc.getData().get("isbn");
+                    String description = (String) doc.getData().get("description");
+                    String author = (String) doc.getData().get("author");
+                    String owner = (String) doc.getData().get("owner");
+                    bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
+                }
+                bookAdapter.notifyDataSetChanged();
+            }
+        });
 
         // click to ISBN scan button
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openScanActivity();
+                //openScanActivity();
+                testBook4();
             }
         });
 
@@ -62,7 +90,7 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //openMyBookActivity();
-                testAdd();
+                testBook1();
             }
         });
 
@@ -77,7 +105,8 @@ public class HomeActivity extends BaseActivity {
         borrowedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openBorrowedActivity();
+                //openBorrowedActivity();
+                testBook2();
             }
         });
 
@@ -92,7 +121,8 @@ public class HomeActivity extends BaseActivity {
         requestedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openRequestedActivity();
+                //openRequestedActivity();
+                testBook3();
             }
         });
 
@@ -105,8 +135,8 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void openScanActivity() {
-        Intent scanIntent = new Intent(this, ScanActivity.class);
-        startActivity(scanIntent);
+        Intent ISBNIntent = new Intent(this, ISBNActivity.class);
+        startActivity(ISBNIntent);
     }
 
     private void openMyBookActivity() {
@@ -134,9 +164,26 @@ public class HomeActivity extends BaseActivity {
         return R.id.navigation_home;
     }
 
-    private void testAdd() {
-        Intent myBookIntent = new Intent(this, AddBookActivity.class);
-        startActivity(myBookIntent);
+
+    private void testBook1(){
+        Intent intent = new Intent(this, BookInfoActivity.class);
+        String bookID = "1234567890122-testuser1@fake.com-1";
+        intent.putExtra("bookID", bookID);
+        startActivity(intent);
     }
-    
+
+    private void testBook2(){
+        Intent intent = new Intent(this, BorrowedBookInfoActivity.class);
+        startActivity(intent);
+    }
+    private void testBook3(){
+        Intent intent = new Intent(this, RequestedBookInfoActivity.class);
+        startActivity(intent);
+    }
+
+    private void testBook4(){
+        Intent intent = new Intent(this, AddBookActivity.class);
+        startActivity(intent);
+    }
+
 }

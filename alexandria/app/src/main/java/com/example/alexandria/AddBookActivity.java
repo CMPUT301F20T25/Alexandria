@@ -94,11 +94,18 @@ public class AddBookActivity extends AppCompatActivity {
                     Log.d("tag", "valid input");
 
                     // generate bookID by checking existing docID
-                    String newBookID = newISBN+'-'+userRef.getId(); // isbn-username
-                    final boolean[] docFound = {true};
-                    final int[] counter = {1};
-                    //TODO: fix the crash when adding books that have same isbn as books existed
-                    // (and in editBook activity as well)
+                    final String[] username = new String[1];
+                    userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            DocumentSnapshot document = task.getResult();
+                            username[0] = String.valueOf(document.getData().get("username"));
+
+                            String newBookID = newISBN+'-'+ username[0];
+                            final boolean[] docFound = {true};
+                            final int[] counter = {1};
+                            //TODO: fix the crash when adding books that have same isbn as books existed
+                            // (and in editBook activity as well)
 //                    while (docFound[0]) {
 //                        String tempID = newBookID + String.valueOf(counter[0]);
 //                        DocumentReference checkRef = db.collection("books").document(tempID);
@@ -122,59 +129,72 @@ public class AddBookActivity extends AppCompatActivity {
 //                        });
 //                    }
 
-                    newBookID = newBookID + '-' + counter[0]; // isbn-username-counter
-                    Log.d("tag", "new bookID - "+newBookID);
+                            newBookID = newBookID + '-' + counter[0]; // isbn-username-counter
+                            Log.d("tag", "new bookID - "+newBookID);
 
-                    DocumentReference bookRef = db.collection("books").document(newBookID);
+                            DocumentReference bookRef = db.collection("books").document(newBookID);
 
-                    List<DocumentReference> requestedUsers = null;
-                    Map<String,String> status = new HashMap<>();
-                    status.put("borrower", null);
-                    status.put("owner", "available");
-                    status.put("public", "available");
+                            List<DocumentReference> requestedUsers = null;
+                            Map<String,String> status = new HashMap<>();
+                            status.put("borrower", null);
+                            status.put("owner", "available");
+                            status.put("public", "available");
 
-                    Map<String,Object> bookInfo = new HashMap<>();
-                    bookInfo.put("authors", authorList);
-                    bookInfo.put("title", newTitle);
-                    bookInfo.put("description", newDescr);
-                    bookInfo.put("isbn", newISBN);
-                    bookInfo.put("borrower", null);
-                    bookInfo.put("owner", userRef.getId());
-                    bookInfo.put("ownerReference", userRef);
-                    bookInfo.put("photo", null);
-                    bookInfo.put("requestedUsers", requestedUsers);
-                    bookInfo.put("status", status);
+                            Map<String,Object> bookInfo = new HashMap<>();
+                            bookInfo.put("authors", authorList);
+                            bookInfo.put("title", newTitle);
+                            bookInfo.put("description", newDescr);
+                            bookInfo.put("isbn", newISBN);
+                            bookInfo.put("borrower", null);
+                            bookInfo.put("ownerReference", userRef);
+                            bookInfo.put("photo", null);
+                            bookInfo.put("requestedUsers", requestedUsers);
+                            bookInfo.put("status", status);
 
-
-                    bookRef.set(bookInfo)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            // get username
+                            userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d("tag", "successfully added a book");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d("tag", "adding book failed");
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    DocumentSnapshot document = task.getResult();
+                                    String username = String.valueOf(document.getData().get("username"));
+                                    bookInfo.put("owner", username);
+
+
+                                    bookRef.set(bookInfo)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d("tag", "successfully added a book");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.d("tag", "adding book failed");
+                                                }
+                                            });
+
+                                    // update the user's book list
+                                    userRef.update("books", FieldValue.arrayUnion(bookRef))
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d("tag","book list updated successfully");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.d("tag","book list update failed");
+
+                                                }
+                                            });
                                 }
                             });
 
-                    // update the user's book list
-                    userRef.update("books", FieldValue.arrayUnion(bookRef))
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d("tag","book list updated successfully");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d("tag","book list update failed");
 
-                                }
-                            });
+                        }
+                    });
 
 
                 }

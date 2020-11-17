@@ -5,6 +5,7 @@ package com.example.alexandria;
  */
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -23,8 +24,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.security.interfaces.DSAKey;
 import java.util.ArrayList;
@@ -50,7 +53,7 @@ public class EditBookActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // set autofill texts
+        // set auto fill texts
         ImageView imageView = findViewById(R.id.editImage);
         EditText titleView = findViewById(R.id.editTitle);
         EditText authorView = findViewById(R.id.editAuthor);
@@ -60,6 +63,7 @@ public class EditBookActivity extends AppCompatActivity {
         // get intent
         Intent intent = getIntent();
         String bookID = intent.getStringExtra("book");
+
         db = FirebaseFirestore.getInstance();
         final DocumentReference bookRef = db.collection("books").document(bookID);
 
@@ -71,8 +75,6 @@ public class EditBookActivity extends AppCompatActivity {
                     if (document.exists()) {
                         Log.d("TAG", "DocumentSnapshot data: " + document.getData());
 
-                        //TODO: use validator
-
                         // get data from database
 
                         ArrayList<String> authorList = (ArrayList<String>) document.getData().get("authors");
@@ -80,6 +82,8 @@ public class EditBookActivity extends AppCompatActivity {
                         for (int counter = 1; counter < authorList.size(); counter++) {
                             author = author+'\n' + authorList.get(counter);
                         }
+
+                        //TODO: validate isbn
 
                         String isbn = String.valueOf(document.getData().get("isbn"));
                         oldISBN = isbn;
@@ -113,7 +117,7 @@ public class EditBookActivity extends AppCompatActivity {
                 String newAuthorList = authorView.getText().toString();
                 List<String> authorList = Arrays.asList(newAuthorList.split("\n"));
 
-                //delete current author filed, add new one
+                //replace current info with new one
                 Map<String,Object> updates = new HashMap<>();
                 updates.put("authors", authorList);
                 updates.put("title", newTitle);
@@ -141,13 +145,17 @@ public class EditBookActivity extends AppCompatActivity {
                 // copy the content, create a new doc if isbn is changed, delete old one
                 // reference: https://stackoverflow.com/questions/47885921/can-i-change-the-name-of-a-document-in-firestore
 
-                String returnBookID;
+                final String[] returnBookID = new String[1];
                 if (!oldISBN.equals(newISBN)){
 
-                    // generate new bookID by checking existing docID
-                    String newBookID = newISBN+'-'+userRef.getId();
+                    String email = userRef.getId();
+                    String newBookID = newISBN+'-'+ email;
+
                     final boolean[] docFound = {true};
                     final int[] counter = {1};
+
+                    // TODO: generate book id
+                    // generate new bookID by checking existing docID
 //                    while (docFound[0]) {
 //                        String tempID = newBookID + String.valueOf(counter[0]);
 //                        DocumentReference checkRef = db.collection("books").document(tempID);
@@ -175,6 +183,8 @@ public class EditBookActivity extends AppCompatActivity {
                     Log.d("tag", "new bookID - "+newBookID);
 
                     String finalNewBookID = newBookID;
+
+
                     bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -185,8 +195,8 @@ public class EditBookActivity extends AppCompatActivity {
 
                                     // copy and create new doc, delete the old one
                                     Map content = document.getData();
-                                    db.collection("books").document(finalNewBookID).set(content);
                                     bookRef.delete();
+                                    db.collection("books").document(finalNewBookID).set(content);
 
                                 } else {
                                     Log.d("TAG", "No such document");
@@ -197,55 +207,60 @@ public class EditBookActivity extends AppCompatActivity {
                         }
                     });
 
+
                     // update the user's book list
                     String finalNewBookID1 = newBookID;
                     userRef.update(
                             "books", FieldValue.arrayRemove(bookRef),
                             "books", FieldValue.arrayUnion(
                                     db.collection("books").document(finalNewBookID1)))
-                          .addOnSuccessListener(new OnSuccessListener<Void>() {
-                              @Override
-                              public void onSuccess(Void aVoid) {
-                                  Log.d("tag","book list updated successfully");
-                              }
-                          })
-                          .addOnFailureListener(new OnFailureListener() {
-                              @Override
-                              public void onFailure(@NonNull Exception e) {
-                                  Log.d("tag","book list update failed");
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d("tag","book list updated successfully");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d("tag","book list update failed");
 
-                              }
-                          });
+                                }
+                            });
 
-                    returnBookID = newBookID;
+                    returnBookID[0] = newBookID;
 
                 } else {
 
-                    returnBookID = bookRef.getId();
+                    returnBookID[0] = bookRef.getId();
                 }
 
 
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra("returnBookID",returnBookID);
+                Log.d("return bookid", returnBookID[0]);
+                returnIntent.putExtra("returnBookID", returnBookID[0]);
                 setResult(RESULT_OK, returnIntent);
                 finish();
+
             }
+
+
         });
+
 
         Button deleteButton = findViewById(R.id.deleteBook);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // to be implemented
-                // delete book from books collection & the reference in user books array
 
-
+                //TODO: delete book from books collection & the reference in user's books array
 
             }
         });
 
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

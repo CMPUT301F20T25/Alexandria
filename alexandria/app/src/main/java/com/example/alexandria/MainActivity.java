@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity{
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
-    //TODO: get username from login and assign it to currentUserRef
     static protected DocumentReference currentUserRef = null;
 
 
@@ -51,6 +50,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = FirebaseFirestore.getInstance();
 
         // Initializing mAuth
         mAuth = FirebaseAuth.getInstance();
@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity{
                         if (task.isSuccessful()){
                             Log.d("Login", "signInWithEmailPassword:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            currentUserRef = db.collection("users").document(user.getEmail());
                             Intent home = new Intent(MainActivity.this, HomeActivity.class);
                             startActivity(home);
                         }else{

@@ -42,8 +42,9 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
+//        Intent intent = getIntent();
+//        bookID = intent.getStringExtra("bookID");
+        bookID = "9876543210987-testuser2@fake.com-1"; // remove later
 
         bookRef = db.collection("books").document(bookID);
 
@@ -83,7 +84,8 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                         descrView.setText(descr);
 
                         Button ownerButton = findViewById(R.id.ownerButton);
-                        ownerButton.setText(ownerRef.getId());
+                        ownerButton.setText(getUsername(ownerRef));
+
 
                         Button returnScanButton = findViewById(R.id.returnScanButton);
                         returnScanButton.setOnClickListener(new View.OnClickListener() {
@@ -99,6 +101,24 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * return username
+     * @param userRef user document reference
+     * @return username
+     */
+    public String getUsername(DocumentReference userRef) {
+        final String[] username = new String[1];
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot document = task.getResult();
+                username[0] = String.valueOf(document.getData().get("username"));
+            }
+        });
+
+        return username[0];
     }
 
     @Override

@@ -10,7 +10,13 @@
         android:supportsRtl="true"
         android:largeHeap="true"
         android:theme="@style/Theme.Alexandria">
-        <activity android:name=".RequestedActivity"></activity>
+        <activity android:name=".ISBNActivity"></activity>
+        <activity android:name=".RequestedBookInfoActivity" />
+        <activity android:name=".BorrowedBookInfoActivity" />
+        <activity android:name=".BookInfoActivity" />
+        <activity android:name=".AddBookActivity" />
+        <activity android:name=".EditBookActivity" />
+        <activity android:name=".RequestedActivity" />
         <activity android:name=".BorrowedActivity" />
         <activity android:name=".MyBookActivity" />
         <activity android:name=".MyAccountActivity" />
