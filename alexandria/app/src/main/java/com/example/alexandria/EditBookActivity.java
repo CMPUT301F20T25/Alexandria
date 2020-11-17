@@ -148,9 +148,6 @@ public class EditBookActivity extends AppCompatActivity {
                 final String[] returnBookID = new String[1];
                 if (!oldISBN.equals(newISBN)){
 
-                    String email = userRef.getId();
-                    String newBookID = newISBN+'-'+ email;
-
                     final boolean[] docFound = {true};
                     final int[] counter = {1};
 
@@ -179,7 +176,7 @@ public class EditBookActivity extends AppCompatActivity {
 //                        });
 //                    }
 
-                    newBookID = newBookID + '-' + counter[0];
+                    String newBookID = newISBN + '-' + counter[0];
                     Log.d("tag", "new bookID - "+newBookID);
 
                     String finalNewBookID = newBookID;
