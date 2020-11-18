@@ -167,7 +167,7 @@ public class HomeActivity extends BaseActivity {
 
     private void testBook1(){
         Intent intent = new Intent(this, BookInfoActivity.class);
-        String bookID = "9876543210987-testuser2@fake.com-1";
+        String bookID = "9876543210999-1";
         intent.putExtra("bookID", bookID);
         startActivity(intent);
     }
