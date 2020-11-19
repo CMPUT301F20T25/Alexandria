@@ -174,13 +174,13 @@ public class HomeActivity extends BaseActivity {
 
     private void testBook2(){
         Intent intent = new Intent(this, BorrowedBookInfoActivity.class);
-        String bookID = "1234567890123-testuser1@fake.com-1";
+        String bookID = "9876543210111-1";
         intent.putExtra("bookID", bookID);
         startActivity(intent);
     }
     private void testBook3(){
         Intent intent = new Intent(this, RequestedBookInfoActivity.class);
-        String bookID = "1234567890123-testuser1@fake.com-1";
+        String bookID = "9876543210777-1";
         intent.putExtra("bookID", bookID);
         startActivity(intent);
     }

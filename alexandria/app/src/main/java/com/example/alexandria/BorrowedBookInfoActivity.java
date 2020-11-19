@@ -42,9 +42,8 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        Intent intent = getIntent();
-//        bookID = intent.getStringExtra("bookID");
-        bookID = "9876543210987-testuser2@fake.com-1"; // remove later
+        Intent intent = getIntent();
+        bookID = intent.getStringExtra("bookID");
 
         bookRef = db.collection("books").document(bookID);
 
@@ -84,41 +83,39 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                         descrView.setText(descr);
 
                         Button ownerButton = findViewById(R.id.ownerButton);
-                        ownerButton.setText(getUsername(ownerRef));
+                        ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                DocumentSnapshot document = task.getResult();
+                                String username = String.valueOf(document.getData().get("username"));
+                                ownerButton.setText(username);
+                            }
+                        });
+
+                        ownerButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // TODO: display owner info
+                            }
+                        });
 
 
                         Button returnScanButton = findViewById(R.id.returnScanButton);
                         returnScanButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                // to be implemented
+                                // TODO: return scan
                             }
                         });
 
+                    } else {
+                        Log.d("TAG", "document not found ");
                     }
 
 
                 }
             }
         });
-    }
-
-    /**
-     * return username
-     * @param userRef user document reference
-     * @return username
-     */
-    public String getUsername(DocumentReference userRef) {
-        final String[] username = new String[1];
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot document = task.getResult();
-                username[0] = String.valueOf(document.getData().get("username"));
-            }
-        });
-
-        return username[0];
     }
 
     @Override
