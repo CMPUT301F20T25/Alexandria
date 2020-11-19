@@ -1,8 +1,5 @@
 package com.example.alexandria;
 
-import com.example.alexandria.models.user.User;
-import com.example.alexandria.models.user.UserManager;
-import com.example.alexandria.models.validators.EmailValidator;
 import com.example.alexandria.utils.PassHash;
 
 import androidx.annotation.NonNull;
@@ -22,8 +19,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -44,6 +41,7 @@ public class MainActivity extends AppCompatActivity{
     //TODO: get username from login and assign it to currentUserRef
     static protected DocumentReference currentUserRef = null;
 
+    public static final String User_Data = "com.example.alexandria.USER";
 
     /**
     * onCreate method
@@ -72,18 +70,6 @@ public class MainActivity extends AppCompatActivity{
                 // getting info from components
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-
-                // validate input
-                EmailValidator validator = new EmailValidator(email);
-                if(!validator.isValid() || password.length() <= 0){
-                    if(!validator.isValid()){
-                        emailEditText.setError("Invalid format!");
-                    }
-                    if(password.length() <= 0){
-                        passwordEditText.setError("Please enter your password");
-                    }
-                    return;
-                }
 
                 login(email, password);
 
@@ -120,41 +106,10 @@ public class MainActivity extends AppCompatActivity{
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
                             Log.d("Login", "signInWithEmailPassword:success");
-                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
-
-                            // get user document relate with current user
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            DocumentReference docRef = db.collection("users").document(email);
-
-                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot document = task.getResult();
-                                        if (document.exists()) {
-                                            Log.d("Login", "DocumentSnapshot data: " + document.getData());
-                                            UserManager.getInstance()
-                                                    .setUser(firebaseUser,
-                                                            (String) document.getData().get("phone"),
-                                                            (String) document.getData().get("username"),
-                                                            (String) document.getData().get("bio"));
-                                            User user = UserManager.getInstance().getUser();
-
-                                            Log.d("Login", user.getEmail());
-                                            Log.d("Login", user.getPhone());
-                                            Intent home = new Intent(MainActivity.this, HomeActivity.class);
-                                            startActivity(home);
-                                        } else {
-                                            Log.d("Login", "No such document");
-                                        }
-                                    } else {
-                                        Log.d("Login", "get failed with ", task.getException());
-                                    }
-                                }
-                            });
-
-                            // save user info to ram
-
+                            String userEmail = mAuth.getCurrentUser().getEmail();
+                            Intent home = new Intent(MainActivity.this, HomeActivity.class);
+                            home.putExtra(User_Data, userEmail);
+                            startActivity(home);
                         }else{
                             Log.d("Login", "signInWithEmailPassword:failed", task.getException());
                             Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
