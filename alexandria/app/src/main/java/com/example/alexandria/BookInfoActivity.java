@@ -33,6 +33,7 @@ import java.util.Map;
 public class BookInfoActivity extends AppCompatActivity {
 
     private int EDIT_BOOK_CODE = 1;
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private String bookID = null; // passed from previous page
@@ -238,9 +239,16 @@ public class BookInfoActivity extends AppCompatActivity {
                 bookID = data.getStringExtra("returnBookID");
                 bookRef = db.collection("books").document(bookID);
 
-                Log.d("EditBook", bookID);
+                Log.d("book info", "edited - "+bookID);
 
                 updateView();
+
+            } else if (resultCode == EditBookActivity.RESULT_DELETE) {
+
+                bookID = data.getStringExtra("returnBookID");
+                Log.d("book info", "deleted - "+bookID);
+
+                finish();
             }
         }
     }

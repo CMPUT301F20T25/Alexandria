@@ -1,6 +1,6 @@
 package com.example.alexandria;
 /**
- * allows user to edit book information
+ * allows user to edit or delete book
  * @author Xueying Luo
  */
 
@@ -41,10 +41,13 @@ import java.util.Map;
 
 public class EditBookActivity extends AppCompatActivity {
 
+    protected static final int RESULT_DELETE = 2;
     FirebaseFirestore db;
 
     private String oldISBN;
     private DocumentReference userRef = MainActivity.currentUserRef;
+    private final String[] returnBookID = new String[1];
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,7 @@ public class EditBookActivity extends AppCompatActivity {
         // get intent
         Intent intent = getIntent();
         String bookID = intent.getStringExtra("book");
+        returnBookID[0] = bookID;
 
         db = FirebaseFirestore.getInstance();
         final DocumentReference bookRef = db.collection("books").document(bookID);
@@ -146,7 +150,6 @@ public class EditBookActivity extends AppCompatActivity {
                 // copy the content, create a new doc if isbn is changed, delete the old one
                 // reference: https://stackoverflow.com/questions/47885921/can-i-change-the-name-of-a-document-in-firestore
 
-                final String[] returnBookID = new String[1];
                 if (!oldISBN.equals(newISBN)){
 
                     // generate bookID by checking existing docID
@@ -260,7 +263,46 @@ public class EditBookActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //TODO: delete book from books collection & the reference in user's books array
+                DocumentReference currentBookRef = db.collection("books").document(returnBookID[0]);
+
+                // delete book from collection
+                currentBookRef.delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("tag", "book deleted from collection successfully");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("tag", "book deletion from collection failed");
+
+                            }
+                        });
+
+                // delete book from user's book list
+                userRef.update("books", FieldValue.arrayRemove(currentBookRef))
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("tag", "book deleted from user's book list successfully");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("tag", "book deletion from user's book list failed");
+
+                            }
+                        });
+
+                Intent returnIntent = new Intent();
+                Log.d("edit book", "delete book - "+returnBookID[0]);
+                returnIntent.putExtra("returnBookID", returnBookID[0]);
+
+                setResult(RESULT_DELETE, returnIntent);
+                finish();
 
             }
         });
