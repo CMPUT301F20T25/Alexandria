@@ -27,9 +27,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class BookInfoActivity extends AppCompatActivity {
+public class BookInfoActivity extends BaseActivity {
 
-    private int EDIT_BOOK_CODE = 1;
+    private final int EDIT_BOOK_CODE = 1;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private String bookID = null; // passed from previous page
@@ -51,12 +51,22 @@ public class BookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
+        bookID = intent.getStringExtra(HomeActivity.Book_Data);
 
         bookRef = db.collection("books").document(bookID);
 
         updateView();
 
+    }
+
+    @Override
+    int getContentViewId() {
+        return 0;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return 0;
     }
 
     /**
