@@ -5,6 +5,7 @@ package com.example.alexandria;
  */
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -22,14 +23,17 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public class BookInfoActivity extends BaseActivity {
 
-    private final int EDIT_BOOK_CODE = 1;
+    private int EDIT_BOOK_CODE = 1;
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private String bookID = null; // passed from previous page
@@ -50,12 +54,22 @@ public class BookInfoActivity extends BaseActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Log.d("tag", "BookInfoActivity created");
+
         Intent intent = getIntent();
         bookID = intent.getStringExtra("bookID");
 
         bookRef = db.collection("books").document(bookID);
 
         updateView();
+
+        Button userButton = findViewById(R.id.borrowerOrOwnerButton);
+        userButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: display owner or borrower info
+            }
+        });
 
     }
 
@@ -73,6 +87,9 @@ public class BookInfoActivity extends BaseActivity {
      * display/update the textView
      */
     public void updateView(){
+
+        Log.d("tag", "update view, bookRef = "+bookRef.getId());
+
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -128,7 +145,18 @@ public class BookInfoActivity extends BaseActivity {
                                 borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
                                 borrowerOrOwner_titleView.setText("Current Borrower:");
                                 borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-                                borrowerOrOwnerButton.setText(borrowerRef.getId());
+
+                                // get username
+                                borrowerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        DocumentSnapshot document = task.getResult();
+                                        String username = String.valueOf(document.getData().get("username"));
+                                        borrowerOrOwnerButton.setText(username);
+
+                                    }
+                                });
+
 
                             } else { // status = Available/Requested
                                 borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
@@ -136,14 +164,24 @@ public class BookInfoActivity extends BaseActivity {
                             }
 
                         } else if (!userRef.equals(ownerRef) && !userRef.equals(borrowerRef)){
-
                             // for public user - hide borrower, show owner
-                            borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-                            borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
-                            borrowerOrOwner_titleView.setText("Owner:");
-                            borrowerOrOwnerButton.setText(ownerRef.getId());
 
-                            statusView.setText(publicStatus);
+                            // get owner username
+                            ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    DocumentSnapshot document = task.getResult();
+                                    String username = String.valueOf(document.getData().get("username"));
+                                    borrowerOrOwnerButton.setText(username);
+
+                                    borrowerOrOwnerButton.setVisibility(View.VISIBLE);
+                                    borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
+                                    borrowerOrOwner_titleView.setText("Owner:");
+
+                                    statusView.setText(publicStatus);
+
+                                }
+                            });
 
                         }
 
@@ -177,6 +215,7 @@ public class BookInfoActivity extends BaseActivity {
                 }
             }
         });
+
         return super.onCreateOptionsMenu(menu);
 
     }
@@ -210,9 +249,16 @@ public class BookInfoActivity extends BaseActivity {
                 bookID = data.getStringExtra("returnBookID");
                 bookRef = db.collection("books").document(bookID);
 
-                Log.d("Tag", bookID+"..."+bookRef);
+                Log.d("book info", "edited - "+bookID);
 
                 updateView();
+
+            } else if (resultCode == EditBookActivity.RESULT_DELETE) {
+
+                bookID = data.getStringExtra("returnBookID");
+                Log.d("book info", "deleted - "+bookID);
+
+                finish();
             }
         }
     }

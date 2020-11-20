@@ -5,6 +5,7 @@ package com.example.alexandria;
  */
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -23,10 +24,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,8 +42,9 @@ import java.util.Map;
 
 public class AddBookActivity extends AppCompatActivity {
 
-    DocumentReference userRef = MainActivity.currentUserRef;
-    FirebaseFirestore db;
+    private String TAG = "add book";
+    private DocumentReference userRef = MainActivity.currentUserRef;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +67,7 @@ public class AddBookActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("tag", "add button clicked");
+                Log.d(TAG, "add button clicked");
 
                 String newTitle = title.getText().toString();
                 String newAuthor = author.getText().toString();
@@ -74,113 +81,126 @@ public class AddBookActivity extends AppCompatActivity {
 //                BookInformationValidator validator =
 //                        new BookInformationValidator(newTitle, newAuthor, newDescr, newISBN);
 //                if(!validator.isValid()){ // invalid input
-//                    Log.d("tag", "invalid input");
+//                    Log.d(TAG, "invalid input");
 //                    ArrayList<ValidationError> errors = validator.getError();
 //                    for(ValidationError error : errors){
 //
 //                        if ("isbn".equals(error.getField())) {
 //                            isbn.setError(error.getMessage());
-//                            Log.d("tag", "invalid isbn");
+//                            Log.d(TAG, "invalid isbn");
 //                        } else {
-//                            Log.d("tag", "unknown error");
+//                            Log.d(TAG, "unknown error");
 //
 //                            Toast.makeText(AddBookActivity.this,
 //                                    "Unknown Error, please try again", Toast.LENGTH_SHORT).show();
 //                        }
 //                    }
-                if (false){
+                if (false){ // invalid input
                 } else { // valid input
 
-                    Log.d("tag", "valid input");
+                    Log.d(TAG, "valid input");
 
                     // generate bookID by checking existing docID
-                    String newBookID = newISBN+'-'+userRef.getId(); // isbn-username
-                    final boolean[] docFound = {true};
+
                     final int[] counter = {1};
-                    //TODO: fix the crash when adding books that have same isbn as books existed
-                    // (and in editBook activity as well)
-//                    while (docFound[0]) {
-//                        String tempID = newBookID + String.valueOf(counter[0]);
-//                        DocumentReference checkRef = db.collection("books").document(tempID);
-//                        checkRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                                if (task.isSuccessful()) {
-//                                    DocumentSnapshot document = task.getResult();
-//                                    if (document.exists()) {
-//                                        Log.d("tag", "document found, try next one");
-//                                        counter[0] +=1;
-//
-//                                    } else {
-//                                        Log.d("TAG", "No such document, keep this id");
-//                                        docFound[0] = false;
-//                                    }
-//                                } else {
-//                                    Log.d("TAG", "get failed with ", task.getException());
-//                                }
-//                            }
-//                        });
-//                    }
+                    final String[] newBookID = {newISBN + '-' + counter[0]}; // isbn-counter
 
-                    newBookID = newBookID + '-' + counter[0]; // isbn-username-counter
-                    Log.d("tag", "new bookID - "+newBookID);
+                    final boolean[] docFound = {true};
 
-                    DocumentReference bookRef = db.collection("books").document(newBookID);
-
-                    List<DocumentReference> requestedUsers = null;
-                    Map<String,String> status = new HashMap<>();
-                    status.put("borrower", null);
-                    status.put("owner", "available");
-                    status.put("public", "available");
-
-                    Map<String,Object> bookInfo = new HashMap<>();
-                    bookInfo.put("authors", authorList);
-                    bookInfo.put("title", newTitle);
-                    bookInfo.put("description", newDescr);
-                    bookInfo.put("isbn", newISBN);
-                    bookInfo.put("borrower", null);
-                    bookInfo.put("owner", userRef.getId());
-                    bookInfo.put("ownerReference", userRef);
-                    bookInfo.put("photo", null);
-                    bookInfo.put("requestedUsers", requestedUsers);
-                    bookInfo.put("status", status);
-
-
-                    bookRef.set(bookInfo)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d("tag", "successfully added a book");
+                    // store all bookID in a list and check if the list contains the new generated id
+                    ArrayList<String> allDocID = new ArrayList<>();
+                    CollectionReference collRef = db.collection("books");
+                    collRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String id = document.getId();
+                                    allDocID.add(id);
                                 }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d("tag", "adding book failed");
-                                }
-                            });
 
-                    // update the user's book list
-                    userRef.update("books", FieldValue.arrayUnion(bookRef))
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.d("tag","book list updated successfully");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d("tag","book list update failed");
+                                Log.d(TAG, "id list: "+allDocID.toString());
 
-                                }
-                            });
+                                while (docFound[0]) {
+                                    if (allDocID.contains(newBookID[0])) { // if id exists
+                                        Log.d(TAG, "document exists - counter = " + counter[0]);
+                                        counter[0] += 1;
+                                        newBookID[0] = newISBN + '-' + counter[0];
+                                    } else { // id does not exist
+                                        Log.d(TAG, "No such document, keep this id : " + newBookID[0]);
+                                        docFound[0] = false;
 
+                                        DocumentReference bookRef = db.collection("books").document(newBookID[0]);
+
+                                        Map<String, String> status = new HashMap<>();
+                                        status.put("borrower", null);
+                                        status.put("owner", "available");
+                                        status.put("public", "available");
+
+                                        Map<String, Object> bookInfo = new HashMap<>();
+                                        bookInfo.put("authors", authorList);
+                                        bookInfo.put("title", newTitle);
+                                        bookInfo.put("description", newDescr);
+                                        bookInfo.put("isbn", newISBN);
+                                        bookInfo.put("borrower", null);
+                                        bookInfo.put("ownerReference", userRef);
+                                        bookInfo.put("photo", null);
+                                        bookInfo.put("requestedUsers", null);
+                                        bookInfo.put("status", status);
+
+                                        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                DocumentSnapshot document = task.getResult();
+
+                                                // get username
+                                                String username = String.valueOf(document.getData().get("username"));
+                                                bookInfo.put("owner", username);
+
+                                                // create a document in books collection
+                                                bookRef.set(bookInfo)
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                Log.d(TAG, "successfully added a book");
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Log.d(TAG, "adding book failed");
+                                                            }
+                                                        });
+
+                                                // update the user's book list
+                                                userRef.update("books", FieldValue.arrayUnion(bookRef))
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                Log.d(TAG, "user's book list updated successfully");
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Log.d(TAG, "user's book list update failed");
+
+                                                            }
+                                                        });
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    });
 
                 }
 
                 finish();
+
             }
+
         });
 
     }
