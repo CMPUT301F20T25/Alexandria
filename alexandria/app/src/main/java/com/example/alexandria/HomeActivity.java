@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,22 +14,40 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class HomeActivity extends BaseActivity {
 
     ListView myBookList;
     ListView borrowedList;
     ListView requestedList;
-    ArrayAdapter<Book> bookAdapter;
-    ArrayList<Book> bookDataList;
+    ArrayAdapter<Book> myBookAdapter;
+    ArrayAdapter<Book> borrowedBookAdapter;
+    ArrayAdapter<Book> requestBookAdapter;
+    ArrayList<Book> myBookDataList;
+    ArrayList<Book> borrowedBookDataList;
+    ArrayList<Book> requestBookDataList;
+    String userEmail;
+    String ownerEmail;
+    String borrowerEmail;
+    String requestEmail;
+
+    public static final String Book_Data = "com.example.alexandria.BOOK";
+    public static final String User_Data = "com.example.alexandria.USER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +59,9 @@ public class HomeActivity extends BaseActivity {
         Button requestedButton;
         FirebaseFirestore db;
 
+        Intent intent = getIntent();
+        userEmail = intent.getStringExtra(MainActivity.User_Data);
+
         final String TAG = "Sample";
 
         myBookList = findViewById(R.id.myBook_list);
@@ -50,29 +72,61 @@ public class HomeActivity extends BaseActivity {
         borrowedButton = findViewById(R.id.borrowed_button);
         requestedButton = findViewById(R.id.requested_button);
 
-        bookDataList = new ArrayList<>();
-        bookAdapter = new CustomList(this, bookDataList);
-        myBookList.setAdapter(bookAdapter);
-        borrowedList.setAdapter(bookAdapter);
-        requestedList.setAdapter(bookAdapter);
+        myBookDataList = new ArrayList<>();
+        borrowedBookDataList = new ArrayList<>();
+        requestBookDataList = new ArrayList<>();
+        myBookAdapter = new CustomList(this, myBookDataList);
+        borrowedBookAdapter = new CustomList(this, borrowedBookDataList);
+        requestBookAdapter = new CustomList(this, requestBookDataList);
+        myBookList.setAdapter(myBookAdapter);
+        borrowedList.setAdapter(borrowedBookAdapter);
+        requestedList.setAdapter(requestBookAdapter);
+
         db = FirebaseFirestore.getInstance();
-        CollectionReference collectionReference = db.collection("Books");
+        CollectionReference collectionReference = db.collection("books");
         collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
                     FirebaseFirestoreException error) {
                 // Clear the old list
-                bookDataList.clear();
+                myBookDataList.clear();
+                borrowedBookDataList.clear();
+                requestBookDataList.clear();
                 for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
                 {
-                    String name = doc.getId();
+                    ArrayList<String> authorList = (ArrayList<String>) doc.getData().get("authors");
+                    String author = authorList.get(0);
+                    //for (int counter = 1; counter < authorList.size(); counter++) {
+                        //author = author+'\n' + authorList.get(counter);
+                   // }
+
+                    String id = doc.getId();
                     String isbn = (String) doc.getData().get("isbn");
+                    String title = String.valueOf(doc.getData().get("title"));
                     String description = (String) doc.getData().get("description");
-                    String author = (String) doc.getData().get("author");
-                    String owner = (String) doc.getData().get("owner");
-                    bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
+
+                    ownerEmail= (String) doc.getData().get("ownerEmail");
+                    borrowerEmail = (String) doc.getData().get("borrowerEmail");
+
+                    if(userEmail.equals(ownerEmail)){
+                        myBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+                    }
+
+                    if(userEmail.equals(borrowerEmail)){
+                        borrowedBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+                    }
+
+                    ArrayList<String> requestList = (ArrayList<String>) doc.getData().get("requestedUsers");
+                    for (int counter = 1; counter < requestList.size(); counter = counter + 2) {
+                        requestEmail = requestList.get(counter);
+                        if(userEmail.equals(requestEmail)){
+                            requestBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+                        }
+                    }
                 }
-                bookAdapter.notifyDataSetChanged();
+                myBookAdapter.notifyDataSetChanged();
+                borrowedBookAdapter.notifyDataSetChanged();
+                requestBookAdapter.notifyDataSetChanged();
             }
         });
 
@@ -92,10 +146,11 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        // click to view my book info
         myBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                openBookInfoActivity(i, myBookDataList);
             }
         });
 
@@ -107,10 +162,11 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        // click to view borrowed book info
         borrowedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                openBookInfoActivity(i, borrowedBookDataList);
             }
         });
 
@@ -122,10 +178,11 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        // click to view requested book info
         requestedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                openBookInfoActivity(i, requestBookDataList);
             }
         });
     }
@@ -137,17 +194,28 @@ public class HomeActivity extends BaseActivity {
 
     private void openMyBookActivity() {
         Intent myBookIntent = new Intent(this, MyBookActivity.class);
+        myBookIntent.putExtra(User_Data, userEmail);
         startActivity(myBookIntent);
     }
 
+
     private void openBorrowedActivity() {
         Intent borrowedIntent = new Intent(this, BorrowedActivity.class);
+        borrowedIntent.putExtra(User_Data, userEmail);
         startActivity(borrowedIntent);
     }
 
     private void openRequestedActivity() {
         Intent requestedIntent = new Intent(this, RequestedActivity.class);
+        requestedIntent.putExtra(User_Data, userEmail);
         startActivity(requestedIntent);
+    }
+
+    private void openBookInfoActivity(int position, ArrayList<Book> bookDataList) {
+        Intent bookInfoIntent = new Intent(HomeActivity.this, BookInfoActivity.class);
+        String bookID = bookDataList.get(position).getBookID();
+        bookInfoIntent.putExtra(Book_Data, bookID);
+        startActivity(bookInfoIntent);
     }
 
     @Override
@@ -160,5 +228,5 @@ public class HomeActivity extends BaseActivity {
         return R.id.navigation_home;
     }
 
-
 }
+

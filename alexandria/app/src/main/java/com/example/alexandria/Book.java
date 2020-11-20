@@ -1,28 +1,32 @@
 package com.example.alexandria;
 
-public class Book {
-    private String isbn;
-    private String description;
-    private String name;
-    private String author;
-    private String owner;
+import com.google.firebase.firestore.DocumentReference;
 
-    Book(String isbn, String description,  String name, String author, String owner){
+public class Book {
+
+    private final String id;
+    private final String isbn;
+    private final String description;
+    private final String title;
+    private final String author;
+
+    Book(String id, String isbn, String description, String title, String author){
+        this.id = id;
         this.isbn = isbn;
         this.description = description;
-        this.name = name;
+        this.title = title;
         this.author = author;
-        this.owner = owner;
     }
+
+    String getBookID(){ return this.id;}
 
     String getBookISBN(){ return this.isbn;}
 
     String getBookDescription(){ return this.description;}
 
-    String getBookName(){ return this.name;}
+    String getBookTitle(){ return this.title;}
 
     String getAuthorName(){ return this.author;}
-
-    String getBookOwner(){ return this.owner;}
-
 }
+
+
