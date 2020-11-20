@@ -33,7 +33,6 @@ public class MyBookActivity extends BaseActivity {
     String ownerEmail;
 
     public static final String Book_Data = "com.example.alexandria.BOOK";
-
     private static final int ADD_BOOK_CODE = 3;
 
     @Override
@@ -112,7 +111,7 @@ public class MyBookActivity extends BaseActivity {
     private void openBookInfoActivity(int position) {
         Intent bookInfoIntent = new Intent(MyBookActivity.this, BookInfoActivity.class);
         String bookID = bookDataList.get(position).getBookID();
-        bookInfoIntent.putExtra(Book_Data, bookID);
+        bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
     }
 

@@ -57,7 +57,7 @@ public class BookInfoActivity extends BaseActivity {
         Log.d("tag", "BookInfoActivity created");
 
         Intent intent = getIntent();
-        bookID = intent.getStringExtra(HomeActivity.Book_Data);
+        bookID = intent.getStringExtra("bookID");
 
         bookRef = db.collection("books").document(bookID);
 
