@@ -51,7 +51,6 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
         Button scanButton;
         Button myBookButton;
         Button borrowedButton;
@@ -218,14 +217,14 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void openBorrowedBookInfoActivity(int position, ArrayList<Book> bookDataList) {
-        Intent bookInfoIntent = new Intent(HomeActivity.this, BookInfoActivity.class);
+        Intent bookInfoIntent = new Intent(HomeActivity.this, BorrowedBookInfoActivity.class);
         String bookID = bookDataList.get(position).getBookID();
         bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
     }
 
     private void openRequestBookInfoActivity(int position, ArrayList<Book> bookDataList) {
-        Intent bookInfoIntent = new Intent(HomeActivity.this, BookInfoActivity.class);
+        Intent bookInfoIntent = new Intent(HomeActivity.this, RequestedBookInfoActivity.class);
         String bookID = bookDataList.get(position).getBookID();
         bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);

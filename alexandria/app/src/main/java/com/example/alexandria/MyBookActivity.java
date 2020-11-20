@@ -40,12 +40,11 @@ public class MyBookActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_book);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.myBook_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Button backButton;
         FirebaseFirestore db;
 
         Intent intent = getIntent();
@@ -54,7 +53,6 @@ public class MyBookActivity extends BaseActivity {
         final String TAG = "Sample";
 
         currentList = findViewById(R.id.current_list);
-        backButton = findViewById(R.id.back_button);
 
         bookDataList = new ArrayList<>();
         bookAdapter = new CustomList(this, bookDataList);
@@ -88,24 +86,12 @@ public class MyBookActivity extends BaseActivity {
             }
         });
 
-        // click to ISBN scan button
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openBackActivity();
-            }
-        });
-
         currentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 openBookInfoActivity(i);
             }
         });
-    }
-
-    private void openBackActivity() {
-        MyBookActivity.super.onBackPressed();
     }
 
     private void openBookInfoActivity(int position) {

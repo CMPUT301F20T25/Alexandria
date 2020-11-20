@@ -8,7 +8,7 @@
     tools:context=".MyBookActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/my_toolbar"
+        android:id="@+id/myBook_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
@@ -18,20 +18,11 @@
         app:title="My Book"
         app:titleTextColor="#FFFFFF" />
 
-    <Button
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="?attr/actionBarSize"
-        android:text="BACK"
-        android:textSize="20sp"
-        android:layout_alignRight="@id/my_toolbar"
-        android:layout_alignEnd="@id/my_toolbar" />
-
     <ListView
         android:id="@+id/current_list"
         android:layout_width="match_parent"
         android:layout_height="550dp"
-        android:layout_below="@id/my_toolbar"/>
+        android:layout_below="@id/myBook_toolbar"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation"

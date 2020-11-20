@@ -2,9 +2,13 @@ package com.example.alexandria;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,7 +39,12 @@ public class BorrowedActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_borrowed);
-        Button backButton;
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.borrowed_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         FirebaseFirestore db;
 
         Intent intent = getIntent();
@@ -44,7 +53,6 @@ public class BorrowedActivity extends BaseActivity {
         final String TAG = "Sample";
 
         currentList = findViewById(R.id.current_list);
-        backButton = findViewById(R.id.back_button);
 
         bookDataList = new ArrayList<>();
         bookAdapter = new CustomList(this, bookDataList);
@@ -78,24 +86,12 @@ public class BorrowedActivity extends BaseActivity {
             }
         });
 
-        // click to ISBN scan button
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openBackActivity();
-            }
-        });
-
         currentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 openBookInfoActivity(i);
             }
         });
-    }
-
-    private void openBackActivity() {
-        BorrowedActivity.super.onBackPressed();
     }
 
     private void openBookInfoActivity(int position) {
@@ -113,5 +109,19 @@ public class BorrowedActivity extends BaseActivity {
     @Override
     int getNavigationMenuItemId() {
         return R.id.navigation_home;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                Log.d("toolbar item", "Back button selected");
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
