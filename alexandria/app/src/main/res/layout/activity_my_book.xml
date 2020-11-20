@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MyBookActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -12,6 +13,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:menu="@menu/mybook"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="My Book"
         app:titleTextColor="#FFFFFF" />
