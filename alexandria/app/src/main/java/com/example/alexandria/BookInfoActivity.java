@@ -51,7 +51,7 @@ public class BookInfoActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        bookID = intent.getStringExtra(HomeActivity.Book_Data);
+        bookID = intent.getStringExtra("bookID");
 
         bookRef = db.collection("books").document(bookID);
 

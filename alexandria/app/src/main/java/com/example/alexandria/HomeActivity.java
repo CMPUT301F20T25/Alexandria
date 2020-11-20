@@ -45,7 +45,6 @@ public class HomeActivity extends BaseActivity {
     String borrowerEmail;
     String requestEmail;
 
-    public static final String Book_Data = "com.example.alexandria.BOOK";
     public static final String User_Data = "com.example.alexandria.USER";
 
     @Override
@@ -165,7 +164,7 @@ public class HomeActivity extends BaseActivity {
         borrowedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                openBookInfoActivity(i, borrowedBookDataList);
+                openBorrowedBookInfoActivity(i, borrowedBookDataList);
             }
         });
 
@@ -181,7 +180,7 @@ public class HomeActivity extends BaseActivity {
         requestedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                openBookInfoActivity(i, requestBookDataList);
+                openRequestBookInfoActivity(i, requestBookDataList);
             }
         });
     }
@@ -213,9 +212,25 @@ public class HomeActivity extends BaseActivity {
     private void openBookInfoActivity(int position, ArrayList<Book> bookDataList) {
         Intent bookInfoIntent = new Intent(HomeActivity.this, BookInfoActivity.class);
         String bookID = bookDataList.get(position).getBookID();
-        bookInfoIntent.putExtra(Book_Data, bookID);
+        bookInfoIntent.putExtra("bookID",bookID);
         startActivity(bookInfoIntent);
     }
+
+    private void openBorrowedBookInfoActivity(int position, ArrayList<Book> bookDataList) {
+        Intent bookInfoIntent = new Intent(HomeActivity.this, BookInfoActivity.class);
+        String bookID = bookDataList.get(position).getBookID();
+        bookInfoIntent.putExtra("bookID", bookID);
+        startActivity(bookInfoIntent);
+    }
+
+    private void openRequestBookInfoActivity(int position, ArrayList<Book> bookDataList) {
+        Intent bookInfoIntent = new Intent(HomeActivity.this, BookInfoActivity.class);
+        String bookID = bookDataList.get(position).getBookID();
+        bookInfoIntent.putExtra("bookID", bookID);
+        startActivity(bookInfoIntent);
+    }
+
+
 
     @Override
     int getContentViewId() {
