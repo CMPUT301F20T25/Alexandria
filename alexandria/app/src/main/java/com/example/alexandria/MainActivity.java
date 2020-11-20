@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity{
 
     static protected DocumentReference currentUserRef = null;
 
+    public static final String User_Data = "com.example.alexandria.USER";
 
     /**
     * onCreate method
@@ -107,7 +108,9 @@ public class MainActivity extends AppCompatActivity{
                             Log.d("Login", "signInWithEmailPassword:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             currentUserRef = db.collection("users").document(user.getEmail());
+                            String userEmail = mAuth.getCurrentUser().getEmail();
                             Intent home = new Intent(MainActivity.this, HomeActivity.class);
+                            home.putExtra(User_Data, userEmail);
                             startActivity(home);
                         }else{
                             Log.d("Login", "signInWithEmailPassword:failed", task.getException());

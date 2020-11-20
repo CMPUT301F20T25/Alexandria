@@ -29,17 +29,17 @@ public class MyAccountActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String currentUserName;
+        final String currentUserID;
         final String TAG = "Tag: Account";
         final FirebaseFirestore db;
 
-        // current user name, for testing
-        currentUserName = "testUser1";
+        // current user email, for testing
+        currentUserID = "testuser1@fake.com";
 
         // database setup
         db = FirebaseFirestore.getInstance();
         final CollectionReference collectionRef = db.collection("users");
-        final DocumentReference userDocRef = db.collection("users").document(currentUserName);
+        final DocumentReference userDocRef = db.collection("users").document(currentUserID);
 
         final EditText userNameEditText = findViewById(R.id.editTextUserName);
         final EditText phoneEditText = findViewById(R.id.editTextPhone);

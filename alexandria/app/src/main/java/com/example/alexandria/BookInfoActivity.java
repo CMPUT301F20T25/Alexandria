@@ -30,7 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class BookInfoActivity extends AppCompatActivity {
+public class BookInfoActivity extends BaseActivity {
 
     private int EDIT_BOOK_CODE = 1;
 
@@ -57,7 +57,7 @@ public class BookInfoActivity extends AppCompatActivity {
         Log.d("tag", "BookInfoActivity created");
 
         Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
+        bookID = intent.getStringExtra(HomeActivity.Book_Data);
 
         bookRef = db.collection("books").document(bookID);
 
@@ -71,6 +71,16 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    int getContentViewId() {
+        return 0;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return 0;
     }
 
     /**

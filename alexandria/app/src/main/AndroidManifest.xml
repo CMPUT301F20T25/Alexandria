@@ -8,14 +8,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/Theme.Alexandria">
-        <activity android:name=".ISBNActivity"></activity>
         <activity android:name=".RequestedBookInfoActivity" />
         <activity android:name=".BorrowedBookInfoActivity" />
         <activity android:name=".BookInfoActivity" />
         <activity android:name=".AddBookActivity" />
         <activity android:name=".EditBookActivity" />
+        <activity android:name=".ISBNActivity" />
         <activity android:name=".RequestedActivity" />
         <activity android:name=".BorrowedActivity" />
         <activity android:name=".MyBookActivity" />
