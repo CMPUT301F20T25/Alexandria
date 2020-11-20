@@ -30,8 +30,6 @@ public class MyBookActivity extends BaseActivity {
     String userEmail;
     String ownerEmail;
 
-    public static final String Book_Data = "com.example.alexandria.BOOK";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +100,7 @@ public class MyBookActivity extends BaseActivity {
     private void openBookInfoActivity(int position) {
         Intent bookInfoIntent = new Intent(MyBookActivity.this, BookInfoActivity.class);
         String bookID = bookDataList.get(position).getBookID();
-        bookInfoIntent.putExtra(Book_Data, bookID);
+        bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
     }
 
