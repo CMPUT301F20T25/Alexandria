@@ -80,8 +80,7 @@ public class HomeActivity extends BaseActivity {
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openScanActivity();
-                testBook4();
+                openScanActivity();
             }
         });
 
@@ -89,8 +88,7 @@ public class HomeActivity extends BaseActivity {
         myBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openMyBookActivity();
-                testBook1();
+                openMyBookActivity();
             }
         });
 
@@ -105,8 +103,7 @@ public class HomeActivity extends BaseActivity {
         borrowedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openBorrowedActivity();
-                testBook2();
+                openBorrowedActivity();
             }
         });
 
@@ -121,8 +118,7 @@ public class HomeActivity extends BaseActivity {
         requestedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openRequestedActivity();
-                testBook3();
+                openRequestedActivity();
             }
         });
 
@@ -164,30 +160,5 @@ public class HomeActivity extends BaseActivity {
         return R.id.navigation_home;
     }
 
-
-    private void testBook1(){
-        Intent intent = new Intent(this, BookInfoActivity.class);
-        String bookID = "9876543210777-2";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
-
-    private void testBook2(){
-        Intent intent = new Intent(this, BorrowedBookInfoActivity.class);
-        String bookID = "9876543210111-1";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
-    private void testBook3(){
-        Intent intent = new Intent(this, RequestedBookInfoActivity.class);
-        String bookID = "9876543210777-1";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
-
-    private void testBook4(){
-        Intent intent = new Intent(this, AddBookActivity.class);
-        startActivity(intent);
-    }
 
 }
