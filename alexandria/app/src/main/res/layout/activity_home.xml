@@ -20,8 +20,8 @@
         android:id="@+id/scan_button"
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
-        android:text="ISBN"
-        android:textSize="20sp"
+        android:text="Add Book"
+        android:textSize="15sp"
         android:layout_alignRight="@id/my_toolbar"
         android:layout_alignEnd="@id/my_toolbar" />
 

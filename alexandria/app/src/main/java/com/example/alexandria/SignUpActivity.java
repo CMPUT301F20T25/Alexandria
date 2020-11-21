@@ -103,7 +103,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 passwordEditText.setError(error.getMessage());
                                 break;
                             default:
-                                Toast.makeText(SignUpActivity.this,"Unknown Error, please try again", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignUpActivity.this,"Please fill in each line, thank you!", Toast.LENGTH_SHORT).show();
                         }
                     }
                     return;
@@ -163,7 +163,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     startActivity(home);
                                 }else{
                                     Log.d("Sign Up", "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(SignUpActivity.this, "Unknown error",
+                                    Toast.makeText(SignUpActivity.this, "The user already exists, please return to the previous page to log in.",
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
