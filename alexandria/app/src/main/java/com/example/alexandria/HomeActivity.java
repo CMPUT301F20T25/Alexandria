@@ -186,7 +186,7 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void openScanActivity() {
-        Intent ISBNIntent = new Intent(this, ISBNActivity.class);
+        Intent ISBNIntent = new Intent(this, IsbnActivity.class);
         startActivity(ISBNIntent);
     }
 

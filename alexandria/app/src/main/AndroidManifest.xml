@@ -14,7 +14,7 @@
         <activity android:name=".BookInfoActivity" />
         <activity android:name=".AddBookActivity" />
         <activity android:name=".EditBookActivity" />
-        <activity android:name=".ISBNActivity" />
+        <activity android:name=".IsbnActivity" />
         <activity android:name=".RequestedActivity" />
         <activity android:name=".BorrowedActivity" />
         <activity android:name=".MyBookActivity" />
