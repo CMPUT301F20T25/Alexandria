@@ -41,6 +41,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -49,6 +50,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'com.jayway.android.robotium:robotium-solo:5.3.1'
 
+    //TODO: cleanup once geolocation is done
     implementation 'org.osmdroid:osmdroid-android:6.1.8'
     //implementation 'org.osmdroid:osmdroid-wms:6.1.8'
     //implementation 'org.osmdroid:osmdroid-mapsforge:6.1.8'
