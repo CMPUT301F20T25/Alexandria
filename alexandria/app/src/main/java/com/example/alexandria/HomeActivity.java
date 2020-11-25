@@ -82,51 +82,51 @@ public class HomeActivity extends BaseActivity {
 
         db = FirebaseFirestore.getInstance();
         CollectionReference collectionReference = db.collection("books");
-        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-                    FirebaseFirestoreException error) {
-                // Clear the old list
-                myBookDataList.clear();
-                borrowedBookDataList.clear();
-                requestBookDataList.clear();
-                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-                {
-                    ArrayList<String> authorList = (ArrayList<String>) doc.getData().get("authors");
-                    String author = authorList.get(0);
-                    //for (int counter = 1; counter < authorList.size(); counter++) {
-                        //author = author+'\n' + authorList.get(counter);
-                   // }
-
-                    String id = doc.getId();
-                    String isbn = (String) doc.getData().get("isbn");
-                    String title = String.valueOf(doc.getData().get("title"));
-                    String description = (String) doc.getData().get("description");
-
-                    ownerEmail= (String) doc.getData().get("ownerEmail");
-                    borrowerEmail = (String) doc.getData().get("borrowerEmail");
-
-                    if(userEmail.equals(ownerEmail)){
-                        myBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
-                    }
-
-                    if(userEmail.equals(borrowerEmail)){
-                        borrowedBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
-                    }
-
-                    ArrayList<String> requestList = (ArrayList<String>) doc.getData().get("requestedUsers");
-                    for (int counter = 1; counter < requestList.size(); counter = counter + 2) {
-                        requestEmail = requestList.get(counter);
-                        if(userEmail.equals(requestEmail)){
-                            requestBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
-                        }
-                    }
-                }
-                myBookAdapter.notifyDataSetChanged();
-                borrowedBookAdapter.notifyDataSetChanged();
-                requestBookAdapter.notifyDataSetChanged();
-            }
-        });
+//        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
+//                    FirebaseFirestoreException error) {
+//                // Clear the old list
+//                myBookDataList.clear();
+//                borrowedBookDataList.clear();
+//                requestBookDataList.clear();
+//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+//                {
+//                    ArrayList<String> authorList = (ArrayList<String>) doc.getData().get("authors");
+//                    String author = authorList.get(0);
+//                    //for (int counter = 1; counter < authorList.size(); counter++) {
+//                        //author = author+'\n' + authorList.get(counter);
+//                   // }
+//
+//                    String id = doc.getId();
+//                    String isbn = (String) doc.getData().get("isbn");
+//                    String title = String.valueOf(doc.getData().get("title"));
+//                    String description = (String) doc.getData().get("description");
+//
+//                    ownerEmail= (String) doc.getData().get("ownerEmail");
+//                    borrowerEmail = (String) doc.getData().get("borrowerEmail");
+//
+//                    if(userEmail.equals(ownerEmail)){
+//                        myBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+//                    }
+//
+//                    if(userEmail.equals(borrowerEmail)){
+//                        borrowedBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+//                    }
+//
+//                    ArrayList<String> requestList = (ArrayList<String>) doc.getData().get("requestedUsers");
+//                    for (int counter = 1; counter < requestList.size(); counter = counter + 2) {
+//                        requestEmail = requestList.get(counter);
+//                        if(userEmail.equals(requestEmail)){
+//                            requestBookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+//                        }
+//                    }
+//                }
+//                myBookAdapter.notifyDataSetChanged();
+//                borrowedBookAdapter.notifyDataSetChanged();
+//                requestBookAdapter.notifyDataSetChanged();
+//            }
+//        });
 
         // click to ISBN scan button
         scanButton.setOnClickListener(new View.OnClickListener() {
