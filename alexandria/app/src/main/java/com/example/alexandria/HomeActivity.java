@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -33,7 +34,7 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Button scanButton;
+        ImageButton addButton;
         Button myBookButton;
         Button borrowedButton;
         Button requestedButton;
@@ -44,7 +45,7 @@ public class HomeActivity extends BaseActivity {
         myBookList = findViewById(R.id.myBook_list);
         borrowedList = findViewById(R.id.borrowed_list);
         requestedList = findViewById(R.id.requested_list);
-        scanButton = findViewById(R.id.scan_button);
+        addButton = findViewById(R.id.add_button);
         myBookButton = findViewById(R.id.myBook_button);
         borrowedButton = findViewById(R.id.borrowed_button);
         requestedButton = findViewById(R.id.requested_button);
@@ -55,28 +56,65 @@ public class HomeActivity extends BaseActivity {
         borrowedList.setAdapter(bookAdapter);
         requestedList.setAdapter(bookAdapter);
         db = FirebaseFirestore.getInstance();
-        CollectionReference collectionReference = db.collection("Books");
-        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-                    FirebaseFirestoreException error) {
+
+        String name = "TestBook1";
+        String isbn = "123456";
+        String description = "description1";
+        String author = "Test Author1";
+        String owner = "owner1";
+        bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
+
+        name = "TestBook2";
+        isbn = "123456";
+        description = "description2";
+        author = "Test Author2";
+        owner = "owner2";
+        bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
+
+        name = "TestBook3";
+        isbn = "123456";
+        description = "description3";
+        author = "Test Author3";
+        owner = "owner3";
+        bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
+
+        name = "TestBook4";
+        isbn = "123456";
+        description = "description4";
+        author = "Test Author4";
+        owner = "owner4";
+        bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
+
+        name = "TestBook5";
+        isbn = "123456";
+        description = "description5";
+        author = "Test Author5";
+        owner = "owner5";
+        bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
+
+
+        //CollectionReference collectionReference = db.collection("Books");
+        //collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            //@Override
+            //public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
+                    //FirebaseFirestoreException error) {
                 // Clear the old list
-                bookDataList.clear();
-                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-                {
-                    String name = doc.getId();
-                    String isbn = (String) doc.getData().get("isbn");
-                    String description = (String) doc.getData().get("description");
-                    String author = (String) doc.getData().get("author");
-                    String owner = (String) doc.getData().get("owner");
-                    bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
-                }
-                bookAdapter.notifyDataSetChanged();
-            }
-        });
+                //bookDataList.clear();
+                //for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
+                //{
+                    //String name = doc.getId();
+                    //String isbn = (String) doc.getData().get("isbn");
+                    //String description = (String) doc.getData().get("description");
+                    //String author = (String) doc.getData().get("author");
+                    //String owner = (String) doc.getData().get("owner");
+                    //bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
+                //}
+                //bookAdapter.notifyDataSetChanged();
+            //}
+        //});
 
         // click to ISBN scan button
-        scanButton.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //openScanActivity();
