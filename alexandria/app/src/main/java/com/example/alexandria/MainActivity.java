@@ -69,7 +69,9 @@ public class MainActivity extends AppCompatActivity{
                 // getting info from components
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
-
+                if (email.equals("") || password.equals("")){
+                    
+                }
                 login(email, password);
 
             }
