@@ -100,6 +100,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="imagePath" value="C:\Users\11690\Desktop\301 Project\Alexandria\alexandria\app\src\main\res\custom-image\alexandria_launcher_icon.png" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -295,11 +296,6 @@
                                 </PersistentState>
                               </value>
                             </entry>
-                          </map>
-                        </option>
-                        <option name="values">
-                          <map>
-                            <entry key="outputIconType" value="ACTIONBAR" />
                           </map>
                         </option>
                       </PersistentState>
