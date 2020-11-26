@@ -41,10 +41,6 @@ public class HomeActivity extends BaseActivity {
         Button acceptedButton;
         FirebaseAuth mAuth;
 
-        DocumentReference currentUserRef = null;
-
-        final String TAG = "Sample";
-
         userName = findViewById(R.id.user_name_text);
         addButton = findViewById(R.id.add_button);
         messageButton = findViewById(R.id.message_button);
@@ -63,15 +59,14 @@ public class HomeActivity extends BaseActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openScanActivity();
-                testBook4();
+                openAddActivity();
             }
         });
 
         messageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openScanActivity();
+                openMessageActivity();
             }
         });
 
@@ -79,8 +74,7 @@ public class HomeActivity extends BaseActivity {
         myBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openMyBookActivity();
-                testBook1();
+                openMyBookActivity();
             }
         });
 
@@ -89,8 +83,7 @@ public class HomeActivity extends BaseActivity {
         borrowedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openBorrowedActivity();
-                testBook2();
+                openBorrowedActivity();
             }
         });
 
@@ -98,23 +91,27 @@ public class HomeActivity extends BaseActivity {
         requestedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openRequestedActivity();
-                testBook3();
+                openRequestedActivity();
             }
         });
 
         acceptedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openRequestedActivity();
+                openAcceptedActivity();
             }
         });
 
     }
 
-    private void openScanActivity() {
-        Intent ISBNIntent = new Intent(this, ISBNActivity.class);
-        startActivity(ISBNIntent);
+    private void openAddActivity() {
+        Intent intent = new Intent(this, AddBookActivity.class);
+        startActivity(intent);
+    }
+
+    private void openMessageActivity() {
+        //Intent intent = new Intent(this, Activity.class);
+        //startActivity(intent);
     }
 
     private void openMyBookActivity() {
@@ -132,6 +129,11 @@ public class HomeActivity extends BaseActivity {
         startActivity(requestedIntent);
     }
 
+    private void openAcceptedActivity() {
+        Intent requestedIntent = new Intent(this, AcceptedActivity.class);
+        startActivity(requestedIntent);
+    }
+
     @Override
     int getContentViewId() {
         return R.layout.activity_home;
@@ -143,29 +145,23 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-    private void testBook1(){
-        Intent intent = new Intent(this, BookInfoActivity.class);
-        String bookID = "9876543210777-2";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
+    //private void testBook1(){
+        //Intent intent = new Intent(this, BookInfoActivity.class);
+        //String bookID = "9876543210777-2";
+        //intent.putExtra("bookID", bookID);
+        //startActivity(intent);
+    //}
 
-    private void testBook2(){
-        Intent intent = new Intent(this, BorrowedBookInfoActivity.class);
-        String bookID = "9876543210111-1";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
-    private void testBook3(){
-        Intent intent = new Intent(this, RequestedBookInfoActivity.class);
-        String bookID = "9876543210777-1";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
-
-    private void testBook4(){
-        Intent intent = new Intent(this, AddBookActivity.class);
-        startActivity(intent);
-    }
-
+    //private void testBook2(){
+        //Intent intent = new Intent(this, BorrowedBookInfoActivity.class);
+        //String bookID = "9876543210111-1";
+        //intent.putExtra("bookID", bookID);
+        //startActivity(intent);
+    //}
+    //private void testBook3(){
+        //Intent intent = new Intent(this, RequestedBookInfoActivity.class);
+        //String bookID = "9876543210777-1";
+        //intent.putExtra("bookID", bookID);
+        //startActivity(intent);
+    //}
 }
