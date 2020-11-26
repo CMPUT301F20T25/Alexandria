@@ -72,7 +72,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="-7dp"
-                        android:radius="0dip"
+                        android:background="@drawable/custom_home_activity_button"
                         android:text="My Book" />
 
                     <ListView
@@ -114,7 +114,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="-7dp"
-                        android:radius="0dip"
+                        android:background="@drawable/custom_home_activity_button"
                         android:text="Borrowed" />
 
                     <ListView
@@ -155,7 +155,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="-7dp"
-                        android:radius="0dip"
+                        android:background="@drawable/custom_home_activity_button"
                         android:text="Requested" />
 
                     <ListView

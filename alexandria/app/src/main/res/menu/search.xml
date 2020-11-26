@@ -4,6 +4,7 @@
     <item
         android:id="@+id/search_filter"
         android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:tint="@android:color/white"
         android:title="filterResults"
         app:showAsAction="always" />
 </menu>
