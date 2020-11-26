@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity{
 
     static protected DocumentReference currentUserRef = null;
 
-
     /**
     * onCreate method
     * @author han
