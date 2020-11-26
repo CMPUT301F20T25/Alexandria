@@ -98,8 +98,8 @@ public class SignUpActivity extends AppCompatActivity {
                 }
 
                 if(!password.equals(repeatedPass)){
-                    passwordEditText.setError("Password doesn't match!");
-                    confirmPasswordEditText.setError("Password doesn't match!");
+                    passwordEditText.setError("Passwords do not match!");
+                    confirmPasswordEditText.setError("Passwords do not match!");
                     return;
                 }
 
@@ -117,7 +117,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     startActivity(home);
                                 }else{
                                     Log.d("Sign Up", "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(SignUpActivity.this, "Unknown error",
+                                    Toast.makeText(SignUpActivity.this, "User already exists",
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }

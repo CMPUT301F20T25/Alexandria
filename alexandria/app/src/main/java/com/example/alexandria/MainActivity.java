@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity{
                             startActivity(home);
                         }else{
                             Log.d("Login", "signInWithEmailPassword:failed", task.getException());
-                            Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Email address and Password NOT match", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
