@@ -1,8 +1,4 @@
 package com.example.alexandria;
-/**
- * display book information to its owner / public user
- * @author Xueying Luo
- */
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class BookInfoActivity extends BaseActivity {
+public class BookInfoActivity extends AppCompatActivity {
 
     private int EDIT_BOOK_CODE = 1;
 
@@ -73,16 +69,6 @@ public class BookInfoActivity extends BaseActivity {
 
     }
 
-    @Override
-    int getContentViewId() {
-        return 0;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return 0;
-    }
-
     /**
      * display/update the textView
      */
@@ -119,7 +105,7 @@ public class BookInfoActivity extends BaseActivity {
 
                         // display book info
 
-                        ImageView imageView = findViewById(R.id.myBookImage);
+                        ImageView imageView = findViewById(R.id.myBookImageButton);
                         TextView titleView = findViewById(R.id.myBookTitle);
                         TextView authorView = findViewById(R.id.myBookAuthor);
                         TextView isbnView = findViewById(R.id.myBookISBN);

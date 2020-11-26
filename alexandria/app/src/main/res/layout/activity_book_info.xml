@@ -30,16 +30,16 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/myBookImage"
-                android:layout_width="292dp"
-                android:layout_height="205dp"
-                android:layout_marginTop="24dp"
+                android:id="@+id/myBookImageButton"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/default_book"
                 android:contentDescription="photo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_gallery" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/myTitle"
@@ -67,7 +67,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/myTitle"
-                app:layout_constraintTop_toBottomOf="@+id/myBookImage" />
+                app:layout_constraintTop_toBottomOf="@+id/myBookImageButton" />
 
             <TextView
                 android:id="@+id/myBookAuthor"
