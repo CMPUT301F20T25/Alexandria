@@ -58,7 +58,7 @@
             <TextView
                 android:id="@+id/login_text"
                 android:layout_width="fill_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
                 android:text="Login Account"
@@ -75,7 +75,7 @@
             <EditText
                 android:id="@+id/editTextEmailLogin"
                 android:layout_width="fill_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="35dp"
                 android:layout_marginRight="35dp"
@@ -92,7 +92,7 @@
             <EditText
                 android:id="@+id/editTextTextPassword"
                 android:layout_width="fill_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="35dp"
                 android:layout_marginRight="35dp"
@@ -109,7 +109,7 @@
             <Button
                 android:id="@+id/buttonLogin"
                 android:layout_width="fill_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="35dp"
                 android:layout_marginRight="35dp"
