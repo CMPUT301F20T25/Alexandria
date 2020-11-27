@@ -144,24 +144,4 @@ public class HomeActivity extends BaseActivity {
         return R.id.navigation_home;
     }
 
-
-    //private void testBook1(){
-        //Intent intent = new Intent(this, BookInfoActivity.class);
-        //String bookID = "9876543210777-2";
-        //intent.putExtra("bookID", bookID);
-        //startActivity(intent);
-    //}
-
-    //private void testBook2(){
-        //Intent intent = new Intent(this, BorrowedBookInfoActivity.class);
-        //String bookID = "9876543210111-1";
-        //intent.putExtra("bookID", bookID);
-        //startActivity(intent);
-    //}
-    //private void testBook3(){
-        //Intent intent = new Intent(this, RequestedBookInfoActivity.class);
-        //String bookID = "9876543210777-1";
-        //intent.putExtra("bookID", bookID);
-        //startActivity(intent);
-    //}
 }

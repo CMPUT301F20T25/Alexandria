@@ -31,8 +31,6 @@ public class MyBookActivity extends AppCompatActivity {
     ListView currentList;
     ArrayAdapter<Book> bookAdapter;
     ArrayList<Book> bookDataList;
-    String bookID = null;
-    DocumentReference bookRef;
     DocumentReference userRef = MainActivity.currentUserRef;
 
     @Override
@@ -49,7 +47,7 @@ public class MyBookActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Log.d("tag", "MyBookActivity created");
+        Log.d("tag", "My Book Activity created");
 
         currentList = findViewById(R.id.current_list);
 
