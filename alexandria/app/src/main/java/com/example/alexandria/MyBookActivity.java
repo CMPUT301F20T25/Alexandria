@@ -1,21 +1,24 @@
 package com.example.alexandria;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -23,34 +26,31 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MyBookActivity extends BaseActivity {
-
     ListView currentList;
     ArrayAdapter<Book> bookAdapter;
     ArrayList<Book> bookDataList;
-    String userEmail;
-    String ownerEmail;
+    DocumentReference userRef = MainActivity.currentUserRef;
 
-    public static final String Book_Data = "com.example.alexandria.BOOK";
     private static final int ADD_BOOK_CODE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_book);
+        FirebaseFirestore db;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.myBook_toolbar);
+        // set up toolbar
+        // reference: https://developer.android.com/training/appbar/setting-up
+        // https://stackoverflow.com/questions/29448116/adding-backbutton-on-top-of-child-element-of-toolbar/29794680#29794680
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_book_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        FirebaseFirestore db;
-
-        Intent intent = getIntent();
-        userEmail = intent.getStringExtra(HomeActivity.User_Data);
-
-        final String TAG = "Sample";
+        Log.d("tag", "My Book Activity created");
 
         currentList = findViewById(R.id.current_list);
 
@@ -66,19 +66,22 @@ public class MyBookActivity extends BaseActivity {
                     FirebaseFirestoreException error) {
                 // Clear the old list
                 bookDataList.clear();
-                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-                {
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                     ArrayList<String> authorList = (ArrayList<String>) doc.getData().get("authors");
                     String author = authorList.get(0);
 
                     String id = doc.getId();
-                    String isbn = (String) doc.getData().get("isbn");
+                    String isbn = String.valueOf(doc.getData().get("isbn"));
                     String title = String.valueOf(doc.getData().get("title"));
-                    String description = (String) doc.getData().get("description");
+                    String description = String.valueOf(doc.getData().get("description"));
 
-                    ownerEmail= (String) doc.getData().get("ownerEmail");
+                    DocumentReference ownerRef = (DocumentReference) doc.getData().get("ownerReference");
 
-                    if(userEmail.equals(ownerEmail)){
+                    Map<String, String> statusMap = (Map) doc.getData().get("status");
+                    String ownerStatus = statusMap.get("owner");
+                    String publicStatus = statusMap.get("public");
+
+                    if (userRef.equals(ownerRef)) {
                         bookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
                     }
                 }
@@ -136,4 +139,3 @@ public class MyBookActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-}
