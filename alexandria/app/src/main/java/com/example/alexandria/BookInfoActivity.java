@@ -30,7 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class BookInfoActivity extends AppCompatActivity {
+public class BookInfoActivity extends BaseActivity {
 
     private int EDIT_BOOK_CODE = 1;
 
@@ -49,7 +49,7 @@ public class BookInfoActivity extends AppCompatActivity {
         // set up toolbar
         // reference: https://developer.android.com/training/appbar/setting-up
         // https://stackoverflow.com/questions/29448116/adding-backbutton-on-top-of-child-element-of-toolbar/29794680#29794680
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.bookInfo_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -71,6 +71,16 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    int getContentViewId() {
+        return 0;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return 0;
     }
 
     /**

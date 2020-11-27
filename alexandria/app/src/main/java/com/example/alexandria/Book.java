@@ -1,6 +1,9 @@
 package com.example.alexandria;
 
+import com.google.firebase.firestore.DocumentReference;
+
 public class Book {
+
     private final String id;
     private final String isbn;
     private final String description;
@@ -25,3 +28,4 @@ public class Book {
 
     String getAuthorName(){ return this.author;}
 }
+

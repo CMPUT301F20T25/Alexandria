@@ -126,4 +126,3 @@ public class RequestedActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-}
