@@ -5,13 +5,18 @@
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alexandria">
+        <activity android:name=".AcceptedActivity"/>
         <activity android:name=".RequestedBookInfoActivity" />
         <activity android:name=".BorrowedBookInfoActivity" />
         <activity android:name=".BookInfoActivity" />
@@ -33,5 +38,6 @@
             </intent-filter>
         </activity>
     </application>
+
 
 </manifest>

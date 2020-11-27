@@ -55,5 +55,6 @@ dependencies {
     implementation "androidx.camera:camera-view:1.0.0-alpha19"
     implementation "androidx.lifecycle:lifecycle-livedata:2.2.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
+    implementation "androidx.cardview:cardview:1.0.0"
 
 }
