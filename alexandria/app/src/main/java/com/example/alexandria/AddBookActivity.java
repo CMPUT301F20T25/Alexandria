@@ -1,8 +1,5 @@
 package com.example.alexandria;
-/**
- * allows user to add a book
- * @author Xueying Luo
- */
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +41,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * allows user to add a book
+ * @author Xueying Luo
+ */
 public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFragment.ConfirmPhotoListener{
 
     private boolean photoUpdated = false;
@@ -175,7 +176,7 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
 
                                                 if (!photoUpdated) {
                                                     // use default image
-                                                    bookInfo.put("photo", null);
+                                                    bookInfo.put("photo", "default");
                                                 } else {
                                                     // upload image to storage
                                                     // source: https://firebase.google.com/docs/storage/android/upload-files

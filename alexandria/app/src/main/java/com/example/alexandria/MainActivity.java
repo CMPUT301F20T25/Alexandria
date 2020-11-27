@@ -71,7 +71,12 @@ public class MainActivity extends AppCompatActivity{
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
 
-                login(email, password);
+                // check input
+                if (email.equals("") || password.equals("")){
+                    Toast.makeText(MainActivity.this, "please enter email & password ", Toast.LENGTH_SHORT).show();
+                } else {
+                    login(email, password);
+                }
 
             }
         });
