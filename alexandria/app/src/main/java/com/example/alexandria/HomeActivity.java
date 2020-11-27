@@ -11,9 +11,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -24,63 +29,45 @@ import java.util.ArrayList;
 
 public class HomeActivity extends BaseActivity {
 
-    ListView myBookList;
-    ListView borrowedList;
-    ListView requestedList;
-    ArrayAdapter<Book> bookAdapter;
-    ArrayList<Book> bookDataList;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Button scanButton;
+        ImageButton addButton;
+        ImageButton messageButton;
+        TextView userName;
         Button myBookButton;
         Button borrowedButton;
         Button requestedButton;
-        FirebaseFirestore db;
+        Button acceptedButton;
+        FirebaseAuth mAuth;
 
-        final String TAG = "Sample";
+        userName = findViewById(R.id.user_name_text);
+        addButton = findViewById(R.id.add_button);
+        messageButton = findViewById(R.id.message_button);
+        myBookButton = findViewById(R.id.open_my_book_button);
+        borrowedButton = findViewById(R.id.open_borrowed_book_button);
+        requestedButton = findViewById(R.id.open_requested_book_button);
+        acceptedButton = findViewById(R.id.open_accepted_book_button);
 
-        myBookList = findViewById(R.id.myBook_list);
-        borrowedList = findViewById(R.id.borrowed_list);
-        requestedList = findViewById(R.id.requested_list);
-        scanButton = findViewById(R.id.scan_button);
-        myBookButton = findViewById(R.id.myBook_button);
-        borrowedButton = findViewById(R.id.borrowed_button);
-        requestedButton = findViewById(R.id.requested_button);
+        mAuth = FirebaseAuth.getInstance ();
+        FirebaseUser user = mAuth.getCurrentUser();
+        String currentUserEmail = user.getEmail();
+        String currentUserName = currentUserEmail.substring(0, currentUserEmail.indexOf("@"));
+        userName.setText(currentUserName);
 
-        bookDataList = new ArrayList<>();
-        bookAdapter = new CustomList(this, bookDataList);
-        myBookList.setAdapter(bookAdapter);
-        borrowedList.setAdapter(bookAdapter);
-        requestedList.setAdapter(bookAdapter);
-        db = FirebaseFirestore.getInstance();
-        CollectionReference collectionReference = db.collection("Books");
-        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        // click to ISBN scan button
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable
-                    FirebaseFirestoreException error) {
-                // Clear the old list
-                bookDataList.clear();
-                for(QueryDocumentSnapshot doc: queryDocumentSnapshots)
-                {
-                    String name = doc.getId();
-                    String isbn = (String) doc.getData().get("isbn");
-                    String description = (String) doc.getData().get("description");
-                    String author = (String) doc.getData().get("author");
-                    String owner = (String) doc.getData().get("owner");
-                    bookDataList.add(new Book(isbn, description, name, author, owner)); // Adding the cities and provinces from FireStore
-                }
-                bookAdapter.notifyDataSetChanged();
+            public void onClick(View v) {
+                //openAddActivity();
+                openScanActivity();
             }
         });
 
-        // click to ISBN scan button
-        scanButton.setOnClickListener(new View.OnClickListener() {
+        messageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openScanActivity();
-                testBook4();
+                openMessageActivity();
             }
         });
 
@@ -88,31 +75,16 @@ public class HomeActivity extends BaseActivity {
         myBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openMyBookActivity();
-                testBook1();
+                openMyBookActivity();
             }
         });
 
-        myBookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-            }
-        });
 
         // click to view borrowed books
         borrowedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openBorrowedActivity();
-                testBook2();
-            }
-        });
-
-        borrowedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                openBorrowedActivity();
             }
         });
 
@@ -120,22 +92,32 @@ public class HomeActivity extends BaseActivity {
         requestedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //openRequestedActivity();
-                testBook3();
+                openRequestedActivity();
             }
         });
 
-        requestedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        acceptedButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+            public void onClick(View v) {
+                openAcceptedActivity();
             }
         });
+
+    }
+
+    private void openAddActivity() {
+        Intent intent = new Intent(this, AddBookActivity.class);
+        startActivity(intent);
     }
 
     private void openScanActivity() {
-        Intent ISBNIntent = new Intent(this, ISBNActivity.class);
+        Intent ISBNIntent = new Intent(this, IsbnActivity.class);
         startActivity(ISBNIntent);
+    }
+
+    private void openMessageActivity() {
+        //Intent intent = new Intent(this, Activity.class);
+        //startActivity(intent);
     }
 
     private void openMyBookActivity() {
@@ -153,6 +135,11 @@ public class HomeActivity extends BaseActivity {
         startActivity(requestedIntent);
     }
 
+    private void openAcceptedActivity() {
+        Intent requestedIntent = new Intent(this, AcceptedActivity.class);
+        startActivity(requestedIntent);
+    }
+
     @Override
     int getContentViewId() {
         return R.layout.activity_home;
@@ -161,32 +148,6 @@ public class HomeActivity extends BaseActivity {
     @Override
     int getNavigationMenuItemId() {
         return R.id.navigation_home;
-    }
-
-
-    private void testBook1(){
-        Intent intent = new Intent(this, BookInfoActivity.class);
-        String bookID = "9876543210777-2";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
-
-    private void testBook2(){
-        Intent intent = new Intent(this, BorrowedBookInfoActivity.class);
-        String bookID = "9876543210111-1";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
-    private void testBook3(){
-        Intent intent = new Intent(this, RequestedBookInfoActivity.class);
-        String bookID = "9876543210777-1";
-        intent.putExtra("bookID", bookID);
-        startActivity(intent);
-    }
-
-    private void testBook4(){
-        Intent intent = new Intent(this, AddBookActivity.class);
-        startActivity(intent);
     }
 
 }

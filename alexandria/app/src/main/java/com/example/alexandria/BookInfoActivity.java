@@ -1,32 +1,41 @@
 package com.example.alexandria;
-/**
- * display book information to its owner / public user
- * @author Xueying Luo
- */
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -34,12 +43,14 @@ public class BookInfoActivity extends AppCompatActivity {
 
     private int EDIT_BOOK_CODE = 1;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
 
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+
     DocumentReference userRef = MainActivity.currentUserRef;
+    StorageReference storageRef = storage.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +60,7 @@ public class BookInfoActivity extends AppCompatActivity {
         // set up toolbar
         // reference: https://developer.android.com/training/appbar/setting-up
         // https://stackoverflow.com/questions/29448116/adding-backbutton-on-top-of-child-element-of-toolbar/29794680#29794680
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.bookInfo_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -74,7 +85,7 @@ public class BookInfoActivity extends AppCompatActivity {
     }
 
     /**
-     * display/update the textView
+     * update the page
      */
     public void updateView(){
 
@@ -109,7 +120,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                         // display book info
 
-                        ImageView imageView = findViewById(R.id.myBookImage);
+                        ImageView imageButton = findViewById(R.id.myBookImageButton);
                         TextView titleView = findViewById(R.id.myBookTitle);
                         TextView authorView = findViewById(R.id.myBookAuthor);
                         TextView isbnView = findViewById(R.id.myBookISBN);
@@ -122,6 +133,25 @@ public class BookInfoActivity extends AppCompatActivity {
                         authorView.setText(author);
                         isbnView.setText(isbn);
                         descrView.setText(descr);
+
+                        // retrieve image from storage
+                        String imagePath = String.valueOf(document.getData().get("photo"));
+                        if (!imagePath.equals(null)) {
+                            storageRef.child(imagePath).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                @Override
+                                public void onSuccess(byte[] bytes) {
+                                    // Use the bytes to display the image
+                                    Drawable image = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                    imageButton.setImageDrawable(image);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    Context context = getApplicationContext();
+                                    Toast.makeText(context, "Retrieving photo failed ", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
 
                         // set owner/borrower button visibility & status
