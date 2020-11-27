@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -27,11 +28,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class MyBookActivity extends AppCompatActivity {
+public class MyBookActivity extends BaseActivity {
     ListView currentList;
     ArrayAdapter<Book> bookAdapter;
     ArrayList<Book> bookDataList;
     DocumentReference userRef = MainActivity.currentUserRef;
+
+    private static final int ADD_BOOK_CODE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,12 +105,35 @@ public class MyBookActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    int getContentViewId() {
+        return R.layout.activity_home;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.navigation_home;
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mybook, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                Log.d("toolbar item", "Back button selected");
                 break;
-
+            case R.id.addBook:
+                Intent intent = new Intent(this, AddBookActivity.class);
+                startActivityForResult(intent, ADD_BOOK_CODE);
+                Log.d("toolbar item", "add button selected");
+                break;
             default:
                 break;
         }

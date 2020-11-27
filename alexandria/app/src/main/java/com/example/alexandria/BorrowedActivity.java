@@ -24,7 +24,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class BorrowedActivity extends AppCompatActivity {
+public class BorrowedActivity extends BaseActivity {
 
     ListView currentList;
     ArrayAdapter<Book> bookAdapter;
@@ -100,12 +100,23 @@ public class BorrowedActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    int getContentViewId() {
+        return R.layout.activity_home;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.navigation_home;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                Log.d("toolbar item", "Back button selected");
                 break;
-
             default:
                 break;
         }
