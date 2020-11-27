@@ -15,4 +15,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="isbn_action">Action</string>
     <string name="isbn_default">default text</string>
+    <string name="back_button">Back button</string>
 </resources>

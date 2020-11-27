@@ -3,6 +3,7 @@ package com.example.alexandria;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -12,18 +13,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
-public class IsbnActivity extends AppCompatActivity implements View.OnClickListener, IsbnFragment.IsbnFragmentListener {
+public class IsbnActivity extends FragmentActivity implements View.OnClickListener, IsbnFragment.IsbnFragmentListener {
 
-    private IntentIntegrator scanIntegrator;
-    private IntentResult scanResult;
-    private String barcode;
+    //private IntentIntegrator scanIntegrator;
+    //private IntentResult scanResult;
+    //private String barcode;
 
     private Toolbar isbnToolbar;
+    private ImageView isbnBackImage;
     private TextView titleTextView;
     private TextView authorsTextView;
     private TextView barcodeTextView;
@@ -36,13 +39,16 @@ public class IsbnActivity extends AppCompatActivity implements View.OnClickListe
     private Fragment isbnFragment;
 
 
+    @androidx.camera.core.ExperimentalGetImage
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_isbn);
+        setContentView(R.layout.activity_isbn);
+        isbnFragment = IsbnFragment.newInstance();
 
         //instantiate layout items
         isbnToolbar = (Toolbar) findViewById(R.id.isbn_toolbar);
+        isbnBackImage = (ImageView) findViewById(R.id.isbn_backImage);
         titleTextView = (TextView) findViewById(R.id.isbn_titleText);
         authorsTextView = (TextView) findViewById(R.id.isbn_authorsText);
         barcodeTextView = (TextView) findViewById(R.id.isbn_barcodeText);
@@ -51,14 +57,15 @@ public class IsbnActivity extends AppCompatActivity implements View.OnClickListe
         actionButton = (Button) findViewById(R.id.isbn_actionButton);
         rescanButton = (Button) findViewById(R.id.isbn_rescanButton);
 
-        //set toolbar behavior
-        setSupportActionBar(isbnToolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         //set button onClick listeners
         actionButton.setOnClickListener(new OnActionClickListener());
         rescanButton.setOnClickListener(this);
+        isbnBackImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         //perform isbn scan
         scanIsbn();
@@ -82,13 +89,17 @@ public class IsbnActivity extends AppCompatActivity implements View.OnClickListe
 
     public void scanIsbn() {
         //TODO: call isbn scanner fragment
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.isbn_constraintLayout, isbnFragment);
+        fragmentTransaction.commit();
     }
 
+    /*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent); //TODO: why a super call?
 
-        scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 
         if (scanResult != null) {
             String scanContent = scanResult.getContents();
@@ -98,10 +109,21 @@ public class IsbnActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+     */
 
     @Override
     public void onScanDone(Bundle resultBundle) {
-        //TODO: terminate isbn scanner fragment
-        //TODO: unpack results
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.remove(isbnFragment);
+        fragmentTransaction.commit();
+        if (resultBundle != null) {
+            titleTextView.setText(resultBundle.getString("title"));
+            authorsTextView.setText(resultBundle.getString("authors"));
+            barcodeTextView.setText(resultBundle.getString("isbn"));
+            descriptionTextView.setText(resultBundle.getString("description"));
+            //TODO: make query to figure what action should be for the book
+        } else {
+            onBackPressed();
+        }
     }
 }

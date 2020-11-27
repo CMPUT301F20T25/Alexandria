@@ -80,6 +80,7 @@ public class HomeActivity extends BaseActivity {
         borrowedList.setAdapter(borrowedBookAdapter);
         requestedList.setAdapter(requestBookAdapter);
 
+        /*
         db = FirebaseFirestore.getInstance();
         CollectionReference collectionReference = db.collection("books");
         collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -127,6 +128,7 @@ public class HomeActivity extends BaseActivity {
                 requestBookAdapter.notifyDataSetChanged();
             }
         });
+         */
 
         // click to ISBN scan button
         scanButton.setOnClickListener(new View.OnClickListener() {
