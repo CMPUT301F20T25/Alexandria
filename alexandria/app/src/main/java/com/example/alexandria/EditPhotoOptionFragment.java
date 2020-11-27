@@ -2,6 +2,7 @@ package com.example.alexandria;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,9 +30,12 @@ import com.google.firebase.storage.StorageReference;
 
 public class EditPhotoOptionFragment extends DialogFragment {
 
-    protected static Uri newImage = null;
+    protected static Uri newImageUri = null;
+    protected static Bitmap newImageBitmap = null;
     private static final String TAG = "edit photo fragment";
     private static final int GET_FROM_GALLERY = 1 ;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
+
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -44,6 +49,10 @@ public class EditPhotoOptionFragment extends DialogFragment {
         Button deletePhoto = view.findViewById(R.id.delete_photo);
 
         StorageReference storageRef = storage.getReference();
+
+        // clear previous data
+        newImageBitmap = null;
+        newImageUri = null;
 
         fromPhone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,7 +72,16 @@ public class EditPhotoOptionFragment extends DialogFragment {
             public void onClick(View v) {
                 Log.d(TAG, "Take Photo button clicked");
 
-                // take photo and upload to database
+                // take photo
+                // source: https://developer.android.com/training/camera/photobasics
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                try {
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                } catch (ActivityNotFoundException e) {
+                    // display error state to the user
+                    Context context = getContext();
+                    Toast.makeText(context, "Error: Please try again", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -91,12 +109,21 @@ public class EditPhotoOptionFragment extends DialogFragment {
 
         //Detects request codes
         if(requestCode==GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
-            newImage = data.getData();
+            newImageUri = data.getData();
 
             new ConfirmPhotoFragment().show(getActivity().getSupportFragmentManager(), "confirm photo");
             Log.d(TAG,"Photo selected from gallery");
             dismiss();
 
+        } else if (requestCode==REQUEST_IMAGE_CAPTURE && resultCode==Activity.RESULT_OK) {
+            Bundle extras = data.getExtras();
+            newImageBitmap = (Bitmap) extras.get("data");
+
+            new ConfirmPhotoFragment().show(getActivity().getSupportFragmentManager(), "confirm photo");
+            Log.d(TAG,"Photo taken from camera");
+            dismiss();
+
+            }
         }
-    }
+
 }
