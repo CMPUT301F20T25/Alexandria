@@ -5,37 +5,52 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class BookInfoActivity extends AppCompatActivity {
 
     private int EDIT_BOOK_CODE = 1;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private String bookID = "1234567890123-testUser1-1"; // passed from previous page
+    private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
 
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+
     DocumentReference userRef = MainActivity.currentUserRef;
+    StorageReference storageRef = storage.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,22 +60,37 @@ public class BookInfoActivity extends AppCompatActivity {
         // set up toolbar
         // reference: https://developer.android.com/training/appbar/setting-up
         // https://stackoverflow.com/questions/29448116/adding-backbutton-on-top-of-child-element-of-toolbar/29794680#29794680
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.bookInfo_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Log.d("tag", "BookInfoActivity created");
+
         Intent intent = getIntent();
         bookID = intent.getStringExtra("bookID");
-        //bookID = "9876543210999-testUser2";
 
         bookRef = db.collection("books").document(bookID);
 
         updateView();
 
+        Button userButton = findViewById(R.id.borrowerOrOwnerButton);
+        userButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: display owner or borrower info
+            }
+        });
+
     }
 
+    /**
+     * update the page
+     */
     public void updateView(){
+
+        Log.d("tag", "update view, bookRef = "+bookRef.getId());
+
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -90,19 +120,38 @@ public class BookInfoActivity extends AppCompatActivity {
 
                         // display book info
 
-                        ImageView imageView = findViewById(R.id.myBookImage);
+                        ImageView imageButton = findViewById(R.id.myBookImageButton);
                         TextView titleView = findViewById(R.id.myBookTitle);
                         TextView authorView = findViewById(R.id.myBookAuthor);
                         TextView isbnView = findViewById(R.id.myBookISBN);
                         TextView descrView = findViewById(R.id.myBookDescr);
                         TextView statusView = findViewById(R.id.myBookStatus);
-                        Button borrowerOrOwnerButton = findViewById(R.id.bookBorrowerOrOwner);
+                        Button borrowerOrOwnerButton = findViewById(R.id.borrowerOrOwnerButton);
                         TextView borrowerOrOwner_titleView = findViewById(R.id.borrowerOrOnwerTitle);
 
                         titleView.setText(title);
                         authorView.setText(author);
                         isbnView.setText(isbn);
                         descrView.setText(descr);
+
+                        // retrieve image from storage
+                        String imagePath = String.valueOf(document.getData().get("photo"));
+                        if (!imagePath.equals(null)) {
+                            storageRef.child(imagePath).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                @Override
+                                public void onSuccess(byte[] bytes) {
+                                    // Use the bytes to display the image
+                                    Drawable image = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                    imageButton.setImageDrawable(image);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    Context context = getApplicationContext();
+                                    Toast.makeText(context, "Retrieving photo failed ", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
 
                         // set owner/borrower button visibility & status
@@ -116,7 +165,18 @@ public class BookInfoActivity extends AppCompatActivity {
                                 borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
                                 borrowerOrOwner_titleView.setText("Current Borrower:");
                                 borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-                                borrowerOrOwnerButton.setText(borrowerRef.getId());
+
+                                // get username
+                                borrowerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        DocumentSnapshot document = task.getResult();
+                                        String username = String.valueOf(document.getData().get("username"));
+                                        borrowerOrOwnerButton.setText(username);
+
+                                    }
+                                });
+
 
                             } else { // status = Available/Requested
                                 borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
@@ -124,14 +184,24 @@ public class BookInfoActivity extends AppCompatActivity {
                             }
 
                         } else if (!userRef.equals(ownerRef) && !userRef.equals(borrowerRef)){
-
                             // for public user - hide borrower, show owner
-                            borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-                            borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
-                            borrowerOrOwner_titleView.setText("Owner:");
-                            borrowerOrOwnerButton.setText(ownerRef.getId());
 
-                            statusView.setText(publicStatus);
+                            // get owner username
+                            ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    DocumentSnapshot document = task.getResult();
+                                    String username = String.valueOf(document.getData().get("username"));
+                                    borrowerOrOwnerButton.setText(username);
+
+                                    borrowerOrOwnerButton.setVisibility(View.VISIBLE);
+                                    borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
+                                    borrowerOrOwner_titleView.setText("Owner:");
+
+                                    statusView.setText(publicStatus);
+
+                                }
+                            });
 
                         }
 
@@ -165,6 +235,7 @@ public class BookInfoActivity extends AppCompatActivity {
                 }
             }
         });
+
         return super.onCreateOptionsMenu(menu);
 
     }
@@ -198,9 +269,16 @@ public class BookInfoActivity extends AppCompatActivity {
                 bookID = data.getStringExtra("returnBookID");
                 bookRef = db.collection("books").document(bookID);
 
-                Log.d("Tag", bookID+"..."+bookRef);
+                Log.d("book info", "edited - "+bookID);
 
                 updateView();
+
+            } else if (resultCode == EditBookActivity.RESULT_DELETE) {
+
+                bookID = data.getStringExtra("returnBookID");
+                Log.d("book info", "deleted - "+bookID);
+
+                finish();
             }
         }
     }

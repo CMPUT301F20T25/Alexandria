@@ -1,6 +1,11 @@
 package com.example.alexandria;
+/**
+ * allows user to edit or delete book
+ * @author Xueying Luo
+ */
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -17,10 +22,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.security.interfaces.DSAKey;
 import java.util.ArrayList;
@@ -31,30 +41,36 @@ import java.util.Map;
 
 public class EditBookActivity extends AppCompatActivity {
 
+    protected static final int RESULT_DELETE = 2;
     FirebaseFirestore db;
 
     private String oldISBN;
     private DocumentReference userRef = MainActivity.currentUserRef;
+    private final String[] returnBookID = new String[1];
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_book);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.editBook_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // set autofill texts
-        EditText titleView = findViewById(R.id.myBookTitle);
-        EditText authorView = findViewById(R.id.myBookAuthor);
-        EditText isbnView = findViewById(R.id.myBookISBN);
-        EditText descrView = findViewById(R.id.myBookDescr);
+        // set auto fill texts
+        ImageView imageView = findViewById(R.id.editImage);
+        EditText titleView = findViewById(R.id.editTitle);
+        EditText authorView = findViewById(R.id.editAuthor);
+        EditText isbnView = findViewById(R.id.editISBN);
+        EditText descrView = findViewById(R.id.editDescr);
 
         // get intent
         Intent intent = getIntent();
         String bookID = intent.getStringExtra("book");
+        returnBookID[0] = bookID;
+
         db = FirebaseFirestore.getInstance();
         final DocumentReference bookRef = db.collection("books").document(bookID);
 
@@ -106,7 +122,10 @@ public class EditBookActivity extends AppCompatActivity {
                 String newAuthorList = authorView.getText().toString();
                 List<String> authorList = Arrays.asList(newAuthorList.split("\n"));
 
-                //delete current author filed, add new one
+
+                // TODO: validate isbn
+
+                //replace current info with new one
                 Map<String,Object> updates = new HashMap<>();
                 updates.put("authors", authorList);
                 updates.put("title", newTitle);
@@ -125,120 +144,170 @@ public class EditBookActivity extends AppCompatActivity {
                             public void onFailure(@NonNull Exception e) {
                                 Log.d("tag", "update failed");
                             }
-                        })
-
-                ;
+                        });
 
 
-
-                // copy the content, create a new doc if isbn is changed, delete old one
+                // copy the content, create a new doc if isbn is changed, delete the old one
                 // reference: https://stackoverflow.com/questions/47885921/can-i-change-the-name-of-a-document-in-firestore
 
-                String returnBookID;
                 if (!oldISBN.equals(newISBN)){
 
-                    // generate new bookID by checking existing docID
-                    String newBookID = newISBN+'-'+userRef.getId();
-                    final boolean[] docFound = {true};
+                    // generate bookID by checking existing docID
+
                     final int[] counter = {1};
-//                    while (docFound[0]) {
-//                        String tempID = newBookID + String.valueOf(counter[0]);
-//                        DocumentReference checkRef = db.collection("books").document(tempID);
-//                        checkRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                                if (task.isSuccessful()) {
-//                                    DocumentSnapshot document = task.getResult();
-//                                    if (document.exists()) {
-//                                        Log.d("tag", "document found, try next one");
-//                                        counter[0] +=1;
-//
-//                                    } else {
-//                                        Log.d("TAG", "No such document, keep this id");
-//                                        docFound[0] = false;
-//                                    }
-//                                } else {
-//                                    Log.d("TAG", "get failed with ", task.getException());
-//                                }
-//                            }
-//                        });
-//                    }
+                    final String[] newBookID = {newISBN + '-' + counter[0]}; // isbn-counter
 
-                    newBookID = newBookID + '-' + counter[0];
-                    Log.d("tag", "new bookID - "+newBookID);
+                    final boolean[] docFound = {true};
 
-                    String finalNewBookID = newBookID;
-                    bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    // store all bookID in a list and check if the list contains the new generated id
+                    ArrayList<String> allDocID = new ArrayList<>();
+                    CollectionReference collRef = db.collection("books");
+                    collRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document.exists()) {
-                                    Log.d("tag","document content copied");
-                                    Map content = document.getData();
-
-                                    db.collection("books").document(finalNewBookID).set(content);
-                                    bookRef.delete();
-
-                                } else {
-                                    Log.d("TAG", "No such document");
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String id = document.getId();
+                                    allDocID.add(id);
                                 }
-                            } else {
-                                Log.d("TAG", "get failed with ", task.getException());
+
+                                Log.d("tag", "id list: " + allDocID.toString());
+
+                                while (docFound[0]) {
+                                    if (allDocID.contains(newBookID[0])) { // if id exists
+                                        Log.d("tag", "document exists - counter = " + counter[0]);
+                                        counter[0] += 1;
+                                        newBookID[0] = newISBN + '-' + counter[0];
+                                    } else { // id does not exist
+                                        Log.d("tag", "No such document, keep this id : " + newBookID[0]);
+                                        docFound[0] = false;
+
+                                        Log.d("tag", "new bookID - " + newBookID[0]);
+
+
+                                        bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    DocumentSnapshot document = task.getResult();
+                                                    if (document.exists()) {
+                                                        Log.d("tag", "document content copied");
+
+                                                        // copy and create a new doc, delete the old one
+                                                        Map content = document.getData();
+                                                        bookRef.delete();
+                                                        db.collection("books").document(newBookID[0]).set(content);
+
+                                                        // update the user's book list
+                                                        userRef.update(
+                                                                "books", FieldValue.arrayRemove(bookRef),
+                                                                "books", FieldValue.arrayUnion(
+                                                                        db.collection("books").document(newBookID[0])))
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        Log.d("tag", "book list updated successfully");
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Log.d("tag", "book list update failed");
+
+                                                                    }
+                                                                });
+
+                                                        returnBookID[0] = newBookID[0];
+
+                                                        Intent returnIntent = new Intent();
+                                                        Log.d("return bookid", returnBookID[0]);
+                                                        returnIntent.putExtra("returnBookID", returnBookID[0]);
+                                                        setResult(RESULT_OK, returnIntent);
+                                                        finish();
+
+
+                                                    } else {
+                                                        Log.d("TAG", "No such document");
+                                                    }
+                                                } else {
+                                                    Log.d("TAG", "get failed with ", task.getException());
+                                                }
+                                            }
+                                        });
+
+                                    }
+
+                                }
                             }
+
                         }
                     });
 
-                    // update the user's book list
-                    String finalNewBookID1 = newBookID;
-                    userRef.update(
-                            "books", FieldValue.arrayRemove(bookRef),
-                            "books", FieldValue.arrayUnion(
-                                    db.collection("books").document(finalNewBookID1)))
-                          .addOnSuccessListener(new OnSuccessListener<Void>() {
-                              @Override
-                              public void onSuccess(Void aVoid) {
-                                  Log.d("tag","book list updated successfully");
-                              }
-                          })
-                          .addOnFailureListener(new OnFailureListener() {
-                              @Override
-                              public void onFailure(@NonNull Exception e) {
-                                  Log.d("tag","book list update failed");
+                } else { // isbn not edited
 
-                              }
-                          });
+                    returnBookID[0] = bookRef.getId();
 
-                    returnBookID = newBookID;
-
-                } else {
-
-                    returnBookID = bookRef.getId();
+                    Intent returnIntent = new Intent();
+                    Log.d("return bookid", returnBookID[0]);
+                    returnIntent.putExtra("returnBookID", returnBookID[0]);
+                    setResult(RESULT_OK, returnIntent);
+                    finish();
                 }
 
-
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("returnBookID",returnBookID);
-                setResult(RESULT_OK, returnIntent);
-                finish();
             }
         });
 
-        // delete book - not completed
+
         Button deleteButton = findViewById(R.id.deleteBook);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // delete book from books collection & the reference in user books array
+                DocumentReference currentBookRef = db.collection("books").document(returnBookID[0]);
 
+                // delete book from collection
+                currentBookRef.delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("tag", "book deleted from collection successfully");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("tag", "book deletion from collection failed");
 
+                            }
+                        });
+
+                // delete book from user's book list
+                userRef.update("books", FieldValue.arrayRemove(currentBookRef))
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("tag", "book deleted from user's book list successfully");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("tag", "book deletion from user's book list failed");
+
+                            }
+                        });
+
+                Intent returnIntent = new Intent();
+                Log.d("edit book", "delete book - "+returnBookID[0]);
+                returnIntent.putExtra("returnBookID", returnBookID[0]);
+
+                setResult(RESULT_DELETE, returnIntent);
+                finish();
 
             }
         });
-
-
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
