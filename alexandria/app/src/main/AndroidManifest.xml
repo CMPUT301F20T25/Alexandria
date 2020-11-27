@@ -9,7 +9,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Alexandria"/>
+        android:theme="@style/Theme.Alexandria">
         <activity android:name=".AcceptedActivity"/>
         <activity android:name=".RequestedBookInfoActivity" />
         <activity android:name=".BorrowedBookInfoActivity" />
