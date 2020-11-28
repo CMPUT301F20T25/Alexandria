@@ -39,6 +39,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * display book information for its owner / public user
+ * @author Xueying Luo
+ */
 public class BookInfoActivity extends AppCompatActivity {
 
     private int EDIT_BOOK_CODE = 1;
@@ -136,7 +140,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                         // retrieve image from storage
                         String imagePath = String.valueOf(document.getData().get("photo"));
-                        if (!imagePath.equals(null)) {
+                        if (!imagePath.equals("default")) {
                             storageRef.child(imagePath).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                 @Override
                                 public void onSuccess(byte[] bytes) {

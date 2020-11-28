@@ -59,7 +59,8 @@ public class HomeActivity extends BaseActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAddActivity();
+                //openAddActivity();
+                openScanActivity();
             }
         });
 
