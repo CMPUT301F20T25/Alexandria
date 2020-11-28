@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.media.Image;
@@ -22,6 +24,7 @@ import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
+import androidx.camera.core.impl.ImageInfoProcessor;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
@@ -35,6 +38,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.provider.ContactsContract;
 import android.renderscript.ScriptGroup;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -46,10 +50,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.inline.InlineContentView;
 
+import com.google.android.gms.common.util.SharedPreferencesUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskExecutors;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.common.MlKitException;
@@ -81,6 +87,9 @@ import java.util.Objects;
 import java.util.Observer;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.prefs.PreferenceChangeEvent;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -100,6 +109,7 @@ public class IsbnFragment extends Fragment {
     private CameraSelector cameraSelector;
     private int lensFacing = CameraSelector.LENS_FACING_BACK;
     private ImageAnalysis analysisUseCase;
+    private BarcodeScannerProcessor imageProcessor;
 
     private static final String ISBN_API_KEY = "AIzaSyB6bLjuktybRey2iJ0SxavVBtkiFNhPiug";
 
@@ -125,8 +135,8 @@ public class IsbnFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //TODO: delete later; for testing only
-                testApiQuery();
-                //isbnCallback.onScanDone(null);
+                //testApiQuery();
+                isbnCallback.onScanDone(null);
             }
         });
         cameraPreviewView = (PreviewView) isbnLayout.findViewById(R.id.isbnFragment_cameraPreview);
@@ -163,9 +173,9 @@ public class IsbnFragment extends Fragment {
         if (cameraPreview != null) {
             cameraProvider.unbind(cameraPreview);
         }
-        cameraPreview = new Preview.Builder()
-                .setTargetRotation(cameraPreviewView.getDisplay().getRotation())
-                .build();
+        Preview.Builder previewBuilder = new Preview.Builder();
+        previewBuilder.setTargetRotation(cameraPreviewView.getDisplay().getRotation());
+        cameraPreview = previewBuilder.build();
         cameraPreview.setSurfaceProvider(cameraPreviewView.getSurfaceProvider());
 
         try {
@@ -183,11 +193,23 @@ public class IsbnFragment extends Fragment {
         if (analysisUseCase != null) {
             cameraProvider.unbind(analysisUseCase);
         }
-        //TODO: problem with analyzer not firing
-        analysisUseCase = new ImageAnalysis.Builder().build();
-        analysisUseCase.setAnalyzer(ContextCompat.getMainExecutor(getContext()), imageProxy -> {
-            processImageProxy(barcodeScanner, imageProxy);
+        if (imageProcessor != null) {
+            imageProcessor.stop();
+        }
+        imageProcessor = new BarcodeScannerProcessor(getContext());
+        ImageAnalysis.Builder builder = new ImageAnalysis.Builder();
+        analysisUseCase = builder.build();
+
+        analysisUseCase.setAnalyzer(ContextCompat.getMainExecutor(getContext()), image -> {
+            try {
+                imageProcessor.processImageProxy(image);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to process image. Error: " + e.getLocalizedMessage());
+                Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT)
+                        .show();
+            }
         });
+        cameraProvider.bindToLifecycle(this, cameraSelector, analysisUseCase);
     }
 
     private class IsbnAnalyzer implements ImageAnalysis.Analyzer {
@@ -242,11 +264,10 @@ public class IsbnFragment extends Fragment {
                 .getProcessCameraProvider()
                 .observe(this, provider -> {
                     cameraProvider = provider;
-                    if (isCameraPermissionGranted()) {
-                        bindCameraUseCases();
-                    } else {
+                    if (!isCameraPermissionGranted()) {
                         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, RC_PERMISSIONS);
                     }
+                    bindCameraUseCases();
                 });
 
         barcodeScanner = BarcodeScanning.getClient();
@@ -407,5 +428,125 @@ public class IsbnFragment extends Fragment {
             is.close();
             return sb.toString();
         }
+
     }
+
+    public class BarcodeScannerProcessor {
+        private static final String TAG = "BarcodeProcessor";
+
+        private final BarcodeScanner barcodeScanner;
+        Context context;
+
+        private boolean isShutDown;
+        private ScopedExecutor executor;
+
+        public BarcodeScannerProcessor(Context context) {
+            //TODO: fill out
+            this.context = context;
+            executor = new ScopedExecutor(TaskExecutors.MAIN_THREAD);
+            barcodeScanner = BarcodeScanning.getClient();
+        }
+
+        //public void ProcessBitmap();
+
+        protected Task<List<Barcode>> detectInImage(InputImage image) {
+            return barcodeScanner.process(image);
+        }
+
+        protected void onSuccess(@NonNull List<Barcode> barcodes) { //TODO: add graphic overlay
+            if (barcodes.isEmpty()) {
+                Log.d(TAG, "No barcodes detected");
+            }
+            for (int i=0; i < barcodes.size(); ++i) {
+                Log.e(TAG, "barcode detected!");
+                Barcode barcode = barcodes.get(i);
+                Log.e(TAG, barcode.getRawValue());
+                Bundle results = getBookInfo(barcode);
+                isbnCallback.onScanDone(results);
+                //graphicOverlay.add(new BarcodeGraphic(graphicOverlay, barcode));
+            }
+        }
+
+        protected void onFailure(Exception e) {
+            Log.e(TAG, "Barcode detection failed " + e);
+        }
+
+        public void stop() {
+            //TODO: check #2
+            executor.shutdown();
+            isShutDown = true;
+            barcodeScanner.close();
+        }
+
+        @androidx.camera.core.ExperimentalGetImage
+        public void processImageProxy(ImageProxy imageProxy) { //TODO: add graphic overlay
+            if (isShutDown) {
+                imageProxy.close();
+                return;
+            }
+
+            //TODO: bitmap stuff for graphics (VisionProcessorBase 168)
+            if (imageProxy.getImage() != null) {
+                requestDetectInImage(InputImage.fromMediaImage(imageProxy.getImage(), imageProxy.getImageInfo().getRotationDegrees()), null, false)
+                        .addOnCompleteListener(results -> imageProxy.close());
+            } else {
+                imageProxy.close();
+            }
+        }
+
+        private Task<List<Barcode>> requestDetectInImage(InputImage inputImage, @Nullable final Bitmap originalCameraImage, boolean shouldShowFps) { //TODO: add graphic overlay
+            return detectInImage(inputImage)
+                    .addOnSuccessListener(executor, results -> {
+                        //TODO: overlay graphics
+                        onSuccess(results);
+                    })
+                    .addOnFailureListener(executor, e -> {
+                        //TODO: clear graphic overlay
+                        String error = "Failed to process. Error: " + e.getLocalizedMessage();
+                        Toast.makeText(context, error + "\nCause: " + e.getCause(), Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, error);
+                        e.printStackTrace();
+                        onFailure(e);
+                    });
+
+        }
+
+        private class ScopedExecutor implements Executor {
+
+            private final Executor executor;
+            private final AtomicBoolean shutdown = new AtomicBoolean();
+
+            public ScopedExecutor(@NonNull Executor executor) {
+                this.executor = executor;
+            }
+
+            @Override
+            public void execute(@NonNull Runnable command) {
+                // Return early if this object has been shut down.
+                if (shutdown.get()) {
+                    return;
+                }
+                executor.execute(
+                        () -> {
+                            // Check again in case it has been shut down in the mean time.
+                            if (shutdown.get()) {
+                                return;
+                            }
+                            command.run();
+                        });
+            }
+
+            /**
+             * After this method is called, no runnables that have been submitted or are subsequently
+             * submitted will start to execute, turning this executor into a no-op.
+             *
+             * <p>Runnables that have already started to execute will continue.
+             */
+            public void shutdown() {
+                shutdown.set(true);
+            }
+        }
+
+    }
+
 }
