@@ -102,7 +102,7 @@ public class IsbnFragment extends Fragment {
     private static final String TAG = "IsbnFragment";
     private static final int RC_PERMISSIONS = 1;
 
-    private BarcodeScanner barcodeScanner;
+    //private BarcodeScanner barcodeScanner;
     private ProcessCameraProvider cameraProvider;
     private PreviewView cameraPreviewView;
     private Preview cameraPreview;
@@ -114,7 +114,7 @@ public class IsbnFragment extends Fragment {
     private static final String ISBN_API_KEY = "AIzaSyB6bLjuktybRey2iJ0SxavVBtkiFNhPiug";
 
     public interface IsbnFragmentListener {
-        public void onScanDone(Bundle resultBundle);
+        void onScanDone(Bundle resultBundle);
     }
 
     public static IsbnFragment newInstance() {
@@ -134,8 +134,6 @@ public class IsbnFragment extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: delete later; for testing only
-                //testApiQuery();
                 isbnCallback.onScanDone(null);
             }
         });
@@ -173,9 +171,9 @@ public class IsbnFragment extends Fragment {
         if (cameraPreview != null) {
             cameraProvider.unbind(cameraPreview);
         }
-        Preview.Builder previewBuilder = new Preview.Builder();
-        previewBuilder.setTargetRotation(cameraPreviewView.getDisplay().getRotation());
-        cameraPreview = previewBuilder.build();
+        //Preview.Builder previewBuilder = new Preview.Builder();
+        //previewBuilder.setTargetRotation(cameraPreviewView.getDisplay().getRotation());
+        cameraPreview = new Preview.Builder().build();
         cameraPreview.setSurfaceProvider(cameraPreviewView.getSurfaceProvider());
 
         try {
@@ -212,51 +210,6 @@ public class IsbnFragment extends Fragment {
         cameraProvider.bindToLifecycle(this, cameraSelector, analysisUseCase);
     }
 
-    private class IsbnAnalyzer implements ImageAnalysis.Analyzer {
-
-        @Override
-        public void analyze(@NonNull ImageProxy image) {
-            processImageProxy(barcodeScanner, image);
-        }
-    }
-
-    @androidx.camera.core.ExperimentalGetImage
-    private void processImageProxy(BarcodeScanner barcodeScanner, ImageProxy imageProxy) {
-        Log.e(TAG, "process img proxy called");
-        InputImage inputImage = InputImage.fromMediaImage(imageProxy.getImage(), imageProxy.getImageInfo().getRotationDegrees());
-
-        barcodeScanner.process(inputImage)
-                .addOnSuccessListener(new OnSuccessListener<List<Barcode>>() {
-                    @Override
-                    public void onSuccess(List<Barcode> barcodes) {
-                        if (barcodes.isEmpty()) {
-                            Log.d(TAG, "No barcode detected");
-                        }
-                        for (int i = 0; i < barcodes.size(); ++i) {
-                            Barcode barcode = barcodes.get(i);
-                            //TODO: add graphic overlay
-                            if (barcode != null && barcode.getRawValue() != null && !barcode.getRawValue().isEmpty() && barcode.getFormat() == Barcode.FORMAT_EAN_13) {
-                                Bundle results = getBookInfo(barcode);
-                                isbnCallback.onScanDone(results);
-                            }
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                })
-                .addOnCompleteListener(new OnCompleteListener<List<Barcode>>() {
-                    @Override
-                    public void onComplete(@NonNull Task<List<Barcode>> task) {
-                        imageProxy.close();
-                    }
-                });
-
-    }
-
     private void setupCamera() {
         cameraSelector = new CameraSelector.Builder().requireLensFacing(lensFacing).build();
         new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()))
@@ -270,19 +223,7 @@ public class IsbnFragment extends Fragment {
                     bindCameraUseCases();
                 });
 
-        barcodeScanner = BarcodeScanning.getClient();
-        //TODO: only for testing; remove later
-        //testApiQuery();
-    }
-
-    private void testApiQuery() {
-        String bookSearchString = "https://www.googleapis.com/books/v1/volumes?" + "q=isbn:" + "9781443428453" + "&key=" + ISBN_API_KEY;
-        try {
-            String res = new GetBookInfo().execute(bookSearchString).get();
-            isbnCallback.onScanDone(parseResults(res, "9781443428453"));
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e(TAG, e.getMessage());
-        }
+        //barcodeScanner = BarcodeScanning.getClient();
     }
 
     public static final class CameraXViewModel extends AndroidViewModel {
@@ -510,7 +451,6 @@ public class IsbnFragment extends Fragment {
                     });
 
         }
-
         private class ScopedExecutor implements Executor {
 
             private final Executor executor;
@@ -546,7 +486,6 @@ public class IsbnFragment extends Fragment {
                 shutdown.set(true);
             }
         }
-
     }
 
 }
