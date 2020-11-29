@@ -72,7 +72,7 @@ public class RequestedActivity extends BaseActivity {
                     String ownerStatus = statusMap.get("owner");
                     String publicStatus = statusMap.get("public");
 
-                    if(doc.getData().get("requestedUsers") instanceof ArrayList) {
+                    if (doc.getData().get("requestedUsers") instanceof ArrayList) {
                         ArrayList<DocumentReference> requestedList = (ArrayList<DocumentReference>) doc.getData().get("requestedUsers");
                         for (int counter = 0; counter < requestedList.size(); counter++) {
                             if (userRef.equals(requestedList.get(counter))) {
@@ -113,7 +113,7 @@ public class RequestedActivity extends BaseActivity {
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -124,4 +124,5 @@ public class RequestedActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+}
 

@@ -137,7 +137,7 @@ public class MyBookActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -153,7 +153,4 @@ public class MyBookActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-<<<<<<< Updated upstream
-=======
 }
->>>>>>> Stashed changes

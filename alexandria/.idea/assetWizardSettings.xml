@@ -188,11 +188,9 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-<<<<<<< Updated upstream
                                                 <entry key="imagePath" value="C:\Users\11690\AppData\Local\Temp\baseline_menu_24.xml" />
-=======
                                                 <entry key="imagePath" value="C:\Users\11690\AppData\Local\Temp\baseline_close_24.xml" />
->>>>>>> Stashed changes
+                                                <entry key="imagePath" value="C:\Users\11690\AppData\Local\Temp\baseline_qr_code_scanner_24.xml" />
                                                 <entry key="paddingPercent" value="-10" />
                                               </map>
                                             </option>
@@ -204,11 +202,9 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-<<<<<<< Updated upstream
                                                 <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/menu/baseline_menu_24.xml" />
-=======
                                                 <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/close/baseline_close_24.xml" />
->>>>>>> Stashed changes
+                                                <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/qr_code_scanner/baseline_qr_code_scanner_24.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -251,11 +247,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-<<<<<<< Updated upstream
                                       <entry key="outputName" value="ic_my_menu" />
-=======
                                       <entry key="outputName" value="ic_my_close" />
->>>>>>> Stashed changes
+                                      <entry key="outputName" value="ic_my_scan" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -366,7 +360,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material/icons/materialicons/edit/baseline_edit_24.xml" />
+                                      <entry key="url" value="file:$USER_HOME$/Library/Android/sdk/icons/material/materialicons/error/baseline_error_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -376,8 +370,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_baseline_edit_24" />
+                            <entry key="color" value="ff6662" />
+                            <entry key="outputName" value="ic_baseline_error_24" />
                           </map>
                         </option>
                       </PersistentState>

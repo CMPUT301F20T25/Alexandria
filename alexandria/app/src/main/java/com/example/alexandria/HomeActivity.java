@@ -59,7 +59,8 @@ public class HomeActivity extends BaseActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAddActivity();
+                //openAddActivity();
+                openScanActivity();
             }
         });
 
@@ -107,6 +108,11 @@ public class HomeActivity extends BaseActivity {
     private void openAddActivity() {
         Intent intent = new Intent(this, AddBookActivity.class);
         startActivity(intent);
+    }
+
+    private void openScanActivity() {
+        Intent ISBNIntent = new Intent(this, IsbnActivity.class);
+        startActivity(ISBNIntent);
     }
 
     private void openMessageActivity() {

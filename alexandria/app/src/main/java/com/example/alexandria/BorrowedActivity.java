@@ -111,7 +111,7 @@ public class BorrowedActivity extends BaseActivity {
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -122,3 +122,4 @@ public class BorrowedActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+}
