@@ -16,7 +16,7 @@
         android:layout_marginRight="20dp"
         android:contentDescription="Add book"
         android:background="@color/purple_500"
-        android:src="@drawable/ic_my_add"
+        android:src="@drawable/ic_my_scan"
         android:tint="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">

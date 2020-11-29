@@ -10,6 +10,10 @@
     <string name="search_title">Search</string>
     <string name="search_bookitem_photo">Cover photo</string>
     <string name="search_defaultText">text...</string>
+    <string name="isbn_rescan">Rescan</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="isbn_action">Action</string>
+    <string name="isbn_default">default text</string>
+    <string name="back_button">Back button</string>
 </resources>

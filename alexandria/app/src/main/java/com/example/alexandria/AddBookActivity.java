@@ -8,8 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -110,7 +113,10 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
 //                                    "Unknown Error, please try again", Toast.LENGTH_SHORT).show();
 //                        }
 //                    }
-                if (false){ // invalid input - empty title/author/isbn
+                if (newAuthor.equals(null) || newTitle.equals(null) || newISBN.length()<13){
+                    // invalid input - empty title/author/isbn
+                    Context context = getApplicationContext();
+                    Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT).show();
                 } else { // valid input
 
                     Log.d(TAG, "valid input");
@@ -244,11 +250,11 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
                             }
                         }
                     });
+                    finish();
 
                 }
 
 
-                finish();
             }
 
         });
@@ -256,12 +262,23 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
     }
 
     /**
-     * update image view with uploaded photo
+     * update image view with photo uploaded from gallery
      * @param uri photo uri to be uploaded
      */
     public void updateImage(Uri uri){
         ImageView image = findViewById(R.id.addBookImage);
         image.setImageURI(uri);
+        photoUpdated = true;
+        Log.d(TAG, "image view updated");
+    }
+
+    /**
+     * update image view with photo taken by camera
+     * @param bitmap photo bitmap to be uploaded
+     */
+    public void updateImage(Bitmap bitmap){
+        ImageView image = findViewById(R.id.addBookImage);
+        image.setImageBitmap(bitmap);
         photoUpdated = true;
         Log.d(TAG, "image view updated");
     }
