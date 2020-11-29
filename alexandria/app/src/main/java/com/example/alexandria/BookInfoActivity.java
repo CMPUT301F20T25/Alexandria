@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -124,7 +125,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                         // display book info
 
-                        ImageView imageButton = findViewById(R.id.myBookImageButton);
+                        ImageView imageView = findViewById(R.id.myBookImage);
                         TextView titleView = findViewById(R.id.myBookTitle);
                         TextView authorView = findViewById(R.id.myBookAuthor);
                         TextView isbnView = findViewById(R.id.myBookISBN);
@@ -146,7 +147,58 @@ public class BookInfoActivity extends AppCompatActivity {
                                 public void onSuccess(byte[] bytes) {
                                     // Use the bytes to display the image
                                     Drawable image = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                                    imageButton.setImageDrawable(image);
+                                    imageView.setImageDrawable(image);
+
+                                    // set owner/borrower button visibility & status
+
+                                    if (userRef.equals(ownerRef)) {
+                                        // for owner -  hide borrower section when book is available
+
+                                        statusView.setText(ownerStatus);
+                                        if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
+
+                                            borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
+                                            borrowerOrOwner_titleView.setText("Current Borrower:");
+                                            borrowerOrOwnerButton.setVisibility(View.VISIBLE);
+
+                                            // get username
+                                            borrowerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    DocumentSnapshot document = task.getResult();
+                                                    String username = String.valueOf(document.getData().get("username"));
+                                                    borrowerOrOwnerButton.setText(username);
+
+                                                }
+                                            });
+
+
+                                        } else { // status = Available/Requested
+                                            borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
+                                            borrowerOrOwnerButton.setVisibility(View.INVISIBLE);
+                                        }
+
+                                    } else if (!userRef.equals(ownerRef) && !userRef.equals(borrowerRef)){
+                                        // for public user - hide borrower, show owner
+
+                                        // get owner username
+                                        ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                DocumentSnapshot document = task.getResult();
+                                                String username = String.valueOf(document.getData().get("username"));
+                                                borrowerOrOwnerButton.setText(username);
+
+                                                borrowerOrOwnerButton.setVisibility(View.VISIBLE);
+                                                borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
+                                                borrowerOrOwner_titleView.setText("Owner:");
+
+                                                statusView.setText(publicStatus);
+
+                                            }
+                                        });
+
+                                    }
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -155,59 +207,62 @@ public class BookInfoActivity extends AppCompatActivity {
                                     Toast.makeText(context, "Retrieving photo failed ", Toast.LENGTH_SHORT).show();
                                 }
                             });
-                        }
+                        } else { // imagePath = default
+                            // set owner/borrower button visibility & status
+
+                            Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.default_book);
+                            imageView.setImageDrawable(drawable);
+
+                            if (userRef.equals(ownerRef)) {
+                                // for owner -  hide borrower section when book is available
+
+                                statusView.setText(ownerStatus);
+                                if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
+
+                                    borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
+                                    borrowerOrOwner_titleView.setText("Current Borrower:");
+                                    borrowerOrOwnerButton.setVisibility(View.VISIBLE);
+
+                                    // get username
+                                    borrowerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            DocumentSnapshot document = task.getResult();
+                                            String username = String.valueOf(document.getData().get("username"));
+                                            borrowerOrOwnerButton.setText(username);
+
+                                        }
+                                    });
 
 
-                        // set owner/borrower button visibility & status
+                                } else { // status = Available/Requested
+                                    borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
+                                    borrowerOrOwnerButton.setVisibility(View.INVISIBLE);
+                                }
 
-                        if (userRef.equals(ownerRef)) {
-                            // for owner -  hide borrower section when book is available
+                            } else if (!userRef.equals(ownerRef) && !userRef.equals(borrowerRef)){
+                                // for public user - hide borrower, show owner
 
-                            statusView.setText(ownerStatus);
-                            if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
-
-                                borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
-                                borrowerOrOwner_titleView.setText("Current Borrower:");
-                                borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-
-                                // get username
-                                borrowerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                // get owner username
+                                ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                         DocumentSnapshot document = task.getResult();
                                         String username = String.valueOf(document.getData().get("username"));
                                         borrowerOrOwnerButton.setText(username);
 
+                                        borrowerOrOwnerButton.setVisibility(View.VISIBLE);
+                                        borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
+                                        borrowerOrOwner_titleView.setText("Owner:");
+
+                                        statusView.setText(publicStatus);
+
                                     }
                                 });
 
-
-                            } else { // status = Available/Requested
-                                borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
-                                borrowerOrOwnerButton.setVisibility(View.INVISIBLE);
                             }
-
-                        } else if (!userRef.equals(ownerRef) && !userRef.equals(borrowerRef)){
-                            // for public user - hide borrower, show owner
-
-                            // get owner username
-                            ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    DocumentSnapshot document = task.getResult();
-                                    String username = String.valueOf(document.getData().get("username"));
-                                    borrowerOrOwnerButton.setText(username);
-
-                                    borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-                                    borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
-                                    borrowerOrOwner_titleView.setText("Owner:");
-
-                                    statusView.setText(publicStatus);
-
-                                }
-                            });
-
                         }
+
 
 
                     } else {
@@ -219,6 +274,20 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateView();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateView();
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

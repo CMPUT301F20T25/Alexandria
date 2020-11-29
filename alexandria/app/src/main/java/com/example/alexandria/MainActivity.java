@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 
 import com.google.firebase.auth.AuthResult;
@@ -119,8 +120,14 @@ public class MainActivity extends AppCompatActivity{
                             startActivity(home);
                         }else{
                             Log.d("Login", "signInWithEmailPassword:failed", task.getException());
-                            Toast.makeText(MainActivity.this, "Email address and Password NOT match", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Incorrect email or password", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
