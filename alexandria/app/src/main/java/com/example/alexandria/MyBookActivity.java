@@ -1,9 +1,7 @@
 package com.example.alexandria;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,9 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SearchView;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -29,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class MyBookActivity extends BaseActivity {
+    String bookStatus;
     ListView currentList;
     ArrayAdapter<Book> bookAdapter;
     ArrayList<Book> bookDataList;
@@ -81,8 +78,25 @@ public class MyBookActivity extends BaseActivity {
                     String ownerStatus = statusMap.get("owner");
                     String publicStatus = statusMap.get("public");
 
+                    if(publicStatus.equals("available")){
+                        if (doc.getData().get("requestedUsers") instanceof ArrayList) {
+                            bookStatus = "requested";
+                        }
+                        else{
+                            bookStatus = "available";
+                        }
+                    }
+                    else{
+                        if(ownerRef.equals("accepted")){
+                            bookStatus = "accepted";
+                        }
+                        else {
+                            bookStatus = "borrowed";
+                        }
+                    }
+
                     if (userRef.equals(ownerRef)) {
-                        bookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+                        bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
                     }
                 }
                 bookAdapter.notifyDataSetChanged();
@@ -139,3 +153,7 @@ public class MyBookActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+<<<<<<< Updated upstream
+=======
+}
+>>>>>>> Stashed changes

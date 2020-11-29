@@ -188,7 +188,11 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+<<<<<<< Updated upstream
                                                 <entry key="imagePath" value="C:\Users\11690\AppData\Local\Temp\baseline_menu_24.xml" />
+=======
+                                                <entry key="imagePath" value="C:\Users\11690\AppData\Local\Temp\baseline_close_24.xml" />
+>>>>>>> Stashed changes
                                                 <entry key="paddingPercent" value="-10" />
                                               </map>
                                             </option>
@@ -200,7 +204,11 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
+<<<<<<< Updated upstream
                                                 <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/menu/baseline_menu_24.xml" />
+=======
+                                                <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/close/baseline_close_24.xml" />
+>>>>>>> Stashed changes
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -243,7 +251,11 @@
                                   </option>
                                   <option name="values">
                                     <map>
+<<<<<<< Updated upstream
                                       <entry key="outputName" value="ic_my_menu" />
+=======
+                                      <entry key="outputName" value="ic_my_close" />
+>>>>>>> Stashed changes
                                     </map>
                                   </option>
                                 </PersistentState>

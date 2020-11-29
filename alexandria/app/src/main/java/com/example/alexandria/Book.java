@@ -1,7 +1,5 @@
 package com.example.alexandria;
 
-import com.google.firebase.firestore.DocumentReference;
-
 public class Book {
 
     private final String id;
@@ -9,13 +7,15 @@ public class Book {
     private final String description;
     private final String title;
     private final String author;
+    private final String bookStatus;
 
-    Book(String id, String isbn, String description, String title, String author){
+    Book(String id, String isbn, String description, String title, String author, String bookStatus){
         this.id = id;
         this.isbn = isbn;
         this.description = description;
         this.title = title;
         this.author = author;
+        this.bookStatus = bookStatus;
     }
 
     String getBookID(){ return this.id;}
@@ -27,5 +27,8 @@ public class Book {
     String getBookTitle(){ return this.title;}
 
     String getAuthorName(){ return this.author;}
+
+    String getBookStatus(){ return this.bookStatus;}
+
 }
 

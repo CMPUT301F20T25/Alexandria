@@ -71,7 +71,16 @@ public class MainActivity extends AppCompatActivity{
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
 
+<<<<<<< Updated upstream
                 login(email, password);
+=======
+                // check input
+                if (email.equals("") || password.equals("")){
+                    Toast.makeText(MainActivity.this, "Please enter Email address and Password ", Toast.LENGTH_SHORT).show();
+                } else {
+                    login(email, password);
+                }
+>>>>>>> Stashed changes
 
             }
         });
