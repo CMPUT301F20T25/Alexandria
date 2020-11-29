@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -72,6 +73,14 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
         EditText author = findViewById(R.id.addBookAuthor);
         EditText isbn = findViewById(R.id.addBookISBN);
         EditText descr = findViewById(R.id.addBookDescr);
+
+        try {
+            Intent intent = getIntent();
+            title.setText(intent.getStringExtra("title"));
+            author.setText(intent.getStringExtra("authors"));
+            isbn.setText(intent.getStringExtra("isbn"));
+            descr.setText(intent.getStringExtra("description"));
+        } catch (Exception ignored) { }
 
         // default image - http://www.freepik.com - Designed by stockgiu / Freepik
         Button editPhoto = findViewById(R.id.editPhotoButton);
