@@ -36,6 +36,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +49,8 @@ public class SearchActivity extends BaseActivity {
     //attributes
     private FirebaseFirestore db;
     private ArrayList<ResultModel> resultData = new ArrayList<ResultModel>();
+    private String currentId;
+    private String currentUsername;
 
     //layout elements
     private androidx.appcompat.widget.Toolbar toolbar;
@@ -59,6 +62,9 @@ public class SearchActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //TODO: check later once MainActivity sets currentUserRef
+        setCurrentUserInfo();
 
         //initialize database
         db = FirebaseFirestore.getInstance();
@@ -72,13 +78,11 @@ public class SearchActivity extends BaseActivity {
             public boolean onQueryTextSubmit(String query) {
                 String q = searchBar.getQuery().toString();
                 if (!q.equals("")) {
-                    Log.e("SEARCH MADE", q);
                     resultData.clear();
-                    loadResults(q);
+                    loadResults(query);
                 }
                 return true;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 return true;
@@ -94,7 +98,7 @@ public class SearchActivity extends BaseActivity {
         });
 
         //instantiate adapter and layout manager
-        resultAdapter = new SearchAdapter(resultData);
+        resultAdapter = new SearchAdapter(resultData, this);
         LinearLayoutManager resultsLayoutManager = new LinearLayoutManager(getApplicationContext());
 
         //instantiate recyclerView
@@ -125,25 +129,36 @@ public class SearchActivity extends BaseActivity {
     }
 
     /**
-     * Runs queries on the database looking for matches to the keywords pertaining to a username, book title, or book author
+     * Queries database for current user's information
+     */
+    private void setCurrentUserInfo() {
+        DocumentReference currentUserRef = MainActivity.currentUserRef;
+        currentUserRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            currentId = task.getResult().getId();
+                            currentUsername = task.getResult().get("username").toString();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Runs queries on the database looking for matches to the keywords pertaining to a username, book title, or book author(s)
      * @param keywords the string to query the database with
      */
     private void loadResults(@NonNull String keywords) {
-        String USER_TYPE = "users";
-        String BOOK_TYPE = "books";
-        Log.e("LOAD RESULTS", keywords);
+        String USER_TYPE = "user";
+        String BOOK_TYPE = "book";
         if (!keywords.equals("")) {
-            //TODO: make search more robust
-            //TODO: have search ignore any books owned by the current user
-            //search on user's username is case sensitive and only matches partial prefix matches
-            Query userUsernameQuery = db.collection("users").orderBy("username").startAt(keywords).endAt(keywords + "~");
-            runQuery(userUsernameQuery, USER_TYPE);
-            //search on book title is case sensitive and only matches partial prefix matches
-            Query bookTitleQuery = db.collection("books").orderBy("title").startAt(keywords).endAt(keywords + "~");
-            runQuery(bookTitleQuery, BOOK_TYPE);
-            //search on author name only matches a full, case-sensitive match of one author
-            Query bookAuthorsQuery = db.collection("books").whereArrayContains("authors", keywords);
-            runQuery(bookAuthorsQuery, BOOK_TYPE);
+            //search users
+            Query userQuery = db.collection("users");
+            runQuery(userQuery, USER_TYPE, keywords);
+            //search books
+            Query bookQuery = db.collection("books");
+            runQuery(bookQuery, BOOK_TYPE, keywords);
         }
     }
 
@@ -152,7 +167,7 @@ public class SearchActivity extends BaseActivity {
      * @param query the query to be run
      * @param modelType the type of model that should be made with the query results ("users", "books")
      */
-    private void runQuery(Query query,@NonNull String modelType) {
+    private void runQuery(Query query,@NonNull String modelType, String keywords) {
         ArrayList<ResultModel> models = new ArrayList<ResultModel>();
         String TAG = "Running query";
         query.get()
@@ -160,17 +175,21 @@ public class SearchActivity extends BaseActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            ArrayList<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Map<String,Object> data = document.getData();
-                                if (modelType == "users" && data.get("bio").equals("")) {
-                                    models.add(new ResultModel.SearchUserItemModel(data.get("username").toString()));
-                                } else if (modelType == "users") {
-                                    models.add(new ResultModel.SearchUserItemModel(data.get("username").toString(), data.get("bio").toString())); //TODO: bio not displaying
-                                } else if (modelType == "books") {
-                                    //Log.e(TAG, data.toString());
-                                    ArrayList<String> authors = (ArrayList<String>) data.get("authors");
-                                    Map<String,Object> status = (Map<String,Object>) data.get("status");
-                                    models.add(new ResultModel.SearchBookItemModel(document.getId(), data.get("title").toString(), authors, data.get("owner").toString(), status.get("public").toString()));
+                                Map<String,Object> r = document.getData();
+                                r.put("id", document.getId());
+                                r.put("resultType", modelType);
+                                results.add(r);
+                            }
+                            results = filterResults(keywords, results);
+                            for (Map<String,Object> r : results) {
+                                if (r.get("resultType").equals("book")) {
+                                    ArrayList<String> authors = (ArrayList<String>) r.get("authors");
+                                    Map<String,Object> status = (Map<String,Object>) r.get("status");
+                                    models.add(new ResultModel.SearchBookItemModel(r.get("id").toString(), r.get("title").toString(), authors, r.get("owner").toString(), status.get("public").toString()));
+                                } else if (r.get("resultType").equals("user")) {
+                                    models.add(new ResultModel.SearchUserItemModel(r.get("username").toString(), r.get("bio").toString()));
                                 }
                             }
                             updateResults(models);
@@ -188,6 +207,45 @@ public class SearchActivity extends BaseActivity {
     private void updateResults(ArrayList<ResultModel> models) {
         resultData.addAll(models);
         resultAdapter.updateData(resultData);
+    }
+
+    /**
+     * Filters out non-matching results of the database query based on the given keywords
+     * @param keywords String of keywords to match
+     * @param initResults Array of results to be filtered
+     * @return ArrayList<Map<String,Object>> of filtered results
+     */
+    private ArrayList<Map<String,Object>> filterResults(String keywords, ArrayList<Map<String,Object>> initResults) {
+        ArrayList<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
+        String keywordRegex = ".*" + keywords.toLowerCase() + ".*";
+        //filter the results based on the given keywords
+        for (Map<String,Object> r : initResults) {
+            if (r.get("resultType").equals("user")) {
+                String rId = r.get("id").toString();
+                String rUsername = r.get("username").toString().toLowerCase();
+                if (!rId.equals(currentId) && rUsername.matches(keywordRegex)) {
+                    results.add(r);
+                }
+            } else if (r.get("resultType").equals("book")) {
+                String rTitle = r.get("title").toString().toLowerCase();
+                ArrayList<String> authors = (ArrayList<String>) r.get("authors");
+                Map<String,Object> status = (Map<String,Object>) r.get("status");
+                String rOwner = r.get("owner").toString().toLowerCase();
+                String rBorrower = (r.get("borrower") == null) ? "" : r.get("borrower").toString().toLowerCase();
+                if (!rBorrower.equals(currentUsername.toLowerCase()) && !rOwner.equals(currentUsername.toLowerCase()) && status.get("public").toString().toLowerCase().equals("available")) {
+                    if (rTitle.matches(keywordRegex)) {
+                        results.add(r);
+                    } else {
+                        for (String author : authors) {
+                            if (author.toLowerCase().matches(keywordRegex)) {
+                                results.add(r);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return results;
     }
 
     @Override
