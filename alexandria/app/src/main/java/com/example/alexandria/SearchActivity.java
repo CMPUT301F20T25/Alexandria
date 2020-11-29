@@ -98,7 +98,7 @@ public class SearchActivity extends BaseActivity {
         });
 
         //instantiate adapter and layout manager
-        resultAdapter = new SearchAdapter(resultData);
+        resultAdapter = new SearchAdapter(resultData, this);
         LinearLayoutManager resultsLayoutManager = new LinearLayoutManager(getApplicationContext());
 
         //instantiate recyclerView
