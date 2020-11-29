@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.alexandria">
+
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature android:name="android.hardware.camera.any" />
+
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
+
     <meta-data
         android:name="com.google.mlkit.vision.DEPENDENCIES"
         android:value="barcode" />
@@ -24,9 +28,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alexandria">
-
-        <activity android:name=".GeolocationActivity"/>
-        <activity android:name=".AcceptedActivity"/>
+        <activity android:name=".ViewGeolocationActivity"></activity>
+        <activity android:name=".SetGeolocationActivity" />
+        <activity android:name=".GeolocationActivity" />
+        <activity android:name=".AcceptedActivity" />
         <activity android:name=".RequestedBookInfoActivity" />
         <activity android:name=".BorrowedBookInfoActivity" />
         <activity android:name=".BookInfoActivity" />
@@ -48,6 +53,5 @@
             </intent-filter>
         </activity>
     </application>
-
 
 </manifest>
