@@ -4,9 +4,21 @@ package com.example.alexandria;
  * @author Kyla Wong, ktwong@ualberta.ca
  */
 
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -44,12 +56,6 @@ public abstract class ResultModel {
     static class SearchUserItemModel extends ResultModel{
         private String username;
         private String bio;
-
-        public SearchUserItemModel(@NonNull final String username) {
-            super();
-            this.username = username;
-            this.bio = " ";
-        }
 
         public SearchUserItemModel(@NonNull final String username, String bio) {
             super();
@@ -102,7 +108,6 @@ public abstract class ResultModel {
         private String owner;
         private String publicStatus;
         private String bookId;
-        //private ImageView photo; //TODO: figure out how to handle images
 
         public SearchBookItemModel(@NonNull String bookId, @NonNull String title, @NonNull ArrayList<String> authors, @NonNull String owner, @NonNull String publicStatus) {
             super();
@@ -170,13 +175,6 @@ public abstract class ResultModel {
          * @return String of book id
          */
         public String getBookId() { return this.bookId; }
-
-
-        /*
-        public ImageView getPhoto() { return this.photoView; }
-
-        public void setPhoto(ImageView photo) { this.photo = photo; }
-        */
 
         /**
          * Returns layout id

@@ -13,4 +13,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="default_text">Default Text</string>
+    <string name="isbn_rescan">Rescan</string>
+    <string name="isbn_action">Action</string>
+    <string name="isbn_default">default text</string>
+    <string name="back_button">Back button</string>
+    <string name="default_bookPhotoDescription">Book Photo</string>
+>>>>>>> dev
 </resources>

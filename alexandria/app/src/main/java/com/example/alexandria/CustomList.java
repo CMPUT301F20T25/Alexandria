@@ -5,10 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
 
@@ -35,6 +37,8 @@ public class CustomList extends ArrayAdapter<Book> {
 
         Book book = books.get(position);
 
+
+        ImageView bookImage = view.findViewById(R.id.book_image);
         TextView authorName = view.findViewById(R.id.author_name);
         TextView bookName = view.findViewById(R.id.book_name);
 
