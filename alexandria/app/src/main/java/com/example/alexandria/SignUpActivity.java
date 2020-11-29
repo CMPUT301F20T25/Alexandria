@@ -38,6 +38,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
+/**
+ * Sign up activity. Sending request to FirebaseAuthentication module.
+ * @author: han
+ */
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText usernameEditText;
@@ -48,6 +52,10 @@ public class SignUpActivity extends AppCompatActivity {
     private Button registerButton;
     private FirebaseAuth mAuth;
 
+    /**
+     * onCreate method
+     * @author han
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +73,11 @@ public class SignUpActivity extends AppCompatActivity {
 
         // Set onClick Listener on the register button
         registerButton.setOnClickListener(new View.OnClickListener(){
-
+            /**
+             * Called when the user presses sigup button. Validate user input. Then sending request to Firebase Authentication module.
+             * if all data are valid. Note that unique constraint won't get validate locally, it will get validate in the firebase.
+             * @author han
+             */
             @Override
             public void onClick(View v) {
                 // Get inputs
@@ -151,7 +163,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     startActivity(home);
                                 }else{
                                     Log.d("Sign Up", "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(SignUpActivity.this, "Unknown error",
+                                    Toast.makeText(SignUpActivity.this, "User already exists",
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
