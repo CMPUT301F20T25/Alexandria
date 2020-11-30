@@ -1,0 +1,5 @@
+com.example.alexandria
+com.example.alexandria.models.user
+com.example.alexandria.models.validators
+com.example.alexandria.utils
+com.google.zxing.integration.android
