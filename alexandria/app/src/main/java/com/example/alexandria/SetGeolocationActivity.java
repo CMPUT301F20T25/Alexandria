@@ -147,4 +147,6 @@ public class SetGeolocationActivity extends AppCompatActivity {
         setResult(RC_REQUEST_SUCCESS);
         finish();
     }
+
+
 }

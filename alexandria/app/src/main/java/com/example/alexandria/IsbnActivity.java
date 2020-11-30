@@ -362,6 +362,9 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
 
         Map<String,Object> updates = new HashMap<>();
         updates.put("status", status);
+        if (action == ACTION_CONFIRM_RETURN) {
+            updates.put("borrower", null);
+        }
 
         bookRef.update(updates)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

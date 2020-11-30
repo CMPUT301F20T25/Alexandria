@@ -77,6 +77,5 @@ public class ViewGeolocationActivity extends AppCompatActivity {
         marker.setPosition(markerLocation);
         mapView.getOverlays().add(marker);
         mapView.invalidate();
-
     }
 }

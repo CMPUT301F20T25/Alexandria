@@ -116,6 +116,17 @@ public class MyAccountActivity extends BaseActivity {
                 openMessageActivity();
             }
         });
+
+        // log out and open main activity
+        Button logOutButton = (Button) findViewById(R.id.logOut_button);
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                finish();
+                openMainActivity();
+            }
+        });
     }
 
     private void openEditProfileActivity(){
@@ -136,6 +147,11 @@ public class MyAccountActivity extends BaseActivity {
     private void openMessageActivity(){
         Intent messageIntent = new Intent(this, MessageActivity.class);
         startActivity(messageIntent);
+    }
+
+    private void openMainActivity(){
+        Intent logOutIntent = new Intent(this, MainActivity.class);
+        startActivity(logOutIntent);
     }
 
     @Override
