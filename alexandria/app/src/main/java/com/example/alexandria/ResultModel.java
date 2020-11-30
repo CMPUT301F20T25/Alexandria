@@ -55,33 +55,19 @@ public abstract class ResultModel {
      */
     static class SearchUserItemModel extends ResultModel{
         private String username;
-        private String userId;
         private String bio;
 
-        public SearchUserItemModel(@NonNull final String userId, String username, String bio) {
+        public SearchUserItemModel(@NonNull final String username, String bio) {
             super();
-            this.userId = userId;
             this.username = username;
             this.bio = bio;
         }
 
         /**
-         * Set user's database document Id
-         * @return String of userId
-         */
-        @NonNull
-        public String getUserId() { return this.userId; }
-
-        /**
-         * Return the userId
-         * @param userId String of userId
-         */
-        public void setUserId(String userId) { this.userId = userId; }
-
-        /**
          * Returns the user's username
          * @return String of username
          */
+        @NonNull
         public String getUsername() { return this.username; }
 
         /**

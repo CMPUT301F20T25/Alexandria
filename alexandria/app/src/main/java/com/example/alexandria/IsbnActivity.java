@@ -1,9 +1,4 @@
 package com.example.alexandria;
-/**
- * This activity uses the IsbnFragment to scan barcodes from a live camera preview and allows
- * the user to performs actions based on the books current status.
- * @author Kyla Wong, ktwong@ualberta.ca
- */
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,7 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class IsbnActivity extends FragmentActivity implements View.OnClickListener, IsbnFragment.IsbnFragmentListener {
+
+public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnFragmentListener {
 
     private Toolbar isbnToolbar;
     private ImageView isbnBackImage;
@@ -107,8 +103,19 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
 
         //set button onClick listeners
         action = ACTION_UNSET;
-        actionButton.setOnClickListener(new OnActionClickListener());
-        rescanButton.setOnClickListener(this);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performAction();
+            }
+        });
+        rescanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action = ACTION_UNSET;
+                scanIsbn();
+            }
+        });
         isbnBackImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,39 +127,11 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
         scanIsbn();
     }
 
-    /**
-     * If this activity it returned to after a book is added or edited, this activity finishes
-     * @param requestCode requestCode sent to called activity
-     * @param resultCode resultCode returned by activity called
-     * @param data the Intent sent by the called activity
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_EDIT_BOOK | requestCode == RC_ADD_BOOK) {
             finish();
-        }
-    }
-
-    /**
-     * Calls the performAction() method on click
-     */
-    private class OnActionClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            performAction();
-        }
-    }
-
-    /**
-     * Calls the isbn scanner fragment if the user selects the rescan button
-     * @param v the view clicked
-     */
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.isbn_rescanButton) {
-            action = ACTION_UNSET;
-            scanIsbn();
         }
     }
 
@@ -165,10 +144,6 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
         fragmentTransaction.commit();
     }
 
-    /**
-     * Checks the results of the barcode scan
-     * @param resultBundle results from the scan
-     */
     @Override
     public void onScanDone(Bundle resultBundle) {
         if (resultBundle == null) {
@@ -192,10 +167,6 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
         fragmentTransaction.commit();
     }
 
-    /**
-     * Sets the action to take based on the book that was scanned
-     * @param isbn Isbn of the book scanned
-     */
     private void setAction(String isbn) {
         CollectionReference booksRef = FirebaseFirestore.getInstance().collection("books");
 
@@ -279,9 +250,6 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
         });
     }
 
-    /**
-     * Carries out the action when the Action button is pressed
-     */
     private void performAction() {
         String title = "";
         String question = "";
@@ -353,10 +321,8 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
         alertDialogueBuilder.show();
     }
 
-    /**
-     * Updates the status of a book respective to its current status
-     */
     private void changeStatusQuery() {
+        //TODO: change status based on action
         DocumentReference bookRef = FirebaseFirestore.getInstance().collection("books").document(results.getString("bookId"));
 
         String ownerStatus = null;
@@ -369,7 +335,7 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
                 borrowerStatus = "borrowed";
                 publicStatus = "unavailable";
                 break;
-            case ACTION_CONFIRM_RETURN: //TODO: change the borrower to null?
+            case ACTION_CONFIRM_RETURN:
                 ownerStatus = "available";
                 borrowerStatus = null;
                 publicStatus = "available";
