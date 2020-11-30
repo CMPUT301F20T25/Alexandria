@@ -18,10 +18,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
-import java.io.ByteArrayOutputStream;
-
 /**
- * zoom image when an image it clicked
+ * enlarge image when an image it clicked
  * @author Xueying Luo
  */
 public class ViewImageFragment extends DialogFragment {

@@ -86,6 +86,30 @@ public class EditBookActivity extends AppCompatActivity implements ConfirmPhotoF
         String bookID = intent.getStringExtra("book");
         returnBookID[0] = bookID;
 
+        // make image clickable and zoom image
+        imageView.setClickable(true);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ViewImageFragment fragment = new ViewImageFragment();
+
+                Bundle bundle = new Bundle();
+
+                // get image in bytes
+                imageView.setDrawingCacheEnabled(true);
+                imageView.buildDrawingCache();
+                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
+
+                bundle.putByteArray("image",data);
+                fragment.setArguments(bundle);
+                fragment.show(getSupportFragmentManager(), "enlarge image");
+            }
+        });
+
         db = FirebaseFirestore.getInstance();
         final DocumentReference bookRef = db.collection("books").document(bookID);
 
