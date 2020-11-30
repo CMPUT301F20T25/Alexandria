@@ -1,9 +1,7 @@
 package com.example.alexandria;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,9 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SearchView;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -29,9 +25,12 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class MyBookActivity extends BaseActivity {
+    String filterStatus = "all";
     ListView currentList;
     ArrayAdapter<Book> bookAdapter;
     ArrayList<Book> bookDataList;
+    ArrayList<Book> bookShowDataList;
+    FirebaseFirestore db;
     DocumentReference userRef = MainActivity.currentUserRef;
 
     private static final int ADD_BOOK_CODE = 3;
@@ -39,8 +38,6 @@ public class MyBookActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_book);
-        FirebaseFirestore db;
 
         // set up toolbar
         // reference: https://developer.android.com/training/appbar/setting-up
@@ -55,7 +52,8 @@ public class MyBookActivity extends BaseActivity {
         currentList = findViewById(R.id.current_list);
 
         bookDataList = new ArrayList<>();
-        bookAdapter = new CustomList(this, bookDataList);
+        bookShowDataList = new ArrayList<>();
+        bookAdapter = new CustomList(this, bookShowDataList);
         currentList.setAdapter(bookAdapter);
 
         db = FirebaseFirestore.getInstance();
@@ -81,9 +79,28 @@ public class MyBookActivity extends BaseActivity {
                     String ownerStatus = statusMap.get("owner");
                     String publicStatus = statusMap.get("public");
 
-                    if (userRef.equals(ownerRef)) {
-                        bookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+                    String bookStatus = "borrowed";
+                    if(publicStatus.equals("available")){
+                        if (doc.getData().get("requestedUsers") instanceof ArrayList) {
+                            bookStatus = "requested";
+                        }
+                        else{
+                            bookStatus = "available";
+                        }
                     }
+                    else{
+                        if(ownerStatus.equals("accepted")){
+                            bookStatus = "accepted";
+                        }
+                    }
+
+                    if (userRef.equals(ownerRef)) {
+                        bookDataList.add(new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
+                    }
+                }
+                bookShowDataList.clear();
+                for (int index = 0; index < bookDataList.size(); index++){
+                    bookShowDataList.add(0,bookDataList.get(index));
                 }
                 bookAdapter.notifyDataSetChanged();
             }
@@ -99,22 +116,10 @@ public class MyBookActivity extends BaseActivity {
 
     private void openBookInfoActivity(int position) {
         Intent bookInfoIntent = new Intent(MyBookActivity.this, BookInfoActivity.class);
-        String bookID = bookDataList.get(position).getBookID();
+        String bookID = bookShowDataList.get(position).getBookID();
         bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
     }
-
-    @Override
-    int getContentViewId() {
-        return R.layout.activity_home;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return R.id.navigation_home;
-
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -134,9 +139,72 @@ public class MyBookActivity extends BaseActivity {
                 startActivityForResult(intent, ADD_BOOK_CODE);
                 Log.d("toolbar item", "add button selected");
                 break;
+            case R.id.show_all:
+                filterStatus = "all";
+                bookShowDataList.clear();
+                for (int index = 0; index < bookDataList.size(); index++){
+                    bookShowDataList.add(0,bookDataList.get(index));
+                }
+                bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "all button selected");
+                break;
+            case R.id.show_available:
+                filterStatus = "available";
+                bookShowDataList.clear();
+                for (int index = 0; index < bookDataList.size(); index++){
+                    if(bookDataList.get(index).getBookStatus().equals(filterStatus)){
+                        bookShowDataList.add(0,bookDataList.get(index));
+                    }
+                }
+                bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "available button selected");
+                break;
+            case R.id.show_requested:
+                filterStatus = "requested";
+                bookShowDataList.clear();
+                for (int index = 0; index < bookDataList.size(); index++){
+                    if(bookDataList.get(index).getBookStatus().equals(filterStatus)){
+                        bookShowDataList.add(0,bookDataList.get(index));
+                    }
+                }
+                bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "requested button selected");
+                break;
+            case R.id.show_accepted:
+                filterStatus = "accepted";
+                bookShowDataList.clear();
+                for (int index = 0; index < bookDataList.size(); index++){
+                    if(bookDataList.get(index).getBookStatus().equals(filterStatus)){
+                        bookShowDataList.add(0,bookDataList.get(index));
+                    }
+                }
+                bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "accepted button selected");
+                break;
+            case R.id.show_borrowed:
+                filterStatus = "borrowed";
+                bookShowDataList.clear();
+                for (int index = 0; index < bookDataList.size(); index++){
+                    if(bookDataList.get(index).getBookStatus().equals(filterStatus)){
+                        bookShowDataList.add(0,bookDataList.get(index));
+                    }
+                }
+                bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "borrowed button selected");
+                break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    int getContentViewId() {
+        return R.layout.activity_my_book;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.navigation_home;
     }
 }

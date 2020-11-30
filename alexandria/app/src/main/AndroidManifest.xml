@@ -28,7 +28,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alexandria">
-        <activity android:name=".ViewGeolocationActivity"></activity>
+        <activity android:name=".AcceptedBookInfoActivity"></activity>
+        <activity android:name=".UserInfoActivity" />
+        <activity android:name=".ViewGeolocationActivity" />
         <activity android:name=".SetGeolocationActivity" />
         <activity android:name=".GeolocationActivity" />
         <activity android:name=".AcceptedActivity" />

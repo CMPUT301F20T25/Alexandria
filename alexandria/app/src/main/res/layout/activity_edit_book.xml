@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/edit_book_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditBookActivity"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -32,13 +36,26 @@
                 android:id="@+id/editImage"
                 android:layout_width="292dp"
                 android:layout_height="205dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:contentDescription="photo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_gallery" />
+                app:srcCompat="@drawable/default_book" />
+
+            <Button
+                android:id="@+id/editPhotoButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginTop="5dp"
+                android:text="Edit Photo"
+                android:textColor="#03A9F4"
+                app:backgroundTint="#FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/editImage" />
 
             <EditText
                 android:id="@+id/editTitle"
@@ -46,14 +63,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:hint="Book title"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editImage" />
+                app:layout_constraintTop_toBottomOf="@id/editPhotoButton2" />
 
             <EditText
                 android:id="@+id/editAuthor"
@@ -61,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:hint="Author (one per line)"
@@ -75,17 +92,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
-                android:layout_marginLeft="60dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="60dp"
                 android:hint="ISBN (13 digits)"
                 android:inputType="number"
                 android:maxLength="13"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/scanButton"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editAuthor" />
 
@@ -95,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:hint="Book description (optional)"
@@ -104,34 +118,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editISBN" />
 
-            <ImageButton
-                android:id="@+id/scanButton"
-                android:layout_width="51dp"
-                android:layout_height="47dp"
-                android:layout_marginTop="22dp"
-                android:layout_marginEnd="60dp"
-                android:layout_marginRight="60dp"
-                android:background="#00FFFFFF"
-                android:contentDescription="scan isbn"
-                android:scaleX="1.4"
-                android:scaleY="1.4"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/editISBN"
-                app:layout_constraintTop_toBottomOf="@+id/editAuthor"
-                app:srcCompat="@android:drawable/ic_menu_camera" />
-
             <Button
                 android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:text="SAVE"
                 app:layout_constraintBottom_toBottomOf="@+id/deleteBook"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/deleteBook" />
+                app:layout_constraintStart_toEndOf="@+id/deleteBook"
+                app:layout_constraintTop_toBottomOf="@+id/editDescr" />
 
             <Button
                 android:id="@+id/deleteBook"
@@ -139,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="24dp"
@@ -155,3 +154,4 @@
     </ScrollView>
 
 </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

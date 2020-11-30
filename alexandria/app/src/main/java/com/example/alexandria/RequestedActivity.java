@@ -1,11 +1,9 @@
 package com.example.alexandria;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -35,7 +33,6 @@ public class RequestedActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_requested);
         FirebaseFirestore db;
 
         // set up toolbar
@@ -70,15 +67,12 @@ public class RequestedActivity extends BaseActivity {
                     String title = String.valueOf(doc.getData().get("title"));
                     String description = String.valueOf(doc.getData().get("description"));
 
-                    Map<String, String> statusMap = (Map) doc.getData().get("status");
-                    String ownerStatus = statusMap.get("owner");
-                    String publicStatus = statusMap.get("public");
-
                     if (doc.getData().get("requestedUsers") instanceof ArrayList) {
                         ArrayList<DocumentReference> requestedList = (ArrayList<DocumentReference>) doc.getData().get("requestedUsers");
                         for (int counter = 0; counter < requestedList.size(); counter++) {
                             if (userRef.equals(requestedList.get(counter))) {
-                                bookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+                                String bookStatus = "accepted";
+                                bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
                             }
                         }
                     }
@@ -103,17 +97,6 @@ public class RequestedActivity extends BaseActivity {
     }
 
     @Override
-    int getContentViewId() {
-        return R.layout.activity_home;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return R.id.navigation_home;
-    }
-
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -124,6 +107,16 @@ public class RequestedActivity extends BaseActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    int getContentViewId() {
+        return R.layout.activity_requested;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.navigation_home;
     }
 }
 
