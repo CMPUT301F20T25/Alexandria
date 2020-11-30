@@ -69,19 +69,15 @@ public class AcceptedActivity extends BaseActivity {
                     String title = String.valueOf(doc.getData().get("title"));
                     String description = String.valueOf(doc.getData().get("description"));
 
-                    Map<String, String> statusMap = (Map) doc.getData().get("status");
-                    String ownerStatus = statusMap.get("owner");
-                    String publicStatus = statusMap.get("public");
+                    DocumentReference borrowerRef = (DocumentReference) doc.getData().get("borrower");
 
-                    if (doc.getData().get("requestedUsers") instanceof ArrayList) {
-                        ArrayList<DocumentReference> requestedList = (ArrayList<DocumentReference>) doc.getData().get("requestedUsers");
-                        for (int counter = 0; counter < requestedList.size(); counter++) {
-                            if (userRef.equals(requestedList.get(counter))) {
-                                if(ownerStatus.equals("accepted"))  {
-                                String bookStatus = "accepted";
-                                bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
-                                }
-                            }
+                    Map<String, String> statusMap = (Map) doc.getData().get("status");
+                    String borrowerStatus = statusMap.get("borrower");
+
+                    if (userRef.equals(borrowerRef)) {
+                        if (borrowerStatus.equals("accepted")){
+                            String bookStatus = "accepted";
+                            bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
                         }
                     }
                 }
@@ -98,22 +94,11 @@ public class AcceptedActivity extends BaseActivity {
     }
 
     private void openBookInfoActivity(int position) {
-        Intent bookInfoIntent = new Intent(AcceptedActivity.this, RequestedBookInfoActivity.class);
+        Intent bookInfoIntent = new Intent(AcceptedActivity.this, BorrowedBookInfoActivity.class);
         String bookID = bookDataList.get(position).getBookID();
         bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
     }
-
-    @Override
-    int getContentViewId() {
-        return R.layout.activity_home;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return R.id.navigation_home;
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -127,4 +112,15 @@ public class AcceptedActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    int getContentViewId() {
+        return R.layout.activity_accepted;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.navigation_home;
+    }
+
 }
