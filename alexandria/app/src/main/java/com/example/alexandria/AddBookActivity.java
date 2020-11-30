@@ -4,7 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,10 +16,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -46,12 +51,15 @@ import java.util.Map;
  * allows user to add a book
  * @author Xueying Luo
  */
-public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFragment.ConfirmPhotoListener, EditPhotoOptionFragment.deleteImageListener {
+public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFragment.ConfirmPhotoListener,
+        EditPhotoOptionFragment.deleteImageListener, IsbnFragment.IsbnFragmentListener {
 
     private boolean defaultPhoto = true;
     private String TAG = "add book";
     private DocumentReference userRef = MainActivity.currentUserRef;
     private FirebaseFirestore db;
+    private IsbnFragment isbnFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -297,6 +305,9 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
         Log.d(TAG, "image view updated");
     }
 
+    /**
+     * set image to default
+     */
     public void deleteImage(){
         ImageView image = findViewById(R.id.addBookImage);
         Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.default_book);
@@ -310,16 +321,72 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
         // not to be implemented
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.bookinfoscan, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @SuppressLint("UnsafeExperimentalUsageError")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
+        // check if menu item is clicked
 
-            default:
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        } else if (item.getItemId() ==  R.id.infoScan) {
+            // go to scan fragment
+
+            isbnFragment = new IsbnFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.add_book_layout, isbnFragment);
+            fragmentTransaction.commit();
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onScanDone(Bundle resultBundle) {
+        // get scan result from IsbnFragment
+
+        if (resultBundle == null) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.remove(isbnFragment);
+            fragmentTransaction.commit();
+            return;
+        }
+
+        if (resultBundle.getString("isbn") != null) {
+            EditText titleView = findViewById(R.id.addBookTitle);
+            EditText authorView = findViewById(R.id.addBookAuthor);
+            EditText isbnView = findViewById(R.id.addBookISBN);
+            EditText descrView = findViewById(R.id.addBookDescr);
+
+            Log.d("scan result", "title: " + resultBundle.getString("title") + "\nauthor: "
+                    + resultBundle.getString("authors") + "\nisbn: " + resultBundle.getString("isbn"));
+
+            // fill the editTexts with result of scan
+            titleView.setText(resultBundle.getString("title"));
+            isbnView.setText(resultBundle.getString("isbn"));
+            descrView.setText(resultBundle.getString("description"));
+
+            List<String> authorList = Arrays.asList(resultBundle.getString("authors").split(","));
+            String author = authorList.get(0);
+            for (int counter = 1; counter < authorList.size(); counter++) {
+                author = author + '\n' + authorList.get(counter);
+            }
+            ;
+            authorView.setText(author);
+
+        } else {
+            Toast.makeText(getApplicationContext(), "No result found!", Toast.LENGTH_LONG).show();
+        }
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.remove(isbnFragment);
+        fragmentTransaction.commit();
+
     }
 }

@@ -104,7 +104,6 @@ public class BookInfoActivity extends AppCompatActivity {
                 fragment.setArguments(bundle);
                 fragment.show(getSupportFragmentManager(), "enlarge image");
 
-
             }
         });
 
@@ -114,6 +113,15 @@ public class BookInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TODO: display owner or borrower info
+            }
+        });
+
+        Button requestButton = findViewById(R.id.requestButton);
+        requestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: request book
+                // add user to requestedUsers list, set owner status to requested
             }
         });
 
@@ -163,6 +171,7 @@ public class BookInfoActivity extends AppCompatActivity {
                         TextView statusView = findViewById(R.id.myBookStatus);
                         Button borrowerOrOwnerButton = findViewById(R.id.borrowerOrOwnerButton);
                         TextView borrowerOrOwner_titleView = findViewById(R.id.borrowerOrOnwerTitle);
+                        Button requestButton = findViewById(R.id.requestButton);
 
                         titleView.setText(title);
                         authorView.setText(author);
@@ -183,6 +192,9 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                     if (userRef.equals(ownerRef)) {
                                         // for owner -  hide borrower section when book is available
+
+                                        // hide request button
+                                        requestButton.setVisibility(View.INVISIBLE);
 
                                         statusView.setText(ownerStatus);
                                         if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
@@ -345,19 +357,14 @@ public class BookInfoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                Log.d("toolbar item", "Back button selected");
-                break;
-            case R.id.editBook:
-                Intent intent = new Intent(this, EditBookActivity.class);
-                intent.putExtra("book", bookID );
-                startActivityForResult(intent, EDIT_BOOK_CODE);
-                Log.d("toolbar item", "Edit button selected");
-                break;
-            default:
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            Log.d("toolbar item", "Back button selected");
+        } else if (item.getItemId() == R.id.editBook) {
+            Intent intent = new Intent(this, EditBookActivity.class);
+            intent.putExtra("book", bookID );
+            startActivityForResult(intent, EDIT_BOOK_CODE);
+            Log.d("toolbar item", "Edit button selected");
         }
         return super.onOptionsItemSelected(item);
     }

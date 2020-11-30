@@ -155,6 +155,12 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                         }
 
                         Button ownerButton = findViewById(R.id.ownerButton);
+                        ownerButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //TODO - display user info
+                            }
+                        });
 
                         ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
