@@ -117,7 +117,7 @@ public class MyBookActivity extends BaseActivity {
 
     private void openBookInfoActivity(int position) {
         Intent bookInfoIntent = new Intent(MyBookActivity.this, BookInfoActivity.class);
-        String bookID = bookDataList.get(position).getBookID();
+        String bookID = bookShowDataList.get(position).getBookID();
         bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
     }

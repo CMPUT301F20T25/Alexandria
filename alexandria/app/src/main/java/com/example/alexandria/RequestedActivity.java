@@ -76,7 +76,7 @@ public class RequestedActivity extends BaseActivity {
                         ArrayList<DocumentReference> requestedList = (ArrayList<DocumentReference>) doc.getData().get("requestedUsers");
                         for (int counter = 0; counter < requestedList.size(); counter++) {
                             if (userRef.equals(requestedList.get(counter))) {
-                                String bookStatus = "requested";
+                                String bookStatus = "accepted";
                                 bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
                             }
                         }
