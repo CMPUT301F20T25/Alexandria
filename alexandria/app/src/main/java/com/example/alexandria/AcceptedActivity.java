@@ -93,7 +93,7 @@ public class AcceptedActivity extends BaseActivity {
     }
 
     private void openBookInfoActivity(int position) {
-        Intent bookInfoIntent = new Intent(AcceptedActivity.this, BorrowedBookInfoActivity.class);
+        Intent bookInfoIntent = new Intent(AcceptedActivity.this, AcceptedBookInfoActivity.class);
         String bookID = bookDataList.get(position).getBookID();
         bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
