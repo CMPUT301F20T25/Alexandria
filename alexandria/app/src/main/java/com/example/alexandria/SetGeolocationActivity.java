@@ -1,5 +1,6 @@
 package com.example.alexandria;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -13,6 +14,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -21,6 +31,10 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.CopyrightOverlay;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SetGeolocationActivity extends AppCompatActivity {
     private TextView instructionTextView;
@@ -35,10 +49,13 @@ public class SetGeolocationActivity extends AppCompatActivity {
 
     private String borrower;
     private String bookTitle;
+    private String bookId;
+    private String borrowerId;
 
     private Intent intent;
     protected final static int RC_REQUEST_SUCCESS = 0;
     protected final static int RC_REQUEST_FAILURE = 1;
+    protected final static int RC_REQUEST_NOTIFY_FAILURE = 2;
 
 
     @Override
@@ -48,15 +65,13 @@ public class SetGeolocationActivity extends AppCompatActivity {
 
         intent = getIntent();
         try {
+            bookId = intent.getStringExtra("bookId");
+            borrowerId = intent.getStringExtra("borrowerId");
             bookTitle = intent.getStringExtra("title");
             borrower = intent.getStringExtra("borrowerUsername");
         } catch (Exception e) {
             Log.e("SET GEO", "Missing book info");
         }
-
-        //TODO: delete later; only for testing
-        bookTitle = "Harry Potter and the Philosopher's Stone";
-        borrower = "testUser2";
 
         //set fields
         instructionTextView = (TextView) findViewById(R.id.setgeo_instructionText);
@@ -143,8 +158,107 @@ public class SetGeolocationActivity extends AppCompatActivity {
     }
 
     private void writeRequest() {
-        //TODO: set location and write accepted request to the database
-        setResult(RC_REQUEST_SUCCESS);
-        finish();
+        DocumentReference bookDocument = FirebaseFirestore.getInstance().collection("books").document(bookId);
+
+        Map<String, String> status = new HashMap<>();
+        //TODO: check status values
+        status.put("borrower", "accepted");
+        status.put("owner", "accepted");
+        status.put("public", "unavailable");
+
+        Map<String, Double> location = new HashMap<>();
+        location.put("latitude", markerLocation.getLatitude());
+        location.put("longitude", markerLocation.getLongitude());
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", status);
+        updates.put("location", location);
+        DocumentReference borrowerRef = FirebaseFirestore.getInstance().collection("users").document(borrowerId);
+        updates.put("borrower", borrowerRef);
+
+        bookDocument.update(updates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        bookDocument.get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        ArrayList<DocumentReference> requests = (ArrayList<DocumentReference>) documentSnapshot.getData().get("requestedUsers");
+                                        Log.e("requested Users", requests.toString());
+                                        Map<String, Object> updateRequests = new HashMap<>();
+                                        updateRequests.put("requestedUsers", null);
+                                        bookDocument.update(updateRequests);
+
+                                        notifyUsers(requests, documentSnapshot.getData().get("ownerReference"), documentSnapshot.getData().get("owner").toString());
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        setResult(RC_REQUEST_FAILURE);
+                        finish();
+                    }
+                });
+    }
+
+    private void notifyUsers(@NonNull ArrayList<DocumentReference> requests, Object ownerReference, String ownerUsername) {
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection("users");
+        String TAG = "notify";
+        usersRef.get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot user : queryDocumentSnapshots) {
+                            for (DocumentReference userRef : requests) {
+                                Log.e(TAG, userRef.getId().toString());
+                                Log.e(TAG, user.getId().toString());
+                                Log.e(TAG, userRef.getId());
+                                Log.e(TAG, borrowerId);
+                                if (userRef.getId().equals(user.getId()) && userRef.getId().equals(borrowerId)) {
+                                    Map<String,String> accepted = new HashMap<>();
+                                    accepted.put("bookId", bookId);
+                                    accepted.put("bookTitle", bookTitle);
+                                    accepted.put("ownerId", ((DocumentReference) ownerReference).getId());
+                                    accepted.put("ownerUsername", ownerUsername);
+
+                                    Map<String,ArrayList<Map<String,String>>> notifications = (Map<String, ArrayList<Map<String, String>>>) user.getData().get("notifications");
+                                    ((ArrayList<Map<String,String>>) notifications.get("accepted")).add(accepted);
+
+                                    Map<String, Object> updates = new HashMap<>();
+                                    updates.put("notifications", notifications);
+                                    userRef.update(updates);
+                                    break;
+                                } else if (userRef.getId().equals(user.getId())) {
+                                    Map<String,String> denied = new HashMap<>();
+                                    denied.put("bookId", bookId);
+                                    denied.put("bookTitle", bookTitle);
+                                    denied.put("ownerId", ((DocumentReference) ownerReference).getId());
+                                    denied.put("ownerUsername", ownerUsername);
+
+                                    Map<String,ArrayList<Map<String,String>>> notifications = (Map<String, ArrayList<Map<String, String>>>) user.getData().get("notifications");
+                                    ((ArrayList<Map<String,String>>) notifications.get("denied")).add(denied);
+
+                                    Map<String, Object> updates = new HashMap<>();
+                                    updates.put("notifications", notifications);
+                                    userRef.update(updates);
+                                    break;
+                                }
+                            }
+                        }
+                        setResult(RC_REQUEST_SUCCESS);
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Set Geo", "Failed to notify users");
+                        setResult(RC_REQUEST_NOTIFY_FAILURE);
+                        finish();
+                    }
+                });
     }
 }
