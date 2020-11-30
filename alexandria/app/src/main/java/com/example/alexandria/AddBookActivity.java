@@ -114,25 +114,6 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
                 // split author text by '\n'
                 List<String> authorList = Arrays.asList(newAuthor.split("\n"));
 
-                // validate input TODO:validator is not working properly
-//                BookInformationValidator validator =
-//                        new BookInformationValidator(newTitle, newAuthor, newDescr, newISBN);
-//                if(!validator.isValid()){ // invalid input
-//                    Log.d(TAG, "invalid input");
-//                    ArrayList<ValidationError> errors = validator.getError();
-//                    for(ValidationError error : errors){
-//
-//                        if ("isbn".equals(error.getField())) {
-//                            isbn.setError(error.getMessage());
-//                            Log.d(TAG, "invalid isbn");
-//                        } else {
-//                            Log.d(TAG, "unknown error");
-//
-//                            Toast.makeText(AddBookActivity.this,
-//                                    "Unknown Error, please try again", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-
                 int validDigit = 0;
                 for (char ch : newISBN.toCharArray()){
                     if (Character.isDigit(ch)){
@@ -190,6 +171,10 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
                                                 status.put("owner", "available");
                                                 status.put("public", "available");
 
+                                                Map<String, Double> location = new HashMap<>();
+                                                location.put("latitude", null);
+                                                location.put("longitude", null);
+
                                                 Map<String, Object> bookInfo = new HashMap<>();
                                                 bookInfo.put("authors", authorList);
                                                 bookInfo.put("title", newTitle);
@@ -199,6 +184,7 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
                                                 bookInfo.put("ownerReference", userRef);
                                                 bookInfo.put("requestedUsers", null);
                                                 bookInfo.put("status", status);
+                                                bookInfo.put("location", location);
 
                                                 if (defaultPhoto) {
                                                     // use default image
