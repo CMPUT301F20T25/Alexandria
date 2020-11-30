@@ -182,32 +182,32 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
                 for (QueryDocumentSnapshot doc : value) {
                     if (doc.getData().get("isbn").toString().equals(isbn)) {
                         //Log.e(TAG, "found book: " + isbn);
-                        Map statusMap = (Map) doc.getData().get("status");
-                        Object owner = doc.getData().get("ownerReference");
-                        Object borrower = doc.getData().get("borrower");
+                        Map<String, String> statusMap = (Map) doc.getData().get("status");
+                        DocumentReference owner = (DocumentReference) doc.getData().get("ownerReference");
+                        DocumentReference borrower = (DocumentReference) doc.getData().get("borrower");
                         //TODO: check the if-statement conditionals
-                        if (currentUser.equals(borrower) && statusMap.get("owner") == "borrowed" && statusMap.get("borrower") == "accepted") {
+                        if (currentUser.equals(borrower) && statusMap.get("owner").equals("borrowed") && statusMap.get("borrower").equals("accepted")) {
                             //confirm you have received the book as borrower
                             setImage = true;
                             results.putString("bookId", doc.getId());
                             actionButton.setText("Confirm Borrow");
                             actionTextView.setText("Looks like you received a book you requested! Would you like to confirm that you've borrowed it?");
                             action = ACTION_CONFIRM_BORROW;
-                        } else if (currentUser.equals(borrower) && statusMap.get("owner") == "borrowed" && statusMap.get("borrower") == "borrowed") {
+                        } else if (currentUser.equals(borrower) && statusMap.get("owner").equals("borrowed") && statusMap.get("borrower").equals("borrowed")) {
                             //return the book to the owner as borrower
                             setImage = true;
                             results.putString("bookId", doc.getId());
                             actionButton.setText("Return Book");
                             actionTextView.setText("Would you like to mark this book as returned?");
                             action = ACTION_RETURN_BOOK;
-                        } else if (currentUser.equals(owner) && statusMap.get("owner") == "accepted" && statusMap.get("borrower") == "accepted") {
+                        } else if (currentUser.equals(owner) && statusMap.get("owner").equals("accepted") && statusMap.get("borrower").equals("accepted")) {
                             //loan the book to borrower as owner
                             setImage = true;
                             results.putString("bookId", doc.getId());
                             actionButton.setText("Loan Book");
                             actionTextView.setText("Would you like to mark this book as loaned?");
                             action = ACTION_LOAN_BOOK;
-                        } else if (currentUser.equals(owner) && statusMap.get("owner") == "borrowed" && statusMap.get("borrower") == null) {
+                        } else if (currentUser.equals(owner) && statusMap.get("owner").equals("borrowed") && statusMap.get("borrower").equals(null)) {
                             //confirm you have received the book as owner
                             setImage = true;
                             results.putString("bookId", doc.getId());
