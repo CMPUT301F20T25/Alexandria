@@ -168,7 +168,6 @@ public class SearchAdapter extends RecyclerView.Adapter {
          */
         public void bindData(final ResultModel.SearchBookItemModel viewModel) {
             Log.d("BINDING BOOK", viewModel.getTitle());
-            //TODO: bind the image data!
             this.titleView.setText(viewModel.getTitle());
             this.authorsView.setText("By: " + TextUtils.join(", ", viewModel.getAuthors()));
             this.ownerView.setText("@" + viewModel.getOwner());
@@ -227,6 +226,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
         private TextView usernameView;
         private TextView bioView;
         private String username;
+        private String userId;
 
         /**
          * Constructor of SearchUserItemHolder
@@ -248,6 +248,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
             this.usernameView.setText(viewModel.getUsername());
             this.bioView.setText(viewModel.getBio());
             this.username = viewModel.getUsername();
+            this.userId = viewModel.getUserId();
         }
 
         /**
@@ -256,7 +257,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
          */
         @Override
         public void onClick(View v) {
-            clickListener.onItemClick(getAdapterPosition(), v, username);
+            clickListener.onItemClick(getAdapterPosition(), v, userId);
         }
     }
 
