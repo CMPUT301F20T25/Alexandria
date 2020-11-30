@@ -1,8 +1,4 @@
 package com.example.alexandria;
-/**
- * display book information to its borrower
- * @author Xueying Luo
- */
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +30,10 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
+/**
+ * display book information to its borrower
+ * @author Xueying Luo
+ */
 public class BorrowedBookInfoActivity extends AppCompatActivity {
 
     private String bookID = null; // passed from previous page
@@ -93,7 +93,7 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
 
                         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
                         String imagePath = String.valueOf(document.getData().get("photo"));
-                        if (!imagePath.equals(null)) {
+                        if (!imagePath.equals("default")) {
                             storageRef.child(imagePath).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                                 @Override
                                 public void onSuccess(byte[] bytes) {
