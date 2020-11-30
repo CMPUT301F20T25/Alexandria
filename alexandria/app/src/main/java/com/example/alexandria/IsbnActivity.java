@@ -64,6 +64,9 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
     private Button actionButton;
     private Button rescanButton;
 
+    DocumentReference owner;
+    DocumentReference borrower;
+
     private Fragment isbnFragment;
     private Bundle results;
 
@@ -182,9 +185,11 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
                 for (QueryDocumentSnapshot doc : value) {
                     if (doc.getData().get("isbn").toString().equals(isbn)) {
                         //Log.e(TAG, "found book: " + isbn);
+                        owner = null;
+                        borrower = null;
                         Map<String, String> statusMap = (Map) doc.getData().get("status");
-                        DocumentReference owner = (DocumentReference) doc.getData().get("ownerReference");
-                        DocumentReference borrower = (DocumentReference) doc.getData().get("borrower");
+                        owner = (DocumentReference) doc.getData().get("ownerReference");
+                        borrower = (DocumentReference) doc.getData().get("borrower");
                         //TODO: check the if-statement conditionals
                         if (currentUser.equals(borrower) && statusMap.get("owner").equals("borrowed") && statusMap.get("borrower").equals("accepted")) {
                             //confirm you have received the book as borrower
@@ -294,8 +299,13 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
             public void onClick(DialogInterface dialog, int which) {
                 //TODO: start the appropriate activity
                 switch(action) {
-                    case ACTION_CONFIRM_BORROW | ACTION_CONFIRM_RETURN | ACTION_LOAN_BOOK | ACTION_RETURN_BOOK:
+                    case ACTION_CONFIRM_BORROW:
+                    case ACTION_CONFIRM_RETURN:
+                    case ACTION_LOAN_BOOK:
+                    case ACTION_RETURN_BOOK:
                         changeStatusQuery();
+                        Intent homeIntent = new Intent(IsbnActivity.this, HomeActivity.class);
+                        startActivity(homeIntent);
                         break;
                     case ACTION_ADD_NEW:
                         List<String> authorList = Arrays.asList(results.getString("authors").split(", "));
@@ -336,6 +346,7 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
                 publicStatus = "unavailable";
                 break;
             case ACTION_CONFIRM_RETURN:
+                borrower = null;
                 ownerStatus = "available";
                 borrowerStatus = null;
                 publicStatus = "available";
@@ -346,6 +357,7 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
                 publicStatus = "unavailable";
                 break;
             case ACTION_RETURN_BOOK:
+                borrower = null;
                 ownerStatus = "borrowed";
                 borrowerStatus = null;
                 publicStatus = "unavailable";
@@ -361,6 +373,7 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
         status.put("publicStatus", publicStatus);
 
         Map<String,Object> updates = new HashMap<>();
+        updates.put("borrower", borrower);
         updates.put("status", status);
         if (action == ACTION_CONFIRM_RETURN) {
             updates.put("borrower", null);
