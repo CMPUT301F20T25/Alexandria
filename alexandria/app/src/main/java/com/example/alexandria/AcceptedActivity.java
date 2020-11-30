@@ -34,7 +34,6 @@ public class AcceptedActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_accepted);
         FirebaseFirestore db;
 
         // set up toolbar

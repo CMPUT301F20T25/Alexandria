@@ -38,7 +38,6 @@ public class MyBookActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_book);
 
         // set up toolbar
         // reference: https://developer.android.com/training/appbar/setting-up
