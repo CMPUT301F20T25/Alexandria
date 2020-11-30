@@ -35,7 +35,6 @@
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".ViewGeolocationActivity" />
         <activity android:name=".SetGeolocationActivity" />
-        <activity android:name=".GeolocationActivity" />
         <activity android:name=".AcceptedActivity" />
         <activity android:name=".RequestedBookInfoActivity" />
         <activity android:name=".BorrowedBookInfoActivity" />
