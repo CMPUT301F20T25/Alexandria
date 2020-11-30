@@ -4,18 +4,15 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,14 +35,10 @@ public class EditPhotoOptionFragment extends DialogFragment {
     private static final String TAG = "edit photo fragment";
     private static final int GET_FROM_GALLERY = 1 ;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
-    private deleteImageListener listener;
 
-    interface deleteImageListener{
-        void deleteImage();
-        void deleteImage(String imagePath);
-    }
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
+
 
     @NonNull
     @Override
@@ -53,15 +46,9 @@ public class EditPhotoOptionFragment extends DialogFragment {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_edit_photo_option, null);
         Button fromPhone = view.findViewById(R.id.from_phone);
         Button takePhoto = view.findViewById(R.id.take_photo);
+        Button deletePhoto = view.findViewById(R.id.delete_photo);
 
-        String photo = "default";
-        if (getArguments().getString("adding") != null) {
-             photo = getArguments().getString("adding");  // new or default - from AddBookActivity
-        } else if (getArguments().getString("editing") != null) {
-            photo = getArguments().getString("editing");  // photo ref path or default- from EditBookActivity
-        }
-
-        Log.d(TAG,"data passed - "+photo);
+        StorageReference storageRef = storage.getReference();
 
         // clear previous data
         newImageBitmap = null;
@@ -98,42 +85,21 @@ public class EditPhotoOptionFragment extends DialogFragment {
             }
         });
 
-        String finalPhoto = photo;
+        deletePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Delete Photo button clicked");
+
+                // delete photo from database, change photo to default image
+            }
+        });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder
-            .setView(view)
-            .setTitle("Edit Photo")
-            .setNeutralButton("Delete Photo", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Log.d(TAG, "Delete Photo button clicked");
-                    // delete photo, change photo to default
 
-                    if (finalPhoto.equals("new")){
-                        listener.deleteImage();
-                    } else if (finalPhoto.length()>7) {
-                        if(finalPhoto.startsWith("images/")){
-                            listener.deleteImage(finalPhoto);
-                        };
-                    }
-                }
-            });
-
-        AlertDialog dialog =  builder.create();
-        dialog.show();
-
-        Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-        LinearLayout.LayoutParams neutralButtonLayout = (LinearLayout.LayoutParams) neutralButton.getLayoutParams();
-        neutralButtonLayout.gravity = Gravity.CENTER_HORIZONTAL;
-        neutralButton.setLayoutParams(neutralButtonLayout);
-
-        // hide delete button if photo is default
-        if (photo.equals("default")){
-            neutralButton.setVisibility(View.INVISIBLE);
-        }
-
-        return dialog;
+        return builder
+                .setView(view)
+                .setTitle("Edit Photo")
+                .create();
     }
 
 
@@ -159,11 +125,5 @@ public class EditPhotoOptionFragment extends DialogFragment {
 
             }
         }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        listener = (EditPhotoOptionFragment.deleteImageListener) context;
-    }
 
 }

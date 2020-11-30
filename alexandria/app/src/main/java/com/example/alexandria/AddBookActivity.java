@@ -1,13 +1,10 @@
 package com.example.alexandria;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,12 +13,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -51,15 +46,12 @@ import java.util.Map;
  * allows user to add a book
  * @author Xueying Luo
  */
-public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFragment.ConfirmPhotoListener,
-        EditPhotoOptionFragment.deleteImageListener, IsbnFragment.IsbnFragmentListener {
+public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFragment.ConfirmPhotoListener{
 
-    private boolean defaultPhoto = true;
+    private boolean photoUpdated = false;
     private String TAG = "add book";
     private DocumentReference userRef = MainActivity.currentUserRef;
     private FirebaseFirestore db;
-    private IsbnFragment isbnFragment;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,16 +86,7 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
         editPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditPhotoOptionFragment fragment = new EditPhotoOptionFragment();
-                // pass data to fragment
-                Bundle bundle = new Bundle();
-                if (!defaultPhoto) {
-                    bundle.putString("adding","new");
-                } else {
-                    bundle.putString("adding","default");
-                }
-                fragment.setArguments(bundle);
-                fragment.show(getSupportFragmentManager(), "edit photo option");
+                new EditPhotoOptionFragment().show(getSupportFragmentManager(), "edit photo option");
                 Log.d(TAG,"Edit Photo button clicked");
             }
         });
@@ -122,14 +105,25 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
                 // split author text by '\n'
                 List<String> authorList = Arrays.asList(newAuthor.split("\n"));
 
-                int validDigit = 0;
-                for (char ch : newISBN.toCharArray()){
-                    if (Character.isDigit(ch)){
-                        validDigit++;
-                    }
-                }
-
-                if (newAuthor.equals("")  || newTitle.equals("") || validDigit!=13){
+                // validate input TODO:validator is not working properly
+//                BookInformationValidator validator =
+//                        new BookInformationValidator(newTitle, newAuthor, newDescr, newISBN);
+//                if(!validator.isValid()){ // invalid input
+//                    Log.d(TAG, "invalid input");
+//                    ArrayList<ValidationError> errors = validator.getError();
+//                    for(ValidationError error : errors){
+//
+//                        if ("isbn".equals(error.getField())) {
+//                            isbn.setError(error.getMessage());
+//                            Log.d(TAG, "invalid isbn");
+//                        } else {
+//                            Log.d(TAG, "unknown error");
+//
+//                            Toast.makeText(AddBookActivity.this,
+//                                    "Unknown Error, please try again", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+                if (newAuthor.equals(null) || newTitle.equals(null) || newISBN.length()<13){
                     // invalid input - empty title/author/isbn
                     Context context = getApplicationContext();
                     Toast.makeText(context, "Invalid input", Toast.LENGTH_SHORT).show();
@@ -179,10 +173,6 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
                                                 status.put("owner", "available");
                                                 status.put("public", "available");
 
-                                                Map<String, Double> location = new HashMap<>();
-                                                location.put("latitude", null);
-                                                location.put("longitude", null);
-
                                                 Map<String, Object> bookInfo = new HashMap<>();
                                                 bookInfo.put("authors", authorList);
                                                 bookInfo.put("title", newTitle);
@@ -192,9 +182,8 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
                                                 bookInfo.put("ownerReference", userRef);
                                                 bookInfo.put("requestedUsers", null);
                                                 bookInfo.put("status", status);
-                                                bookInfo.put("location", location);
 
-                                                if (defaultPhoto) {
+                                                if (!photoUpdated) {
                                                     // use default image
                                                     bookInfo.put("photo", "default");
                                                 } else {
@@ -217,8 +206,7 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
                                                     uploadTask.addOnFailureListener(new OnFailureListener() {
                                                         @Override
                                                         public void onFailure(@NonNull Exception exception) {
-                                                            Context context = getApplicationContext();
-                                                            Toast.makeText(context, "image upload failed", Toast.LENGTH_SHORT).show();
+                                                            Log.d(TAG,"image upload failed");
                                                         }
                                                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                         @Override
@@ -290,7 +278,7 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
     public void updateImage(Uri uri){
         ImageView image = findViewById(R.id.addBookImage);
         image.setImageURI(uri);
-        defaultPhoto = false;
+        photoUpdated = true;
         Log.d(TAG, "image view updated");
     }
 
@@ -301,92 +289,20 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
     public void updateImage(Bitmap bitmap){
         ImageView image = findViewById(R.id.addBookImage);
         image.setImageBitmap(bitmap);
-        defaultPhoto = false;
+        photoUpdated = true;
         Log.d(TAG, "image view updated");
     }
 
-    /**
-     * set image to default
-     */
-    public void deleteImage(){
-        ImageView image = findViewById(R.id.addBookImage);
-        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.default_book);
-        image.setImageDrawable(drawable);
-        defaultPhoto = true;
-        Log.d(TAG, "image view set to default");
-    }
-
-    @Override
-    public void deleteImage(String imagePath) {
-        // not to be implemented
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.bookinfoscan, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @SuppressLint("UnsafeExperimentalUsageError")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // check if menu item is clicked
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
 
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        } else if (item.getItemId() ==  R.id.infoScan) {
-            // go to scan fragment
-
-            isbnFragment = new IsbnFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.add_book_layout, isbnFragment);
-            fragmentTransaction.commit();
-
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onScanDone(Bundle resultBundle) {
-        // get scan result from IsbnFragment
-
-        if (resultBundle == null) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.remove(isbnFragment);
-            fragmentTransaction.commit();
-            return;
-        }
-
-        if (resultBundle.getString("isbn") != null) {
-            EditText titleView = findViewById(R.id.addBookTitle);
-            EditText authorView = findViewById(R.id.addBookAuthor);
-            EditText isbnView = findViewById(R.id.addBookISBN);
-            EditText descrView = findViewById(R.id.addBookDescr);
-
-            Log.d("scan result", "title: " + resultBundle.getString("title") + "\nauthor: "
-                    + resultBundle.getString("authors") + "\nisbn: " + resultBundle.getString("isbn"));
-
-            // fill the editTexts with result of scan
-            titleView.setText(resultBundle.getString("title"));
-            isbnView.setText(resultBundle.getString("isbn"));
-            descrView.setText(resultBundle.getString("description"));
-
-            List<String> authorList = Arrays.asList(resultBundle.getString("authors").split(","));
-            String author = authorList.get(0);
-            for (int counter = 1; counter < authorList.size(); counter++) {
-                author = author + '\n' + authorList.get(counter);
-            }
-            ;
-            authorView.setText(author);
-
-        } else {
-            Toast.makeText(getApplicationContext(), "No result found!", Toast.LENGTH_LONG).show();
-        }
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.remove(isbnFragment);
-        fragmentTransaction.commit();
-
     }
 }

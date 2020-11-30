@@ -1,9 +1,4 @@
 package com.example.alexandria;
-/**
- * This class uses the BarcodeScanner libraries from the Google ML Vision API and the CameraX API to read barcodes
- * from a live camera feed. It also uses the Google Books API to get info about a book based on its isbn.
- * @author Kyla Wong, ktwong@ualberta.ca
- */
 
 import android.Manifest;
 import android.app.Application;
@@ -118,18 +113,10 @@ public class IsbnFragment extends Fragment {
 
     private static final String ISBN_API_KEY = "AIzaSyB6bLjuktybRey2iJ0SxavVBtkiFNhPiug";
 
-    /**
-     * Interface that must be implemented by the activity that calls this fragment
-     * in order to receive information from the scanner.
-     */
     public interface IsbnFragmentListener {
         void onScanDone(Bundle resultBundle);
     }
 
-    /**
-     * Creates and returns a new instance of this fragment.
-     * @return The instance of this fragment created.
-     */
     public static IsbnFragment newInstance() {
         IsbnFragment fragment = new IsbnFragment();
         return fragment;
@@ -140,13 +127,6 @@ public class IsbnFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    /**
-     * Creates the fragment's view and sets up the camera used to read barcodes
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View isbnLayout = inflater.inflate(R.layout.fragment_isbn, container, false);
@@ -166,20 +146,10 @@ public class IsbnFragment extends Fragment {
         return isbnLayout;
     }
 
-    /**
-     * Checks whether the user has granted permission for the camera to be used
-     * @return Boolean indicating whether permission has been granted
-     */
     private boolean isCameraPermissionGranted() {
         return ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
     }
 
-    /**
-     * Sets up the camera if the permissions needed to run the scanner are granted by the user
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.i(TAG, "Permission granted!");
@@ -194,9 +164,6 @@ public class IsbnFragment extends Fragment {
 
     }
 
-    /**
-     * Binds the live camera view to the lifecycle of the camera provider
-     */
     private void bindCameraUseCases() {
         if (cameraProvider == null) {
             return;
@@ -217,9 +184,6 @@ public class IsbnFragment extends Fragment {
         bindAnalysisUseCase();
     }
 
-    /**
-     * Sets up and binds the barcode analyzer to the camera provider lifecycle
-     */
     private void bindAnalysisUseCase() {
         if (cameraProvider == null) {
             return;
@@ -246,9 +210,6 @@ public class IsbnFragment extends Fragment {
         cameraProvider.bindToLifecycle(this, cameraSelector, analysisUseCase);
     }
 
-    /**
-     * Sets up the camera with a live preview
-     */
     private void setupCamera() {
         cameraSelector = new CameraSelector.Builder().requireLensFacing(lensFacing).build();
         new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()))
@@ -265,9 +226,6 @@ public class IsbnFragment extends Fragment {
         //barcodeScanner = BarcodeScanning.getClient();
     }
 
-    /**
-     * The CameraXViewModel used by the camer
-     */
     public static final class CameraXViewModel extends AndroidViewModel {
 
         private static final String TAG = "CameraXViewModel";
@@ -301,11 +259,6 @@ public class IsbnFragment extends Fragment {
         }
     }
 
-    /**
-     * Makes a call to the the Google Books API to get the info of a book based on the given isbn
-     * @param barcode The barcode of the book to lookup
-     * @return The results of the API call
-     */
     private Bundle getBookInfo(Barcode barcode) {
         Bundle results = new Bundle();
         String bookSearchString = "https://www.googleapis.com/books/v1/volumes?" + "q=isbn:" + barcode.getRawValue() + "&key=" + ISBN_API_KEY;
@@ -318,12 +271,6 @@ public class IsbnFragment extends Fragment {
         return null;
     }
 
-    /**
-     * Parses the results from the API call into a returnable Bundle
-     * @param result the results of the API call
-     * @param isbn the isbn of the book that the API call was made on
-     * @return a Bundle of the parsed results
-     */
     private Bundle parseResults(String result, String isbn) {
         Bundle bookBundle = new Bundle();
         try {
@@ -377,10 +324,6 @@ public class IsbnFragment extends Fragment {
         return bookBundle;
     }
 
-    /**
-     * Checks that activity calling the fragment implements ths IsbnFragmentListener interface
-     * @param context
-     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -392,9 +335,6 @@ public class IsbnFragment extends Fragment {
         }
     }
 
-    /**
-     * The class used to make the asynchronus call to the Google Books APi
-     */
     private class GetBookInfo extends AsyncTask<String, Void, String> {
 
         @Override
@@ -432,9 +372,6 @@ public class IsbnFragment extends Fragment {
 
     }
 
-    /**
-     * The BarcodeScannerProcessor used to process the images provided by the live camera feed
-     */
     public class BarcodeScannerProcessor {
         private static final String TAG = "BarcodeProcessor";
 
@@ -539,6 +476,12 @@ public class IsbnFragment extends Fragment {
                         });
             }
 
+            /**
+             * After this method is called, no runnables that have been submitted or are subsequently
+             * submitted will start to execute, turning this executor into a no-op.
+             *
+             * <p>Runnables that have already started to execute will continue.
+             */
             public void shutdown() {
                 shutdown.set(true);
             }

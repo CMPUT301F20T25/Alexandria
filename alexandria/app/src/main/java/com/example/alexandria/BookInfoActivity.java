@@ -4,11 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -36,7 +34,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -81,47 +78,11 @@ public class BookInfoActivity extends AppCompatActivity {
 
         updateView();
 
-        // make image clickable and zoom image
-        ImageView imageView = findViewById(R.id.myBookImage);
-        imageView.setClickable(true);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ViewImageFragment fragment = new ViewImageFragment();
-
-                Bundle bundle = new Bundle();
-
-                // get image in bytes
-                imageView.setDrawingCacheEnabled(true);
-                imageView.buildDrawingCache();
-                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] data = baos.toByteArray();
-
-                bundle.putByteArray("image",data);
-                fragment.setArguments(bundle);
-                fragment.show(getSupportFragmentManager(), "enlarge image");
-
-            }
-        });
-
-
         Button userButton = findViewById(R.id.borrowerOrOwnerButton);
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO: display owner or borrower info
-            }
-        });
-
-        Button requestButton = findViewById(R.id.requestButton);
-        requestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO: request book
-                // add user to requestedUsers list, set owner status to requested
             }
         });
 
@@ -163,7 +124,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                         // display book info
 
-                        ImageView imageView = findViewById(R.id.myBookImage);
+                        ImageView imageButton = findViewById(R.id.myBookImageButton);
                         TextView titleView = findViewById(R.id.myBookTitle);
                         TextView authorView = findViewById(R.id.myBookAuthor);
                         TextView isbnView = findViewById(R.id.myBookISBN);
@@ -171,7 +132,6 @@ public class BookInfoActivity extends AppCompatActivity {
                         TextView statusView = findViewById(R.id.myBookStatus);
                         Button borrowerOrOwnerButton = findViewById(R.id.borrowerOrOwnerButton);
                         TextView borrowerOrOwner_titleView = findViewById(R.id.borrowerOrOnwerTitle);
-                        Button requestButton = findViewById(R.id.requestButton);
 
                         titleView.setText(title);
                         authorView.setText(author);
@@ -186,61 +146,7 @@ public class BookInfoActivity extends AppCompatActivity {
                                 public void onSuccess(byte[] bytes) {
                                     // Use the bytes to display the image
                                     Drawable image = new BitmapDrawable(getResources(), BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                                    imageView.setImageDrawable(image);
-
-                                    // set owner/borrower button visibility & status
-
-                                    if (userRef.equals(ownerRef)) {
-                                        // for owner -  hide borrower section when book is available
-
-                                        // hide request button
-                                        requestButton.setVisibility(View.INVISIBLE);
-
-                                        statusView.setText(ownerStatus);
-                                        if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
-
-                                            borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
-                                            borrowerOrOwner_titleView.setText("Current Borrower:");
-                                            borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-
-                                            // get username
-                                            borrowerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                    DocumentSnapshot document = task.getResult();
-                                                    String username = String.valueOf(document.getData().get("username"));
-                                                    borrowerOrOwnerButton.setText(username);
-
-                                                }
-                                            });
-
-
-                                        } else { // status = Available/Requested
-                                            borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
-                                            borrowerOrOwnerButton.setVisibility(View.INVISIBLE);
-                                        }
-
-                                    } else if (!userRef.equals(ownerRef) && !userRef.equals(borrowerRef)){
-                                        // for public user - hide borrower, show owner
-
-                                        // get owner username
-                                        ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                DocumentSnapshot document = task.getResult();
-                                                String username = String.valueOf(document.getData().get("username"));
-                                                borrowerOrOwnerButton.setText(username);
-
-                                                borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-                                                borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
-                                                borrowerOrOwner_titleView.setText("Owner:");
-
-                                                statusView.setText(publicStatus);
-
-                                            }
-                                        });
-
-                                    }
+                                    imageButton.setImageDrawable(image);
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -249,62 +155,59 @@ public class BookInfoActivity extends AppCompatActivity {
                                     Toast.makeText(context, "Retrieving photo failed ", Toast.LENGTH_SHORT).show();
                                 }
                             });
-                        } else { // imagePath = default
-                            // set owner/borrower button visibility & status
-
-                            Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.default_book);
-                            imageView.setImageDrawable(drawable);
-
-                            if (userRef.equals(ownerRef)) {
-                                // for owner -  hide borrower section when book is available
-
-                                statusView.setText(ownerStatus);
-                                if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
-
-                                    borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
-                                    borrowerOrOwner_titleView.setText("Current Borrower:");
-                                    borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-
-                                    // get username
-                                    borrowerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            DocumentSnapshot document = task.getResult();
-                                            String username = String.valueOf(document.getData().get("username"));
-                                            borrowerOrOwnerButton.setText(username);
-
-                                        }
-                                    });
+                        }
 
 
-                                } else { // status = Available/Requested
-                                    borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
-                                    borrowerOrOwnerButton.setVisibility(View.INVISIBLE);
-                                }
+                        // set owner/borrower button visibility & status
 
-                            } else if (!userRef.equals(ownerRef) && !userRef.equals(borrowerRef)){
-                                // for public user - hide borrower, show owner
+                        if (userRef.equals(ownerRef)) {
+                            // for owner -  hide borrower section when book is available
 
-                                // get owner username
-                                ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            statusView.setText(ownerStatus);
+                            if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
+
+                                borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
+                                borrowerOrOwner_titleView.setText("Current Borrower:");
+                                borrowerOrOwnerButton.setVisibility(View.VISIBLE);
+
+                                // get username
+                                borrowerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                         DocumentSnapshot document = task.getResult();
                                         String username = String.valueOf(document.getData().get("username"));
                                         borrowerOrOwnerButton.setText(username);
 
-                                        borrowerOrOwnerButton.setVisibility(View.VISIBLE);
-                                        borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
-                                        borrowerOrOwner_titleView.setText("Owner:");
-
-                                        statusView.setText(publicStatus);
-
                                     }
                                 });
 
-                            }
-                        }
 
+                            } else { // status = Available/Requested
+                                borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
+                                borrowerOrOwnerButton.setVisibility(View.INVISIBLE);
+                            }
+
+                        } else if (!userRef.equals(ownerRef) && !userRef.equals(borrowerRef)){
+                            // for public user - hide borrower, show owner
+
+                            // get owner username
+                            ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    DocumentSnapshot document = task.getResult();
+                                    String username = String.valueOf(document.getData().get("username"));
+                                    borrowerOrOwnerButton.setText(username);
+
+                                    borrowerOrOwnerButton.setVisibility(View.VISIBLE);
+                                    borrowerOrOwner_titleView.setVisibility(View.VISIBLE);
+                                    borrowerOrOwner_titleView.setText("Owner:");
+
+                                    statusView.setText(publicStatus);
+
+                                }
+                            });
+
+                        }
 
 
                     } else {
@@ -316,20 +219,6 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateView();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        updateView();
-    }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -357,14 +246,19 @@ public class BookInfoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            Log.d("toolbar item", "Back button selected");
-        } else if (item.getItemId() == R.id.editBook) {
-            Intent intent = new Intent(this, EditBookActivity.class);
-            intent.putExtra("book", bookID );
-            startActivityForResult(intent, EDIT_BOOK_CODE);
-            Log.d("toolbar item", "Edit button selected");
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                Log.d("toolbar item", "Back button selected");
+                break;
+            case R.id.editBook:
+                Intent intent = new Intent(this, EditBookActivity.class);
+                intent.putExtra("book", bookID );
+                startActivityForResult(intent, EDIT_BOOK_CODE);
+                Log.d("toolbar item", "Edit button selected");
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

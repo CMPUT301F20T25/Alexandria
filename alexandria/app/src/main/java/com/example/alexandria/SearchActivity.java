@@ -113,9 +113,12 @@ public class SearchActivity extends BaseActivity {
             @Override
             public void onItemClick(int position, View v, String info) {
                 if (resultAdapter.getItemViewType(position) == R.layout.activity_search_useritem) {
-                    Intent intent = new Intent(v.getContext(), UserInfoActivity.class); //change class name to match what gets made
-                    intent.putExtra("userId", info);
+                    //TODO: connect to public user profile page
+                    /*
+                    Intent intent = new Intent(v.getContext(), UserProfileActivity.class); //change class name to match what gets made
+                    intent.putExtra("username", info);
                     startActivity(intent);
+                     */
                 } else if (resultAdapter.getItemViewType(position) == R.layout.activity_search_bookitem) {
                     Intent intent = new Intent(v.getContext(), BookInfoActivity.class);
                     intent.putExtra("bookID", info);
@@ -186,7 +189,7 @@ public class SearchActivity extends BaseActivity {
                                     Map<String,Object> status = (Map<String,Object>) r.get("status");
                                     models.add(new ResultModel.SearchBookItemModel(r.get("id").toString(), r.get("title").toString(), authors, r.get("owner").toString(), status.get("public").toString()));
                                 } else if (r.get("resultType").equals("user")) {
-                                    models.add(new ResultModel.SearchUserItemModel(r.get("id").toString(), r.get("username").toString(), r.get("bio").toString()));
+                                    models.add(new ResultModel.SearchUserItemModel(r.get("username").toString(), r.get("bio").toString()));
                                 }
                             }
                             updateResults(models);
