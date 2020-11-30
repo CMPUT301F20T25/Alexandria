@@ -31,6 +31,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * display book information to its borrower
@@ -54,6 +55,11 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Intent intent = getIntent();
+        bookID = intent.getStringExtra("bookID");
+
+        bookRef = db.collection("books").document(bookID);
 
         // make image clickable and zoom image
         ImageView imageView = findViewById(R.id.borrowedBookImage);
@@ -89,18 +95,34 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
         });
 
 
-        Button confirmButton = findViewById(R.id.returnBookButton);
-        confirmButton.setOnClickListener(new View.OnClickListener() {
+        Button returnButton = findViewById(R.id.returnBookButton);
+        returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO - return book button
+
+                // set borrower & status to null
+
+                Log.d("accepted", "confirm button clicked");
+
+                bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // set borrower status to 'borrowed'
+                                Map<String, String> status = (Map<String, String>) document.getData().get("status");
+                                status.put("borrower", null);
+
+                                bookRef.update("status", status);
+
+                                finish();
+                            }
+                        }
+                    }
+                });
             }
         });
-
-        Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
-
-        bookRef = db.collection("books").document(bookID);
 
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
