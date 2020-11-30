@@ -71,14 +71,14 @@ public class MainActivity extends AppCompatActivity{
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
 
-                // check input
-                if (email.equals("") || password.equals("")){
-                    Toast.makeText(MainActivity.this, "Please enter Email address and Password ", Toast.LENGTH_SHORT).show();
-                } else {
-                    login(email, password);
+                if(email.length() == 0){
+                    emailEditText.setError("Please input your email");
                 }
-
-
+                
+                if(password.length() == 0){
+                    passwordEditText.setError("Please input your password");
+                }
+                login(email, password);
             }
         });
 
