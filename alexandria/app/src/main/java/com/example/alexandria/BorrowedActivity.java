@@ -1,7 +1,6 @@
 package com.example.alexandria;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
@@ -77,7 +76,8 @@ public class BorrowedActivity extends BaseActivity {
                     String publicStatus = statusMap.get("public");
 
                     if (userRef.equals(borrowerRef)) {
-                        bookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+                        String bookStatus = "borrowed";
+                        bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
                     }
                 }
                 bookAdapter.notifyDataSetChanged();

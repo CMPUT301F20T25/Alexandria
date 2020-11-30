@@ -5,7 +5,11 @@ package com.example.alexandria;
  */
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +20,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -28,15 +41,17 @@ import javax.xml.transform.Result;
 public class SearchAdapter extends RecyclerView.Adapter {
     private ArrayList<ResultModel> resultModels = new ArrayList<ResultModel>();
     private static ClickListener clickListener;
+    private Context context;
 
     /**
      * Constructor of the SearchAdapter
      * @param viewModels an ArrayList or ResultModels to be displayed
      */
-    public SearchAdapter(ArrayList<ResultModel> viewModels) {
+    public SearchAdapter(ArrayList<ResultModel> viewModels, Context context) {
         if (viewModels != null) {
             this.resultModels.addAll(viewModels);
         }
+        this.context = context;
     }
 
     /**
@@ -159,6 +174,39 @@ public class SearchAdapter extends RecyclerView.Adapter {
             this.ownerView.setText("@" + viewModel.getOwner());
             this.publicStatusView.setText(viewModel.getPublicStatus());
             this.bookID = viewModel.getBookId();
+            //set image
+            DocumentReference bookRef = FirebaseFirestore.getInstance().collection("books").document(viewModel.getBookId());
+
+            bookRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            String imagePath = String.valueOf(documentSnapshot.getData().get("photo"));
+                            if (!imagePath.isEmpty()) {
+                                StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                                storageReference.child(imagePath).getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                    @Override
+                                    public void onSuccess(byte[] bytes) {
+                                        // Use the bytes to display the image
+                                        Drawable image = new BitmapDrawable(context.getResources(), BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                        photoView.setImageDrawable(image);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("Search Adapter", "Unable to get image from storage");
+                                    }
+                                });
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("ResultModel", "Failed to retrieve book's image: " + viewModel.getBookId());
+                        }
+                    });
         }
 
         /**

@@ -1,14 +1,12 @@
 package com.example.alexandria;
-/**
- * allows user to add a book
- * @author Xueying Luo
- */
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -44,6 +42,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * allows user to add a book
+ * @author Xueying Luo
+ */
 public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFragment.ConfirmPhotoListener{
 
     private boolean photoUpdated = false;
@@ -70,6 +72,14 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
         EditText author = findViewById(R.id.addBookAuthor);
         EditText isbn = findViewById(R.id.addBookISBN);
         EditText descr = findViewById(R.id.addBookDescr);
+
+        try {
+            Intent intent = getIntent();
+            title.setText(intent.getStringExtra("title"));
+            author.setText(intent.getStringExtra("authors"));
+            isbn.setText(intent.getStringExtra("isbn"));
+            descr.setText(intent.getStringExtra("description"));
+        } catch (Exception ignored) { }
 
         // default image - http://www.freepik.com - Designed by stockgiu / Freepik
         Button editPhoto = findViewById(R.id.editPhotoButton);
@@ -175,7 +185,7 @@ public class AddBookActivity extends AppCompatActivity implements ConfirmPhotoFr
 
                                                 if (!photoUpdated) {
                                                     // use default image
-                                                    bookInfo.put("photo", null);
+                                                    bookInfo.put("photo", "default");
                                                 } else {
                                                     // upload image to storage
                                                     // source: https://firebase.google.com/docs/storage/android/upload-files
