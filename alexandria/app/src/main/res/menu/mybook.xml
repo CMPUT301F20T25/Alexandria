@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/addBook"
         android:enabled="true"
         android:icon="@drawable/ic_my_add"
-        android:tint="@android:color/white"
         android:title="addbook"
         android:visible="true"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/show_all"
+        android:title="All Books" />
+
+    <item
+        android:id="@+id/show_available"
+        android:title="Available Status" />
+
+    <item
+        android:id="@+id/show_requested"
+        android:title="Requested Status" />
+
+    <item
+        android:id="@+id/show_accepted"
+        android:title="Accepted Status" />
+
+    <item
+        android:id="@+id/show_borrowed"
+        android:title="Borrowed Status" />
 
 </menu>

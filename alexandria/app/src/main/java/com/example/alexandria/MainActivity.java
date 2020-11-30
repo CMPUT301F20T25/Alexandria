@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity{
                 // getting info from components
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
+
                 if(email.length() == 0){
                     emailEditText.setError("Please input your email");
                 }
@@ -78,7 +79,6 @@ public class MainActivity extends AppCompatActivity{
                     passwordEditText.setError("Please input your password");
                 }
                 login(email, password);
-
             }
         });
 

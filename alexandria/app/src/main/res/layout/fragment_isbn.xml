@@ -29,9 +29,11 @@
             android:layout_alignParentStart="true"
             android:clickable="true"
             android:focusable="true"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:src="@drawable/ic_my_close"
             android:visibility="visible"
-            android:contentDescription="@string/back_button" />
+            android:contentDescription="@string/back_button"
+            android:layout_alignParentLeft="true"
+            app:tint="@color/white" />
 
     </RelativeLayout> </androidx.appcompat.widget.Toolbar>
 
@@ -44,6 +46,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/isbnFragment_toolbar" />
 
-
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/my_scan_ui"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/isbnFragment_toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

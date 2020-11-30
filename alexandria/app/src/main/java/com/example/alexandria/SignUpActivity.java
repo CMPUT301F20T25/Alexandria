@@ -103,7 +103,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 passwordEditText.setError(error.getMessage());
                                 break;
                             default:
-                                Toast.makeText(SignUpActivity.this,"Unknown Error, please try again", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignUpActivity.this,"Please fill in each line correctly", Toast.LENGTH_SHORT).show();
                         }
                     }
                     return;
