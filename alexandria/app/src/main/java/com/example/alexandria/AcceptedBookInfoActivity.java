@@ -3,6 +3,7 @@ package com.example.alexandria;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
  * display book information to its borrower
  * @author Xueying Luo
  */
-public class BorrowedBookInfoActivity extends AppCompatActivity {
+public class AcceptedBookInfoActivity extends AppCompatActivity {
 
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
@@ -46,15 +47,15 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_borrowed_book_info);
+        setContentView(R.layout.activity_accepted_book_info);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.borrowedBook_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.acceptedBook_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // make image clickable and zoom image
-        ImageView imageView = findViewById(R.id.borrowedBookImage);
+        ImageView imageView = findViewById(R.id.acceptedBookImage);
         imageView.setClickable(true);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,11 +108,11 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
 
                         // display book info
 
-                        ImageView imageView = findViewById(R.id.borrowedBookImage);
-                        TextView titleView = findViewById(R.id.borrowedBookTitle);
-                        TextView authorView = findViewById(R.id.borrowedBookAuthor);
-                        TextView isbnView = findViewById(R.id.borrowedBookISBN);
-                        TextView descrView = findViewById(R.id.borrowedBookDescr);
+                        ImageView imageView = findViewById(R.id.acceptedBookImage);
+                        TextView titleView = findViewById(R.id.acceptedBookTitle);
+                        TextView authorView = findViewById(R.id.acceptedBookAuthor);
+                        TextView isbnView = findViewById(R.id.acceptedBookISBN);
+                        TextView descrView = findViewById(R.id.acceptedBookDescr);
 
                         titleView.setText(title);
                         authorView.setText(author);
@@ -155,7 +156,7 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                         });
 
 
-                        Button returnScanButton = findViewById(R.id.returnScanButton);
+                        Button returnScanButton = findViewById(R.id.borrowScanButton);
                         returnScanButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
