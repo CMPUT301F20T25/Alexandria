@@ -96,7 +96,7 @@ public class MyBookActivity extends BaseActivity {
                     }
 
                     if (userRef.equals(ownerRef)) {
-                        bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
+                        bookDataList.add(new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
                     }
                 }
                 bookShowDataList.clear();
