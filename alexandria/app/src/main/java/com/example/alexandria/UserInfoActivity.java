@@ -1,4 +1,8 @@
 package com.example.alexandria;
+/**
+ * Displays the public profile information of the given user.
+ * @author Kyla Wong, ktwong@ualberta.ca
+ */
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -74,6 +78,9 @@ public class UserInfoActivity extends AppCompatActivity {
         setInfo();
     }
 
+    /**
+     * Queries the database for the user's info and sets it to display in the UI
+     */
     private void setInfo() {
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("users").document(userId);
 

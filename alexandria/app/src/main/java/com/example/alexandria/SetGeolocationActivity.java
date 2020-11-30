@@ -1,4 +1,9 @@
 package com.example.alexandria;
+/**
+ * Allows users to set the Geolocation of a request and writes the results to the database if the
+ * location is set and confirmed.
+ * @author Kyla Wong, ktwong@ualberta.ca
+ */
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -133,6 +138,10 @@ public class SetGeolocationActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Updates the position of the marker upon user confirmation
+     * @param p the GeoPoint to update the mark to
+     */
     private void updateMarker(GeoPoint p) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder
@@ -157,6 +166,9 @@ public class SetGeolocationActivity extends AppCompatActivity {
         alertDialogBuilder.show();
     }
 
+    /**
+     * Writes the confirmed book request to the database
+     */
     private void writeRequest() {
         DocumentReference bookDocument = FirebaseFirestore.getInstance().collection("books").document(bookId);
 
@@ -204,6 +216,12 @@ public class SetGeolocationActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Writes the notifications for the user requests accepted and denied to the database
+     * @param requests ArrayList of document references of users who requested the book
+     * @param ownerReference document reference of the owner of the book
+     * @param ownerUsername String of the book's owner's username
+     */
     private void notifyUsers(@NonNull ArrayList<DocumentReference> requests, Object ownerReference, String ownerUsername) {
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("users");
         String TAG = "notify";
