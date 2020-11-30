@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -35,6 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -78,6 +80,34 @@ public class BookInfoActivity extends AppCompatActivity {
         bookRef = db.collection("books").document(bookID);
 
         updateView();
+
+        // make image clickable and zoom image
+        ImageView imageView = findViewById(R.id.myBookImage);
+        imageView.setClickable(true);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ViewImageFragment fragment = new ViewImageFragment();
+
+                Bundle bundle = new Bundle();
+
+                // get image in bytes
+                imageView.setDrawingCacheEnabled(true);
+                imageView.buildDrawingCache();
+                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
+
+                bundle.putByteArray("image",data);
+                fragment.setArguments(bundle);
+                fragment.show(getSupportFragmentManager(), "enlarge image");
+
+
+            }
+        });
+
 
         Button userButton = findViewById(R.id.borrowerOrOwnerButton);
         userButton.setOnClickListener(new View.OnClickListener() {

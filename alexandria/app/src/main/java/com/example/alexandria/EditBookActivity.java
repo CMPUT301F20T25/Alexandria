@@ -1,8 +1,4 @@
 package com.example.alexandria;
-/**
- * allows user to edit or delete book
- * @author Xueying Luo
- */
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,6 +47,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * allows user to edit or delete book
+ * @author Xueying Luo
+ */
 public class EditBookActivity extends AppCompatActivity implements ConfirmPhotoFragment.ConfirmPhotoListener, EditPhotoOptionFragment.deleteImageListener {
 
     protected static final int RESULT_DELETE = 2;

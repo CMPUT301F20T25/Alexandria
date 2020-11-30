@@ -54,8 +54,6 @@ public class EditPhotoOptionFragment extends DialogFragment {
         Button fromPhone = view.findViewById(R.id.from_phone);
         Button takePhoto = view.findViewById(R.id.take_photo);
 
-        StorageReference storageRef = storage.getReference();
-
         String photo = "default";
         if (getArguments().getString("adding") != null) {
              photo = getArguments().getString("adding");  // new or default - from AddBookActivity
