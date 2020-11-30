@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class IsbnActivity extends FragmentActivity implements View.OnClickListener, IsbnFragment.IsbnFragmentListener {
+public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnFragmentListener {
 
     private Toolbar isbnToolbar;
     private ImageView isbnBackImage;
@@ -107,8 +107,19 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
 
         //set button onClick listeners
         action = ACTION_UNSET;
-        actionButton.setOnClickListener(new OnActionClickListener());
-        rescanButton.setOnClickListener(this);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performAction();
+            }
+        });
+        rescanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action = ACTION_UNSET;
+                scanIsbn();
+            }
+        });
         isbnBackImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,28 +142,6 @@ public class IsbnActivity extends FragmentActivity implements View.OnClickListen
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_EDIT_BOOK | requestCode == RC_ADD_BOOK) {
             finish();
-        }
-    }
-
-    /**
-     * Calls the performAction() method on click
-     */
-    private class OnActionClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            performAction();
-        }
-    }
-
-    /**
-     * Calls the isbn scanner fragment if the user selects the rescan button
-     * @param v the view clicked
-     */
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.isbn_rescanButton) {
-            action = ACTION_UNSET;
-            scanIsbn();
         }
     }
 
