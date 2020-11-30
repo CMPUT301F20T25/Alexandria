@@ -32,26 +32,13 @@
                 android:id="@+id/editImage"
                 android:layout_width="292dp"
                 android:layout_height="205dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:contentDescription="photo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/default_book" />
-
-            <Button
-                android:id="@+id/editPhotoButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_marginTop="5dp"
-                android:text="Edit Photo"
-                android:textColor="#03A9F4"
-                app:backgroundTint="#FFFFFF"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editImage" />
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
 
             <EditText
                 android:id="@+id/editTitle"
@@ -59,14 +46,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:hint="Book title"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/editPhotoButton2" />
+                app:layout_constraintTop_toBottomOf="@+id/editImage" />
 
             <EditText
                 android:id="@+id/editAuthor"
@@ -74,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:hint="Author (one per line)"
@@ -89,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:hint="ISBN (13 digits)"
@@ -108,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:hint="Book description (optional)"
@@ -121,7 +108,7 @@
                 android:id="@+id/scanButton"
                 android:layout_width="51dp"
                 android:layout_height="47dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="22dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:background="#00FFFFFF"
@@ -138,15 +125,13 @@
                 android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginRight="60dp"
                 android:text="SAVE"
                 app:layout_constraintBottom_toBottomOf="@+id/deleteBook"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/deleteBook"
-                app:layout_constraintTop_toBottomOf="@+id/editDescr" />
+                app:layout_constraintStart_toEndOf="@+id/deleteBook" />
 
             <Button
                 android:id="@+id/deleteBook"
@@ -154,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:layout_marginLeft="60dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="24dp"

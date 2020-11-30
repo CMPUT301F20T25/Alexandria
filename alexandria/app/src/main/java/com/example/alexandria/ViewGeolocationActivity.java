@@ -1,9 +1,4 @@
 package com.example.alexandria;
-/**
- * Open up activity where given GeoPoint can be viewed on an interactive map. Map data is from the Open Street Maps Library and
- * integrated with the osmdroid API.
- * @author Kyla Wong, ktwong@ualberta.ca
- */
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -37,9 +32,9 @@ public class ViewGeolocationActivity extends AppCompatActivity {
         ImageView backImage;
 
         Intent intent;
-        String bookTitle = "";
+        String bookTitle;
 
-        GeoPoint markerLocation = new GeoPoint(0.0, 0.0);
+        GeoPoint markerLocation;
 
         intent = getIntent();
         try {
@@ -49,8 +44,11 @@ public class ViewGeolocationActivity extends AppCompatActivity {
             markerLocation = new GeoPoint(lat, lon);
         } catch (Exception e) {
             Log.e("View Geo", "No title given");
-            finish();
         }
+
+        //TODO: delete; for testing only
+        bookTitle = "Harry Potter and the Goblet of Fire";
+        markerLocation = new GeoPoint(0.0, 0.0);
 
         toolbarText = (TextView) findViewById(R.id.viewgeo_toolbarText);
         toolbarText.setText("View Request Location");

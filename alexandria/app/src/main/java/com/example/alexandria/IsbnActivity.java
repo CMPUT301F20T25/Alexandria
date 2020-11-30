@@ -1,9 +1,4 @@
 package com.example.alexandria;
-/**
- * This activity uses the IsbnFragment to scan barcodes from a live camera preview and allows
- * the user to performs actions based on the books current status.
- * @author Kyla Wong, ktwong@ualberta.ca
- */
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnFragmentListener {
 
@@ -131,12 +127,6 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
         scanIsbn();
     }
 
-    /**
-     * If this activity it returned to after a book is added or edited, this activity finishes
-     * @param requestCode requestCode sent to called activity
-     * @param resultCode resultCode returned by activity called
-     * @param data the Intent sent by the called activity
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -154,10 +144,6 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
         fragmentTransaction.commit();
     }
 
-    /**
-     * Checks the results of the barcode scan
-     * @param resultBundle results from the scan
-     */
     @Override
     public void onScanDone(Bundle resultBundle) {
         if (resultBundle == null) {
@@ -181,10 +167,6 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
         fragmentTransaction.commit();
     }
 
-    /**
-     * Sets the action to take based on the book that was scanned
-     * @param isbn Isbn of the book scanned
-     */
     private void setAction(String isbn) {
         CollectionReference booksRef = FirebaseFirestore.getInstance().collection("books");
 
@@ -268,9 +250,6 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
         });
     }
 
-    /**
-     * Carries out the action when the Action button is pressed
-     */
     private void performAction() {
         String title = "";
         String question = "";
@@ -342,10 +321,8 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
         alertDialogueBuilder.show();
     }
 
-    /**
-     * Updates the status of a book respective to its current status
-     */
     private void changeStatusQuery() {
+        //TODO: change status based on action
         DocumentReference bookRef = FirebaseFirestore.getInstance().collection("books").document(results.getString("bookId"));
 
         String ownerStatus = null;
@@ -358,7 +335,7 @@ public class IsbnActivity extends FragmentActivity implements IsbnFragment.IsbnF
                 borrowerStatus = "borrowed";
                 publicStatus = "unavailable";
                 break;
-            case ACTION_CONFIRM_RETURN: //TODO: change the borrower to null?
+            case ACTION_CONFIRM_RETURN:
                 ownerStatus = "available";
                 borrowerStatus = null;
                 publicStatus = "available";

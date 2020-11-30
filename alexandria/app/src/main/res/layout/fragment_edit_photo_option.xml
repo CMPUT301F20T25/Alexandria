@@ -28,4 +28,14 @@
         android:textColor="#673AB7"
         app:backgroundTint="#FFFFFF"/>
 
+    <Button
+        android:id="@+id/delete_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="8dp"
+        android:text="Delete Photo"
+        android:textColor="#673AB7"
+        app:backgroundTint="#FFFFFF"/>
 </LinearLayout>

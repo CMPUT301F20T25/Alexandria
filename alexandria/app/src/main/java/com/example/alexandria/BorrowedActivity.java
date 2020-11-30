@@ -72,13 +72,12 @@ public class BorrowedActivity extends BaseActivity {
                     DocumentReference borrowerRef = (DocumentReference) doc.getData().get("borrower");
 
                     Map<String, String> statusMap = (Map) doc.getData().get("status");
-                    String borrowerStatus = statusMap.get("borrower");
+                    String ownerStatus = statusMap.get("owner");
+                    String publicStatus = statusMap.get("public");
 
                     if (userRef.equals(borrowerRef)) {
-                        if (borrowerStatus.equals("borrowed")){
                         String bookStatus = "borrowed";
                         bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
-                        }
                     }
                 }
                 bookAdapter.notifyDataSetChanged();
@@ -100,6 +99,16 @@ public class BorrowedActivity extends BaseActivity {
         startActivity(bookInfoIntent);
     }
 
+    @Override
+    int getContentViewId() {
+        return R.layout.activity_home;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.navigation_home;
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -112,15 +121,5 @@ public class BorrowedActivity extends BaseActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    int getContentViewId() {
-        return R.layout.activity_borrowed;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return R.id.navigation_home;
     }
 }
