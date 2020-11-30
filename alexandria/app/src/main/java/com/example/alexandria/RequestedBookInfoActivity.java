@@ -41,6 +41,8 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
+    private String buttonUserId = null; // pass to userInfoActivity
+
     DocumentReference userRef = MainActivity.currentUserRef;
 
 
@@ -78,11 +80,18 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
             }
         });
 
+        Button ownerButton = findViewById(R.id.ownerButton);
+        ownerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userInfo();
+            }
+        });
+
         Intent intent = getIntent();
         bookID = intent.getStringExtra("bookID");
 
         bookRef = db.collection("books").document(bookID);
-
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -146,21 +155,9 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                         if (requestedUsers.contains(userRef)) {
                             requestStatus = "requested";
                             statusView.setText(requestStatus);
-                        } else if (borrowerRef.equals(userRef)){
-                            requestStatus = "accepted";
-                            statusView.setText(requestStatus);
-
                         } else {
                             Log.d("TAG", "user does not request for this book");
                         }
-
-                        Button ownerButton = findViewById(R.id.ownerButton);
-                        ownerButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //TODO - display user info
-                            }
-                        });
 
                         ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
@@ -171,29 +168,7 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                             }
                         });
 
-                        Button viewLocationButton = findViewById(R.id.viewLocationButton);
-                        viewLocationButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: view location button
-
-                            }
-                        });
-
-                        Button confirmButton = findViewById(R.id.confirmButton);
-                        confirmButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: confirm borrow button
-                            }
-                        });
-
-
-                        // hide button when status != accepted
-                        if (!requestStatus.equals("accepted")){
-                            viewLocationButton.setVisibility(View.INVISIBLE);
-                            confirmButton.setVisibility(View.INVISIBLE);
-                        }
+                        buttonUserId = ownerRef.getId();
 
                     }
                 }
@@ -201,6 +176,16 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    /**
+     * go to user info activity
+     */
+    public void userInfo() {
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userId", buttonUserId);
+        Log.d("TAG", "passed userId = " +buttonUserId);
+        startActivity(intent);
     }
 
 

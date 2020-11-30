@@ -52,6 +52,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
+    private String buttonUserId = null; // pass to userInfoActivity
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -107,12 +108,11 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
-
         Button userButton = findViewById(R.id.borrowerOrOwnerButton);
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: display owner or borrower info
+                userInfo();
             }
         });
 
@@ -125,6 +125,16 @@ public class BookInfoActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    /**
+     * go to user info activity
+     */
+    public void userInfo() {
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userId", buttonUserId);
+        Log.d("TAG", "passed userId = " +buttonUserId);
+        startActivity(intent);
     }
 
     /**
@@ -210,10 +220,10 @@ public class BookInfoActivity extends AppCompatActivity {
                                                     DocumentSnapshot document = task.getResult();
                                                     String username = String.valueOf(document.getData().get("username"));
                                                     borrowerOrOwnerButton.setText(username);
-
                                                 }
                                             });
 
+                                            buttonUserId = borrowerRef.getId();
 
                                         } else { // status = Available/Requested
                                             borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
@@ -239,6 +249,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                             }
                                         });
+                                        buttonUserId = ownerRef.getId();
 
                                     }
                                 }
@@ -258,6 +269,9 @@ public class BookInfoActivity extends AppCompatActivity {
                             if (userRef.equals(ownerRef)) {
                                 // for owner -  hide borrower section when book is available
 
+                                // hide request button
+                                requestButton.setVisibility(View.INVISIBLE);
+
                                 statusView.setText(ownerStatus);
                                 if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
 
@@ -275,7 +289,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                         }
                                     });
-
+                                    buttonUserId = borrowerRef.getId();
 
                                 } else { // status = Available/Requested
                                     borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
@@ -301,6 +315,8 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                     }
                                 });
+
+                                buttonUserId = ownerRef.getId();
 
                             }
                         }

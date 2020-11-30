@@ -59,9 +59,8 @@
                 android:id="@+id/acceptedBookTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="60dp"
-                android:layout_marginRight="60dp"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -72,9 +71,8 @@
                 android:id="@+id/acceptedBookAuthor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="60dp"
-                android:layout_marginRight="60dp"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -85,9 +83,8 @@
                 android:id="@+id/acceptedBookISBN"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="60dp"
-                android:layout_marginRight="60dp"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -144,25 +141,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
-                android:layout_marginLeft="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:text="Description:"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/isbn" />
-
-            <Button
-                android:id="@+id/borrowScanButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="24dp"
-                android:text="BORROW SCAN"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ownerButton" />
 
             <TextView
                 android:id="@+id/owner"
@@ -193,6 +176,31 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/owner"
                 app:layout_constraintTop_toBottomOf="@+id/acceptedBookDescr" />
+
+            <Button
+                android:id="@+id/confirmButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
+                android:text="CONFIRM BORROW"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/viewLocationButton" />
+
+            <Button
+                android:id="@+id/viewLocationButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="VIEW GEOLOCATION"
+                app:layout_constraintBottom_toTopOf="@+id/confirmButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ownerButton" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

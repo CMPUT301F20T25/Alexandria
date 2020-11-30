@@ -40,6 +40,8 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
 
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
+    private String buttonUserId = null; // pass to userInfoActivity
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference userRef = MainActivity.currentUserRef;
 
@@ -75,6 +77,23 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                 bundle.putByteArray("image",data);
                 fragment.setArguments(bundle);
                 fragment.show(getSupportFragmentManager(), "enlarge image");
+            }
+        });
+
+        Button ownerButton = findViewById(R.id.ownerButton);
+        ownerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userInfo();
+            }
+        });
+
+
+        Button confirmButton = findViewById(R.id.returnBookButton);
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO - return book button
             }
         });
 
@@ -137,7 +156,6 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                             });
                         }
 
-                        Button ownerButton = findViewById(R.id.ownerButton);
                         ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -147,21 +165,7 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                             }
                         });
 
-                        ownerButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: display owner info
-                            }
-                        });
-
-
-                        Button returnScanButton = findViewById(R.id.returnScanButton);
-                        returnScanButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openScanActivity();
-                            }
-                        });
+                        buttonUserId = ownerRef.getId();
 
                     } else {
                         Log.d("TAG", "document not found ");
@@ -173,9 +177,14 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void openScanActivity() {
-        Intent ISBNIntent = new Intent(this, IsbnActivity.class);
-        startActivity(ISBNIntent);
+    /**
+     * go to user info activity
+     */
+    public void userInfo() {
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userId", buttonUserId);
+        Log.d("TAG", "passed userId = " +buttonUserId);
+        startActivity(intent);
     }
 
     @Override
