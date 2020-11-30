@@ -1,20 +1,32 @@
 package com.example.alexandria;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
-public class CustomList extends ArrayAdapter<Book> {
+public class CustomList extends ArrayAdapter<Book>{
 
     private ArrayList<Book> books;
     private Context context;
@@ -37,8 +49,6 @@ public class CustomList extends ArrayAdapter<Book> {
 
         Book book = books.get(position);
 
-
-        ImageView bookImage = view.findViewById(R.id.book_image);
         TextView authorName = view.findViewById(R.id.author_name);
         TextView bookName = view.findViewById(R.id.book_name);
 

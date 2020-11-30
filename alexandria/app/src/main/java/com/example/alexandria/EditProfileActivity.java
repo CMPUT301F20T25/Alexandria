@@ -3,15 +3,11 @@ package com.example.alexandria;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,16 +19,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.Map;
-
-public class MyAccountActivity extends BaseActivity {
+public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_profile);
 
+        // final String currentUserID;
         final String TAG = "Tag: Account";
         final FirebaseFirestore db;
 
@@ -43,14 +38,14 @@ public class MyAccountActivity extends BaseActivity {
         String currentUserEmail = user.getEmail();
         String currentUserName = currentUserEmail.substring(0, currentUserEmail.indexOf("@"));
 
+        final EditText userNameEditText = findViewById(R.id.EditTextUserName);
+        final EditText phoneEditText = findViewById(R.id.EditTextPhone);
+        final EditText emailEditText = findViewById(R.id.EditTextTextEmail);
+
         // database setup
         db = FirebaseFirestore.getInstance();
         final CollectionReference collectionRef = db.collection("users");
         final DocumentReference userDocRef = db.collection("users").document(currentUserEmail);
-
-        final TextView userNameEditText = findViewById(R.id.textUserName);
-        final TextView phoneEditText = findViewById(R.id.textPhone);
-        final TextView emailEditText = findViewById(R.id.textTextEmail);
 
         // get realtime updates with firebase
         userDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -81,70 +76,26 @@ public class MyAccountActivity extends BaseActivity {
             }
         });
 
-        // open edit profile activity
+        // save button
         Button saveButton = (Button) findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openEditProfileActivity();
+                // save changes
+                String name = userNameEditText.getText().toString();
+                userDocRef.update("username", name);
+
+                String phone = phoneEditText.getText().toString();
+                userDocRef.update("phone number", phone);
+
+                String email = emailEditText.getText().toString();
+                userDocRef.update("email", email);
+
+                // display message
+                Toast.makeText(EditProfileActivity.this, "Changes Saved",Toast.LENGTH_LONG).show();
+
             }
         });
 
-        // open setting activity
-        Button settingButton = (Button) findViewById(R.id.setting_button);
-        settingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openSettingActivity();
-            }
-        });
-
-        // open myBook activity
-        Button myBookButton = (Button) findViewById(R.id.myBook_button);
-        myBookButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMyBookActivity();
-            }
-        });
-
-        // open message activity
-        Button messageButton = (Button) findViewById(R.id.message_button);
-        messageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMessageActivity();
-            }
-        });
-    }
-
-    private void openEditProfileActivity(){
-        Intent profileIntent = new Intent(this, EditProfileActivity.class);
-        startActivity(profileIntent);
-    }
-
-    private void openSettingActivity(){
-        Intent settingIntent = new Intent(this, SettingActivity.class);
-        startActivity(settingIntent);
-    }
-
-    private void openMyBookActivity(){
-        Intent myBookIntent = new Intent(this, MyBookActivity.class);
-        startActivity(myBookIntent);
-    }
-
-    private void openMessageActivity(){
-        Intent messageIntent = new Intent(this, MessageActivity.class);
-        startActivity(messageIntent);
-    }
-
-    @Override
-    int getContentViewId() {
-        return R.layout.activity_my_account;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return R.id.navigation_user;
     }
 }
