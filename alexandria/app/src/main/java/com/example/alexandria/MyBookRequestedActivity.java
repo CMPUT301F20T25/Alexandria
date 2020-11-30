@@ -1,11 +1,13 @@
 package com.example.alexandria;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,27 +25,31 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class BorrowedActivity extends BaseActivity {
-
+public class MyBookRequestedActivity extends AppCompatActivity {
+    String filterStatus = "requested";
     ListView currentList;
     ArrayAdapter<Book> bookAdapter;
     ArrayList<Book> bookDataList;
+    FirebaseFirestore db;
     DocumentReference userRef = MainActivity.currentUserRef;
+
+    private static final int ADD_BOOK_CODE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseFirestore db;
+        setContentView(R.layout.activity_my_book_requested);
 
         // set up toolbar
         // reference: https://developer.android.com/training/appbar/setting-up
         // https://stackoverflow.com/questions/29448116/adding-backbutton-on-top-of-child-element-of-toolbar/29794680#29794680
-        Toolbar toolbar = (Toolbar) findViewById(R.id.borrowed_book_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_book_requested_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Log.d("tag", "Borrowed Book Activity created");
+
+        Log.d("tag", "My Book Requested Activity created");
 
         currentList = findViewById(R.id.current_list);
 
@@ -68,14 +74,21 @@ public class BorrowedActivity extends BaseActivity {
                     String title = String.valueOf(doc.getData().get("title"));
                     String description = String.valueOf(doc.getData().get("description"));
 
-                    DocumentReference borrowerRef = (DocumentReference) doc.getData().get("borrower");
+                    DocumentReference ownerRef = (DocumentReference) doc.getData().get("ownerReference");
 
                     Map<String, String> statusMap = (Map) doc.getData().get("status");
-                    String borrowerStatus = statusMap.get("borrower");
+                    String ownerStatus = statusMap.get("owner");
+                    String publicStatus = statusMap.get("public");
 
-                    if (userRef.equals(borrowerRef)) {
-                        if (borrowerStatus.equals("borrowed")){
-                            String bookStatus = "borrowed";
+                    String bookStatus = "borrowed";
+
+                    if(publicStatus.equals("available")){
+                        if (doc.getData().get("requestedUsers") instanceof ArrayList) {
+                            bookStatus = "requested";
+                        }
+                    }
+                    if (userRef.equals(ownerRef)) {
+                        if (bookStatus.equals(filterStatus)){
                             bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
                         }
                     }
@@ -93,12 +106,11 @@ public class BorrowedActivity extends BaseActivity {
     }
 
     private void openBookInfoActivity(int position) {
-        Intent bookInfoIntent = new Intent(BorrowedActivity.this, BorrowedBookInfoActivity.class);
+        Intent bookInfoIntent = new Intent(MyBookRequestedActivity.this, BookInfoActivity.class);
         String bookID = bookDataList.get(position).getBookID();
         bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -112,15 +124,4 @@ public class BorrowedActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    int getContentViewId() {
-        return R.layout.activity_borrowed;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return R.id.navigation_home;
-    }
 }
-

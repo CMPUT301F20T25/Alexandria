@@ -38,7 +38,6 @@ public class MyBookActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_book);
 
         // set up toolbar
         // reference: https://developer.android.com/training/appbar/setting-up
@@ -117,20 +116,9 @@ public class MyBookActivity extends BaseActivity {
 
     private void openBookInfoActivity(int position) {
         Intent bookInfoIntent = new Intent(MyBookActivity.this, BookInfoActivity.class);
-        String bookID = bookDataList.get(position).getBookID();
+        String bookID = bookShowDataList.get(position).getBookID();
         bookInfoIntent.putExtra("bookID", bookID);
         startActivity(bookInfoIntent);
-    }
-
-    @Override
-    int getContentViewId() {
-        return R.layout.activity_home;
-    }
-
-    @Override
-    int getNavigationMenuItemId() {
-        return R.id.navigation_home;
-
     }
 
     @Override
@@ -158,6 +146,7 @@ public class MyBookActivity extends BaseActivity {
                     bookShowDataList.add(0,bookDataList.get(index));
                 }
                 bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "all button selected");
                 break;
             case R.id.show_available:
                 filterStatus = "available";
@@ -168,6 +157,7 @@ public class MyBookActivity extends BaseActivity {
                     }
                 }
                 bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "available button selected");
                 break;
             case R.id.show_requested:
                 filterStatus = "requested";
@@ -178,6 +168,7 @@ public class MyBookActivity extends BaseActivity {
                     }
                 }
                 bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "requested button selected");
                 break;
             case R.id.show_accepted:
                 filterStatus = "accepted";
@@ -188,6 +179,7 @@ public class MyBookActivity extends BaseActivity {
                     }
                 }
                 bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "accepted button selected");
                 break;
             case R.id.show_borrowed:
                 filterStatus = "borrowed";
@@ -198,10 +190,21 @@ public class MyBookActivity extends BaseActivity {
                     }
                 }
                 bookAdapter.notifyDataSetChanged();
+                Log.d("toolbar item", "borrowed button selected");
                 break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    int getContentViewId() {
+        return R.layout.activity_my_book;
+    }
+
+    @Override
+    int getNavigationMenuItemId() {
+        return R.id.navigation_home;
     }
 }

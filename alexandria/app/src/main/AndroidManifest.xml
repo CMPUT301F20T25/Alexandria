@@ -28,10 +28,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alexandria">
-        <activity android:name=".MessageActivity"></activity>
+        <activity android:name=".MyBookRequestedActivity"></activity>
+        <activity android:name=".AcceptedBookInfoActivity" />
+        <activity android:name=".MessageActivity" />
         <activity android:name=".SettingActivity" />
         <activity android:name=".EditProfileActivity" />
-        <activity android:name=".AcceptedBookInfoActivity" />
         <activity android:name=".UserInfoActivity" />
         <activity android:name=".ViewGeolocationActivity" />
         <activity android:name=".SetGeolocationActivity" />

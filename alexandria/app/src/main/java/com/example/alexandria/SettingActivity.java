@@ -2,10 +2,12 @@ package com.example.alexandria;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -31,6 +33,14 @@ public class SettingActivity extends AppCompatActivity {
         // final String currentUserID;
         final String TAG = "Tag: Account";
         final FirebaseFirestore db;
+
+        // set up toolbar
+        // reference: https://developer.android.com/training/appbar/setting-up
+        // https://stackoverflow.com/questions/29448116/adding-backbutton-on-top-of-child-element-of-toolbar/29794680#29794680
+        Toolbar toolbar = (Toolbar) findViewById(R.id.setting_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // retrieve information of current user
         FirebaseAuth mAuth;
@@ -101,5 +111,18 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                Log.d("toolbar item", "Back button selected");
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -140,7 +140,7 @@ public class MyAccountActivity extends BaseActivity {
     }
 
     private void openMyBookActivity(){
-        Intent myBookIntent = new Intent(this, MyBookActivity.class);
+        Intent myBookIntent = new Intent(this, MyBookRequestedActivity.class);
         startActivity(myBookIntent);
     }
 
