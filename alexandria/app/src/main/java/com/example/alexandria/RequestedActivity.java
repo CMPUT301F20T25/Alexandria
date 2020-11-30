@@ -1,11 +1,9 @@
 package com.example.alexandria;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -78,7 +76,8 @@ public class RequestedActivity extends BaseActivity {
                         ArrayList<DocumentReference> requestedList = (ArrayList<DocumentReference>) doc.getData().get("requestedUsers");
                         for (int counter = 0; counter < requestedList.size(); counter++) {
                             if (userRef.equals(requestedList.get(counter))) {
-                                bookDataList.add(new Book(id, isbn, description, title, author)); // Adding the cities and provinces from FireStore
+                                String bookStatus = "requested";
+                                bookDataList.add(0, new Book(id, isbn, description, title, author, bookStatus)); // Adding the cities and provinces from FireStore
                             }
                         }
                     }

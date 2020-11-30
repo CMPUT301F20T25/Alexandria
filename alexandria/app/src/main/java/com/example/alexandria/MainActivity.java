@@ -73,11 +73,10 @@ public class MainActivity extends AppCompatActivity{
 
                 // check input
                 if (email.equals("") || password.equals("")){
-                    Toast.makeText(MainActivity.this, "please enter email & password ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Please enter Email Address and Password", Toast.LENGTH_SHORT).show();
                 } else {
                     login(email, password);
                 }
-
             }
         });
 
