@@ -279,4 +279,6 @@ public class SetGeolocationActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 }

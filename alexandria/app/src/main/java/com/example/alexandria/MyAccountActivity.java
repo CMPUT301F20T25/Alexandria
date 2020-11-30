@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -11,8 +12,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,25 +33,24 @@ public class MyAccountActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String currentUserID;
         final String TAG = "Tag: Account";
         final FirebaseFirestore db;
 
-        // current user email, for testing
-        currentUserID = "testuser1@fake.com";
+        // retrieve information of current user
+        FirebaseAuth mAuth;
+        mAuth = FirebaseAuth.getInstance ();
+        FirebaseUser user = mAuth.getCurrentUser();
+        String currentUserEmail = user.getEmail();
+        String currentUserName = currentUserEmail.substring(0, currentUserEmail.indexOf("@"));
 
         // database setup
         db = FirebaseFirestore.getInstance();
         final CollectionReference collectionRef = db.collection("users");
-        final DocumentReference userDocRef = db.collection("users").document(currentUserID);
+        final DocumentReference userDocRef = db.collection("users").document(currentUserEmail);
 
-        final EditText userNameEditText = findViewById(R.id.editTextUserName);
-        final EditText phoneEditText = findViewById(R.id.editTextPhone);
-        final EditText emailEditText = findViewById(R.id.editTextTextEmail);
-
-        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch acceptedSwitch = findViewById(R.id.accepted_switch);
-        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch deniedSwitch = findViewById(R.id.denied_switch);
-        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch receivedSwitch = findViewById(R.id.received_switch);
+        final TextView userNameEditText = findViewById(R.id.textUserName);
+        final TextView phoneEditText = findViewById(R.id.textPhone);
+        final TextView emailEditText = findViewById(R.id.textTextEmail);
 
         // get realtime updates with firebase
         userDocRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -72,66 +75,83 @@ public class MyAccountActivity extends BaseActivity {
                     String email = (String) value.getData().get("email");
                     emailEditText.setText(email);
 
-                    // retrieve notification settings
-                    Map<String,Boolean> map = (Map<String, Boolean>) value.getData().get("notificationSettings");
-                    Boolean acceptedReqNotification = map.get("acceptedRequests");
-                    Boolean denyReqNotification = map.get("deniedRequests");
-                    Boolean receiveReqNotification = map.get("receivedRequests");
-                    // set switch
-                    acceptedSwitch.setChecked(acceptedReqNotification);
-                    deniedSwitch.setChecked(denyReqNotification);
-                    receivedSwitch.setChecked(receiveReqNotification);
-
                 } else {
                     Log.d(TAG, "Current data: null");
                 }
             }
         });
 
-        // save button
+        // open edit profile activity
         Button saveButton = (Button) findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // save changes
-                String name = userNameEditText.getText().toString();
-                userDocRef.update("username", name);
-
-                String phone = phoneEditText.getText().toString();
-                userDocRef.update("phone number", phone);
-
-                String email = emailEditText.getText().toString();
-                userDocRef.update("email", email);
-
-                // display message
-                Toast.makeText(MyAccountActivity.this, "Changes Saved",Toast.LENGTH_LONG).show();
+                openEditProfileActivity();
             }
         });
 
-        // accept notification setting
-        acceptedSwitch.setOnClickListener(new View.OnClickListener() {
+        // open setting activity
+        Button settingButton = (Button) findViewById(R.id.setting_button);
+        settingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userDocRef.update("notificationSettings.acceptedRequests", acceptedSwitch.isChecked());
-
+                openSettingActivity();
             }
         });
 
-        // deny notification setting
-        deniedSwitch.setOnClickListener(new View.OnClickListener() {
+        // open myBook activity
+        Button myBookButton = (Button) findViewById(R.id.myBook_button);
+        myBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userDocRef.update("notificationSettings.deniedRequests", deniedSwitch.isChecked());
+                openMyBookActivity();
             }
         });
 
-        // receive notification setting
-        receivedSwitch.setOnClickListener(new View.OnClickListener() {
+        // open message activity
+        Button messageButton = (Button) findViewById(R.id.message_button);
+        messageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userDocRef.update("notificationSettings.receivedRequests", receivedSwitch.isChecked());
+                openMessageActivity();
             }
         });
+
+        // log out and open main activity
+        Button logOutButton = (Button) findViewById(R.id.logOut_button);
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                finish();
+                openMainActivity();
+            }
+        });
+    }
+
+    private void openEditProfileActivity(){
+        Intent profileIntent = new Intent(this, EditProfileActivity.class);
+        startActivity(profileIntent);
+    }
+
+    private void openSettingActivity(){
+        Intent settingIntent = new Intent(this, SettingActivity.class);
+        startActivity(settingIntent);
+    }
+
+    private void openMyBookActivity(){
+        Intent myBookIntent = new Intent(this, MyBookActivity.class);
+        startActivity(myBookIntent);
+    }
+
+    private void openMessageActivity(){
+        Intent messageIntent = new Intent(this, MessageActivity.class);
+        startActivity(messageIntent);
+    }
+
+    private void openMainActivity(){
+        Intent logOutIntent = new Intent(this, MainActivity.class);
+        startActivity(logOutIntent);
     }
 
     @Override
