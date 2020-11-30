@@ -3,6 +3,7 @@ package com.example.alexandria;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,30 +34,30 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
- * display book information to user who has requested the book
+ * display book information to its borrower
  * @author Xueying Luo
  */
-public class RequestedBookInfoActivity extends AppCompatActivity {
+public class AcceptedBookInfoActivity extends AppCompatActivity {
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
     private String buttonUserId = null; // pass to userInfoActivity
 
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference userRef = MainActivity.currentUserRef;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_requested_book_info);
+        setContentView(R.layout.activity_accepted_book_info);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.requestedBook_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.acceptedBook_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ImageView imageView = findViewById(R.id.requestedBookImage);
+        // make image clickable and zoom image
+        ImageView imageView = findViewById(R.id.acceptedBookImage);
         imageView.setClickable(true);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,10 +89,28 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
             }
         });
 
+        Button viewLocationButton = findViewById(R.id.viewLocationButton);
+        viewLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: view location button
+
+            }
+        });
+
+        Button confirmButton = findViewById(R.id.confirmButton);
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: confirm borrow button
+            }
+        });
+
         Intent intent = getIntent();
         bookID = intent.getStringExtra("bookID");
 
         bookRef = db.collection("books").document(bookID);
+
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -113,16 +132,14 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                         String descr = String.valueOf(document.getData().get("description"));
 
                         DocumentReference ownerRef = (DocumentReference) document.getData().get("ownerReference");
-                        DocumentReference borrowerRef = (DocumentReference) document.getData().get("borrower");
 
                         // display book info
 
-                        ImageView imageView = findViewById(R.id.requestedBookImage);
-                        TextView titleView = findViewById(R.id.requestedBookTitle);
-                        TextView authorView = findViewById(R.id.requestedBookAuthor);
-                        TextView isbnView = findViewById(R.id.requestedBookISBN);
-                        TextView descrView = findViewById(R.id.requestedBookDescr);
-                        TextView statusView = findViewById(R.id.requestStatusContent);
+                        ImageView imageView = findViewById(R.id.acceptedBookImage);
+                        TextView titleView = findViewById(R.id.acceptedBookTitle);
+                        TextView authorView = findViewById(R.id.acceptedBookAuthor);
+                        TextView isbnView = findViewById(R.id.acceptedBookISBN);
+                        TextView descrView = findViewById(R.id.acceptedBookDescr);
 
                         titleView.setText(title);
                         authorView.setText(author);
@@ -148,17 +165,6 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                             });
                         }
 
-                        String requestStatus = null;
-
-                        // if user in requestedUser list, set status to requested
-                        ArrayList<DocumentReference> requestedUsers = (ArrayList) document.getData().get("requestedUsers");
-                        if (requestedUsers.contains(userRef)) {
-                            requestStatus = "requested";
-                            statusView.setText(requestStatus);
-                        } else {
-                            Log.d("TAG", "user does not request for this book");
-                        }
-
                         ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -170,12 +176,20 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
 
                         buttonUserId = ownerRef.getId();
 
+
+                    } else {
+                        Log.d("TAG", "document not found ");
                     }
+
+
                 }
             }
         });
+    }
 
-
+    private void openScanActivity() {
+        Intent ISBNIntent = new Intent(this, IsbnActivity.class);
+        startActivity(ISBNIntent);
     }
 
     /**
@@ -188,9 +202,8 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected (MenuItem item){
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();

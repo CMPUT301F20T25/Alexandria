@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -28,6 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -38,6 +40,8 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
 
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
+    private String buttonUserId = null; // pass to userInfoActivity
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference userRef = MainActivity.currentUserRef;
 
@@ -50,6 +54,48 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // make image clickable and zoom image
+        ImageView imageView = findViewById(R.id.borrowedBookImage);
+        imageView.setClickable(true);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ViewImageFragment fragment = new ViewImageFragment();
+
+                Bundle bundle = new Bundle();
+
+                // get image in bytes
+                imageView.setDrawingCacheEnabled(true);
+                imageView.buildDrawingCache();
+                Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
+
+                bundle.putByteArray("image",data);
+                fragment.setArguments(bundle);
+                fragment.show(getSupportFragmentManager(), "enlarge image");
+            }
+        });
+
+        Button ownerButton = findViewById(R.id.ownerButton);
+        ownerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userInfo();
+            }
+        });
+
+
+        Button confirmButton = findViewById(R.id.returnBookButton);
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO - return book button
+            }
+        });
 
         Intent intent = getIntent();
         bookID = intent.getStringExtra("bookID");
@@ -110,7 +156,6 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                             });
                         }
 
-                        Button ownerButton = findViewById(R.id.ownerButton);
                         ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -120,21 +165,7 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                             }
                         });
 
-                        ownerButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: display owner info
-                            }
-                        });
-
-
-                        Button returnScanButton = findViewById(R.id.returnScanButton);
-                        returnScanButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: return scan
-                            }
-                        });
+                        buttonUserId = ownerRef.getId();
 
                     } else {
                         Log.d("TAG", "document not found ");
@@ -144,6 +175,16 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * go to user info activity
+     */
+    public void userInfo() {
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userId", buttonUserId);
+        Log.d("TAG", "passed userId = " +buttonUserId);
+        startActivity(intent);
     }
 
     @Override
