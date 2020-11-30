@@ -18,5 +18,6 @@
     <string name="isbn_default">default text</string>
     <string name="back_button">Back button</string>
     <string name="default_bookPhotoDescription">Book Photo</string>
+    <string name="notif_title">Notifications</string>
     >>>>>>> dev
 </resources>

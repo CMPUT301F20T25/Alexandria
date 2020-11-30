@@ -116,8 +116,8 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void openMessageActivity() {
-        //Intent intent = new Intent(this, Activity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, MessageActivity.class);
+        startActivity(intent);
     }
 
     private void openMyBookActivity() {
