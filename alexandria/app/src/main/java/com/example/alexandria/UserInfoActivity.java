@@ -91,7 +91,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         username.setText("@" + documentSnapshot.getData().get("username").toString());
                         email.setText(documentSnapshot.getData().get("email").toString());
                         String phoneNumber = documentSnapshot.getData().get("phone number").toString();
-                        phoneNumber = "(" + phoneNumber.substring(0,3) + ") " + phoneNumber.substring(4,7) + "-" + phoneNumber.substring(8);
+                        phoneNumber = "(" + phoneNumber.substring(0,3) + ") " + phoneNumber.substring(3,6) + "-" + phoneNumber.substring(6,10);
                         phone.setText(phoneNumber);
                         bio.setText(documentSnapshot.getData().get("bio").toString());
                         bioDesc.setText("A bit about @" + documentSnapshot.getData().get("username").toString() + " ...");

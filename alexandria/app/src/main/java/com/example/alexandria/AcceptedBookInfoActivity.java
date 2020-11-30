@@ -3,7 +3,6 @@ package com.example.alexandria;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -32,15 +31,19 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
- * display book information to its borrower
+ * display accepted book information to its borrower,
+ * with location to pick up the book, and to confirm borrow when user receives book
  * @author Xueying Luo
  */
 public class AcceptedBookInfoActivity extends AppCompatActivity {
 
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
+    private String buttonUserId = null; // pass to userInfoActivity
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference userRef = MainActivity.currentUserRef;
 
@@ -53,6 +56,11 @@ public class AcceptedBookInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Intent intent = getIntent();
+        bookID = intent.getStringExtra("bookID");
+
+        bookRef = db.collection("books").document(bookID);
 
         // make image clickable and zoom image
         ImageView imageView = findViewById(R.id.acceptedBookImage);
@@ -79,10 +87,51 @@ public class AcceptedBookInfoActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
+        Button ownerButton = findViewById(R.id.ownerButton);
+        ownerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userInfo();
+            }
+        });
 
-        bookRef = db.collection("books").document(bookID);
+        Button viewLocationButton = findViewById(R.id.viewLocationButton);
+        viewLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewLocation();
+            }
+        });
+
+        Button receivedButton = findViewById(R.id.bookReceivedButton);
+        receivedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // confirm the borrow after receiving the book
+
+                Log.d("accepted", "confirm button clicked");
+
+                bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // set borrower status to 'borrowed'
+                                Map<String, String> status = (Map<String, String>) document.getData().get("status");
+                                status.put("owner", "borrowed");
+                                status.put("borrower", "borrowed");
+                                status.put("public", "unavailable");
+
+                                bookRef.update("status", status);
+
+                                finish();
+                            }
+                        }
+                    }
+                });
+            }
+        });
 
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -138,7 +187,6 @@ public class AcceptedBookInfoActivity extends AppCompatActivity {
                             });
                         }
 
-                        Button ownerButton = findViewById(R.id.ownerButton);
                         ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -148,21 +196,8 @@ public class AcceptedBookInfoActivity extends AppCompatActivity {
                             }
                         });
 
-                        ownerButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: display owner info
-                            }
-                        });
+                        buttonUserId = ownerRef.getId();
 
-
-                        Button returnScanButton = findViewById(R.id.borrowScanButton);
-                        returnScanButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openScanActivity();
-                            }
-                        });
 
                     } else {
                         Log.d("TAG", "document not found ");
@@ -174,9 +209,45 @@ public class AcceptedBookInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void openScanActivity() {
-        Intent ISBNIntent = new Intent(this, IsbnActivity.class);
-        startActivity(ISBNIntent);
+    /**
+     * go to view geolocation activity
+     */
+    private void viewLocation() {
+        // retrieve location from database
+
+        bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot document = task.getResult();
+
+                Map<String, Double> location = (Map<String, Double>) document.getData().get("location");
+                Double latitude = location.get("latitude");
+                Double longitude = location.get("longitude");
+
+                if (latitude!=null && longitude!=null) {
+                    Intent intent = new Intent(getApplicationContext(), ViewGeolocationActivity.class);
+                    intent.putExtra("title", document.getData().get("title").toString());
+                    intent.putExtra("latitude", latitude);
+                    intent.putExtra("latitude", longitude);
+
+                    Log.d("TAG", "passed extra = " +bookID+ latitude + ","+longitude );
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getApplicationContext(),"retrieve location failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
+    /**
+     * go to user info activity
+     */
+    public void userInfo() {
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userId", buttonUserId);
+        Log.d("TAG", "passed userId = " +buttonUserId);
+        startActivity(intent);
     }
 
     @Override

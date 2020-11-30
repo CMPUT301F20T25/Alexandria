@@ -41,6 +41,8 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
+    private String buttonUserId = null; // pass to userInfoActivity
+
     DocumentReference userRef = MainActivity.currentUserRef;
 
 
@@ -53,6 +55,9 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Intent intent = getIntent();
+        bookID = intent.getStringExtra("bookID");
 
         ImageView imageView = findViewById(R.id.requestedBookImage);
         imageView.setClickable(true);
@@ -78,11 +83,15 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
+        Button ownerButton = findViewById(R.id.ownerButton);
+        ownerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userInfo();
+            }
+        });
 
         bookRef = db.collection("books").document(bookID);
-
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -104,7 +113,6 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                         String descr = String.valueOf(document.getData().get("description"));
 
                         DocumentReference ownerRef = (DocumentReference) document.getData().get("ownerReference");
-                        DocumentReference borrowerRef = (DocumentReference) document.getData().get("borrower");
 
                         // display book info
 
@@ -139,28 +147,15 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                             });
                         }
 
-                        String requestStatus = null;
 
                         // if user in requestedUser list, set status to requested
                         ArrayList<DocumentReference> requestedUsers = (ArrayList) document.getData().get("requestedUsers");
                         if (requestedUsers.contains(userRef)) {
-                            requestStatus = "requested";
+                            String requestStatus = "requested";
                             statusView.setText(requestStatus);
-                        } else if (borrowerRef.equals(userRef)){
-                            requestStatus = "accepted";
-                            statusView.setText(requestStatus);
-
                         } else {
                             Log.d("TAG", "user does not request for this book");
                         }
-
-                        Button ownerButton = findViewById(R.id.ownerButton);
-                        ownerButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //TODO - display user info
-                            }
-                        });
 
                         ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
@@ -171,29 +166,7 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                             }
                         });
 
-                        Button viewLocationButton = findViewById(R.id.viewLocationButton);
-                        viewLocationButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: view location button
-
-                            }
-                        });
-
-                        Button confirmButton = findViewById(R.id.confirmButton);
-                        confirmButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: confirm borrow button
-                            }
-                        });
-
-
-                        // hide button when status != accepted
-                        if (!requestStatus.equals("accepted")){
-                            viewLocationButton.setVisibility(View.INVISIBLE);
-                            confirmButton.setVisibility(View.INVISIBLE);
-                        }
+                        buttonUserId = ownerRef.getId();
 
                     }
                 }
@@ -201,6 +174,16 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    /**
+     * go to user info activity
+     */
+    public void userInfo() {
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userId", buttonUserId);
+        Log.d("TAG", "passed userId = " +buttonUserId);
+        startActivity(intent);
     }
 
 

@@ -31,6 +31,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * display book information to its borrower
@@ -40,6 +41,8 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
 
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
+    private String buttonUserId = null; // pass to userInfoActivity
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference userRef = MainActivity.currentUserRef;
 
@@ -52,6 +55,11 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Intent intent = getIntent();
+        bookID = intent.getStringExtra("bookID");
+
+        bookRef = db.collection("books").document(bookID);
 
         // make image clickable and zoom image
         ImageView imageView = findViewById(R.id.borrowedBookImage);
@@ -78,10 +86,43 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
+        Button ownerButton = findViewById(R.id.ownerButton);
+        ownerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userInfo();
+            }
+        });
 
-        bookRef = db.collection("books").document(bookID);
+
+        Button returnButton = findViewById(R.id.returnBookButton);
+        returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // set borrower & status to null
+
+                Log.d("accepted", "confirm button clicked");
+
+                bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // set borrower status to 'borrowed'
+                                Map<String, String> status = (Map<String, String>) document.getData().get("status");
+                                status.put("borrower", null);
+
+                                bookRef.update("status", status);
+
+                                finish();
+                            }
+                        }
+                    }
+                });
+            }
+        });
 
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -137,7 +178,6 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                             });
                         }
 
-                        Button ownerButton = findViewById(R.id.ownerButton);
                         ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -147,21 +187,7 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
                             }
                         });
 
-                        ownerButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // TODO: display owner info
-                            }
-                        });
-
-
-                        Button returnScanButton = findViewById(R.id.returnScanButton);
-                        returnScanButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                openScanActivity();
-                            }
-                        });
+                        buttonUserId = ownerRef.getId();
 
                     } else {
                         Log.d("TAG", "document not found ");
@@ -173,9 +199,14 @@ public class BorrowedBookInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void openScanActivity() {
-        Intent ISBNIntent = new Intent(this, IsbnActivity.class);
-        startActivity(ISBNIntent);
+    /**
+     * go to user info activity
+     */
+    public void userInfo() {
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userId", buttonUserId);
+        Log.d("TAG", "passed userId = " +buttonUserId);
+        startActivity(intent);
     }
 
     @Override

@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -40,6 +41,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -52,6 +54,7 @@ public class BookInfoActivity extends AppCompatActivity {
 
     private String bookID = null; // passed from previous page
     private DocumentReference bookRef;
+    private String buttonUserId = null; // pass to userInfoActivity
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -100,19 +103,18 @@ public class BookInfoActivity extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] data = baos.toByteArray();
 
-                bundle.putByteArray("image",data);
+                bundle.putByteArray("image", data);
                 fragment.setArguments(bundle);
                 fragment.show(getSupportFragmentManager(), "enlarge image");
 
             }
         });
 
-
         Button userButton = findViewById(R.id.borrowerOrOwnerButton);
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: display owner or borrower info
+                userInfo();
             }
         });
 
@@ -120,11 +122,122 @@ public class BookInfoActivity extends AppCompatActivity {
         requestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: request book
-                // add user to requestedUsers list, set owner status to requested
+                Log.d("request book", "request button clicked");
+
+                bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+
+                                ArrayList<DocumentReference> requestedUsers = (ArrayList<DocumentReference>) document.getData().get("requestedUsers");
+
+                                if (requestedUsers == null) {
+                                    requestedUsers = new ArrayList<>();
+                                }
+
+                                // update requestedUsers list
+                                requestedUsers.add(userRef);
+                                bookRef.update("requestedUsers", requestedUsers)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+
+                                                // set notification data
+                                                Map<String, String> bookInfo = new HashMap<>();
+                                                bookInfo.put("bookId", bookRef.getId());
+                                                bookInfo.put("borrowerId", userRef.getId());
+                                                bookInfo.put("bookTitle", document.getData().get("title").toString());
+
+                                                // set owner status to requested
+                                                Map<String, String> status = (Map<String, String>) document.getData().get("status");
+                                                status.put("owner", "requested");
+
+                                                bookRef.update("status", status);
+
+                                                DocumentReference ownerRef = (DocumentReference) document.getData().get("ownerReference");
+
+                                                userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                                                        if (task.isSuccessful()) {
+                                                            DocumentSnapshot document = task.getResult();
+                                                            if (document.exists()) {
+
+                                                                bookInfo.put("borrowerUsername", document.getData().get("username").toString());
+
+                                                                // send a notification to owner
+                                                                ownerRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                        if (task.isSuccessful()) {
+                                                                            DocumentSnapshot document = task.getResult();
+                                                                            if (document.exists()) {
+                                                                                Map<String, ArrayList> notifications = (Map<String, ArrayList>) document.getData().get("notifications");
+                                                                                ArrayList<Map> received = notifications.get("received");
+
+                                                                                if (received == null) {
+                                                                                    received = new ArrayList<>();
+                                                                                }
+                                                                                received.add(bookInfo);
+                                                                                notifications.put("received", received);
+
+                                                                                Log.d("request", "notification info = " + received);
+
+                                                                                ownerRef.update("notifications", notifications);
+                                                                                Toast.makeText(getApplicationContext(), "request sent", Toast.LENGTH_SHORT).show();
+
+                                                                                finish();
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                });
+
+
+                                                            } else {
+                                                                Log.d("request", "error -2");
+                                                            }
+                                                        } else {
+                                                            Log.d("request", "error -1");
+                                                        }
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Toast.makeText(getApplicationContext(), "request failed -2", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getApplicationContext(), "request failed -1 ", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                            } else {
+                                Log.d("TAG", "get failed with ", task.getException());
+                            }
+
+                        }
+                    }
+                });
             }
         });
+    }
 
+
+    /**
+     * go to user info activity
+     */
+    public void userInfo() {
+        Intent intent = new Intent(this, UserInfoActivity.class);
+        intent.putExtra("userId", buttonUserId);
+        Log.d("TAG", "passed userId = " +buttonUserId);
+        startActivity(intent);
     }
 
     /**
@@ -210,12 +323,12 @@ public class BookInfoActivity extends AppCompatActivity {
                                                     DocumentSnapshot document = task.getResult();
                                                     String username = String.valueOf(document.getData().get("username"));
                                                     borrowerOrOwnerButton.setText(username);
-
                                                 }
                                             });
 
+                                            buttonUserId = borrowerRef.getId();
 
-                                        } else { // status = Available/Requested
+                                        } else { // owner status = Available/Requested
                                             borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
                                             borrowerOrOwnerButton.setVisibility(View.INVISIBLE);
                                         }
@@ -239,6 +352,15 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                             }
                                         });
+                                        buttonUserId = ownerRef.getId();
+
+                                        // hide request button and set status to requested if user in requestedUser list
+                                        ArrayList<DocumentReference> requestedUsers = (ArrayList) document.getData().get("requestedUsers");
+                                        if (requestedUsers.contains(userRef)) {
+                                            String requestStatus = "requested";
+                                            statusView.setText(requestStatus);
+                                            requestButton.setVisibility(View.INVISIBLE);
+                                        }
 
                                     }
                                 }
@@ -258,6 +380,9 @@ public class BookInfoActivity extends AppCompatActivity {
                             if (userRef.equals(ownerRef)) {
                                 // for owner -  hide borrower section when book is available
 
+                                // hide request button
+                                requestButton.setVisibility(View.INVISIBLE);
+
                                 statusView.setText(ownerStatus);
                                 if (ownerStatus.equals("borrowed") || ownerStatus.equals("accepted")) {
 
@@ -275,9 +400,9 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                         }
                                     });
+                                    buttonUserId = borrowerRef.getId();
 
-
-                                } else { // status = Available/Requested
+                                } else { // owner status = Available/Requested
                                     borrowerOrOwner_titleView.setVisibility(View.INVISIBLE);
                                     borrowerOrOwnerButton.setVisibility(View.INVISIBLE);
                                 }
@@ -299,8 +424,19 @@ public class BookInfoActivity extends AppCompatActivity {
 
                                         statusView.setText(publicStatus);
 
+
                                     }
                                 });
+
+                                buttonUserId = ownerRef.getId();
+
+                                // hide request button and set status to requested if user in requestedUser list
+                                ArrayList<DocumentReference> requestedUsers = (ArrayList) document.getData().get("requestedUsers");
+                                if (requestedUsers.contains(userRef)) {
+                                    String requestStatus = "requested";
+                                    statusView.setText(requestStatus);
+                                    requestButton.setVisibility(View.INVISIBLE);
+                                }
 
                             }
                         }
