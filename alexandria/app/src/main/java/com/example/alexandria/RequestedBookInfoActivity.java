@@ -56,6 +56,9 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        Intent intent = getIntent();
+        bookID = intent.getStringExtra("bookID");
+
         ImageView imageView = findViewById(R.id.requestedBookImage);
         imageView.setClickable(true);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -88,9 +91,6 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
-        bookID = intent.getStringExtra("bookID");
-
         bookRef = db.collection("books").document(bookID);
         bookRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -113,7 +113,6 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                         String descr = String.valueOf(document.getData().get("description"));
 
                         DocumentReference ownerRef = (DocumentReference) document.getData().get("ownerReference");
-                        DocumentReference borrowerRef = (DocumentReference) document.getData().get("borrower");
 
                         // display book info
 
@@ -148,12 +147,11 @@ public class RequestedBookInfoActivity extends AppCompatActivity {
                             });
                         }
 
-                        String requestStatus = null;
 
                         // if user in requestedUser list, set status to requested
                         ArrayList<DocumentReference> requestedUsers = (ArrayList) document.getData().get("requestedUsers");
                         if (requestedUsers.contains(userRef)) {
-                            requestStatus = "requested";
+                            String requestStatus = "requested";
                             statusView.setText(requestStatus);
                         } else {
                             Log.d("TAG", "user does not request for this book");
